@@ -1,0 +1,57 @@
+/*Header placed in the center with a small margin*/
+header { 
+}
+
+/*Following header, the body. Has both margin-left and margin-right set to auto to make it 'float in the center'.
+Text also aligned in the center. Default background color set to lightblue.*/
+body {
+	text-align: center;
+	background-color: black;
+}
+
+/*Section that contains several articals. Has display - inline-block*/
+section {
+    display: inline-block;
+    clear: both;
+    text-align: left;
+    background-color: #5371AE;
+    width: 63.5%;
+}
+
+/*For each article, it has the following properties: text align in the center...*/
+article{
+    text-align: center;
+}
+
+/*Give the list a background color pink. For overflow content - hide it*/
+ul {
+    list-style-type: none;
+    padding: 0;
+    overflow: hidden;
+    background-color: #4B4747;
+    display: flex;
+    align-items: center;
+}
+
+/*List items(menus) float at left*/
+li a {
+    float:left;
+    display: block;
+    color: white;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+
+h3 {
+    text-align: center;
+}
+
+
+/*Footer is shown by default*/
+footer {
+    background-color: #4B4747;
+    display:block;
+    bottom: auto;
+}
+
