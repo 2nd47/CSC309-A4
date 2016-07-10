@@ -28,6 +28,13 @@ So, the process includes: creating a project post or contract profile; looking t
 * Admin:
   The administrator view will include aggregate information about projects and contractors such as total number of projects, contractors, completed job postings, and an array of other useful analytics. This allows includes changing passwords, and overriding user information, entering data directly into the database, as well as other necessary utilities to deal with user-support cases.
 
-** Work Assignment
+** Work Distribution
 
-Team members will partner up into pairs. These pairs will then review one another's work continuously throughout development and occasionally review the other pair's work. Pairs will be split into Daniil/Alex and Izzy/Annie.
+Team members will partner up into pairs. These pairs will then review one another's work continuously throughout development and occasionally review the other pair's work. Pairs will be split into Daniil/Alex and Izzy/Annie. Daniil and Alex will be implementing mainly the back-end of the app, dealing mainly with the database, database-facing code, and front-end facing code on the node.js server. In contract, Izzy and Annie will be creating the necessary front-end facing code, HTML, and CSS styling for the app.
+
+** Contact / Team Members
+
+Meichen Dong, g5meichn, annied617@gmail.com
+Daniil Kouznetsov, g3dakouz, daniil.kouznetsov@mail.utoronto.ca
+Alexander Mastryukov, c3mastry, Alexandermastryukov@gmail.com
+Xiaoyi Zhao, g3xiaoyi, izzy_zxy@hotmail.com
