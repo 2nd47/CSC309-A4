@@ -3,13 +3,14 @@
 
 body {
     font-family: "Arial", sans-serif;
+    height: 100%;
     margin:0px;
     color: #333;
     background:#EEE;
 }
 
 a {
-  color: #36D7B7;
+  color: #2ad5b3;
   text-decoration:none;
 }
 
@@ -38,9 +39,9 @@ nav {
     background:lightgray;
     border-width: 0px 0px 4px 0px;
     border-style:solid;
-    border-color:#CCC;
+    border-color:#bfbfbf;
     width:100%;
-    justify-content: space-around;
+    justify-content: flex-start;
 }
 
 a {
@@ -50,6 +51,25 @@ a {
     height: auto;
     margin: 0.25em;
     text-align:center;
+    margin-right: 1rem;
+    margin-left: 1rem;
+}
+
+.enditem {
+  margin-left: auto;
+  margin-right: 2rem;
+}
+
+input[type="text"] {
+  margin: 0;
+  width: 100%;
+  font-size: x-large;
+  box-shadow: none;
+  text-align: left;
+  outline: none;
+  border: none;
+  border-bottom: solid 2px #bfbfbf;
+  transition: border 0.3s;
 }
 
 main {
@@ -59,11 +79,25 @@ main {
 }
 
 main article {
-    /* margin-top is negative to account for our fixed header */
-    padding-top:2em;
-    margin-top:-3em;
     display:block;
     width:100%;
+}
+
+main article p {
+  border-width: medium medium medium medium;
+  border-style: solid;
+  border-color: lightgray;
+}
+
+aside {
+  display: block;
+  float: left;
+  margin-left: 9%;
+  width: 10%;
+  background-color: lightgray;
+  border-style:solid;
+  border-width: 0px 0px 4px 0px;
+  border-color:#bfbfbf;
 }
 
 footer {
@@ -72,7 +106,7 @@ footer {
   background-color: lightgray;
   border-style:solid;
   border-width: 4px 0px 0px 0px;
-  border-color:#CCC;
+  border-color:#bfbfbf;
   bottom: 0;
   position: fixed;
   display: flex;
