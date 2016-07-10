@@ -1,0 +1,112 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  height: 50px;
+  background-color: #10001F;
+  color: #FFFFFF;
+}
+
+#navbar_wrapper {
+  position: relative;
+  height: 100%;
+  min-width: 320px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+#explore_nav {
+  padding: 16px 0;
+  margin: 0 10px;
+  display: inline-block;
+}
+
+#contract_nav {
+  padding: 16px 0;
+  margin: 0 10px;
+  display: inline-block;
+}
+
+#searchbar_nav {
+  display: inline-block;
+  float:right;
+  padding: 14px;
+}
+
+#login_nav {
+  float: right;
+  padding: 6px 22px;
+  margin: 8px 0;
+  background-color: #00C100;
+  border: solid 2px #00C100;
+  border-radius: 2px;
+}
+
+main {
+  width: 100%;
+  height: calc(100% - 80px);
+  background-color: #1B0035;
+}
+
+#content_wrapper {
+  min-width: 320px;
+  max-width: 1000px;
+  height: 100%;
+  margin: auto;
+  color: #ffffff;
+}
+
+#explore_showcase {
+  display: inline-block;
+  background-color: #0EBCF3;
+  padding: 15px 40px;
+  margin: 20px;
+  width: 200px;
+  text-align: center;
+  margin-top: 300px;
+  border: 3px solid #0EBCF3;
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+#contract_showcase {
+  display: inline-block;
+  background-color: #844ba1;
+  padding: 15px 40px;
+  margin: 20px;
+  width: 200px;
+  text-align: center;
+  margin-top: 300px;
+  border: 3px solid #844ba1;
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+#earn_showcase {
+  display: inline-block;
+  background-color: #29baa5;
+  padding: 15px 40px;
+  margin: 20px;
+  width: 200px;
+  text-align: center;
+  margin-top: 300px;
+  border: 3px solid #29baa5;
+  border-radius: 10px;
+  font-size: 18px;
+}
+
+footer {
+  width: 100%;
+  height: 30px;
+  background-color: #10001F;
+  color: #565656;
+  text-align: center;
+}
+
+#footer_content {
+  padding: 6px 0;
+}
