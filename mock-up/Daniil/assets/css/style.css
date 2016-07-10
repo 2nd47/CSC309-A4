@@ -84,6 +84,7 @@ main article {
 }
 
 main article p {
+  background-color: #e6e6e6;
   border-width: medium medium medium medium;
   border-style: solid;
   border-color: lightgray;
