@@ -1,0 +1,85 @@
+/* Stylesheet for CSC309 Assignment 1 */
+/* Written by Daniil Kouznetsov */
+
+body {
+    font-family: "Arial", sans-serif;
+    margin:0px;
+    color: #333;
+    background:#EEE;
+}
+
+a {
+  color: #36D7B7;
+  text-decoration:none;
+}
+
+a:hover {
+  color: #000; transition: all 0.3s ease;
+}
+
+header {
+  margin-top:4em;
+}
+
+h1 {
+  font-size:xx-large;
+  text-align:center;
+}
+
+h2 {
+  font-size:x-large;
+  text-align:center;
+}
+
+nav {
+    position:fixed;
+    top:0px;
+    display: flex;
+    background:lightgray;
+    border-width: 0px 0px 4px 0px;
+    border-style:solid;
+    border-color:#CCC;
+    width:100%;
+    justify-content: space-around;
+}
+
+a {
+    font-size:x-large;
+    opacity:.8;
+    width: auto;
+    height: auto;
+    margin: 0.25em;
+    text-align:center;
+}
+
+main {
+  font-size: large;
+  margin-left:20%;
+  margin-right:20%;
+}
+
+main article {
+    /* margin-top is negative to account for our fixed header */
+    padding-top:2em;
+    margin-top:-3em;
+    display:block;
+    width:100%;
+}
+
+footer {
+  width: 100%;
+  display: block;
+  background-color: lightgray;
+  border-style:solid;
+  border-width: 4px 0px 0px 0px;
+  border-color:#CCC;
+  bottom: 0;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+}
+
+footer p {
+  text-align:center;
+  font-size:small;
+}
