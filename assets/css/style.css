@@ -3,11 +3,12 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  font-family: Arial;
 }
 
 header {
   height: 50px;
-  background-color: #10001F;
+  background-color: #14011D;
   color: #FFFFFF;
 }
 
@@ -32,15 +33,23 @@ header {
 }
 
 #searchbar_nav {
+  height: 50px;
   display: inline-block;
   float:right;
-  padding: 14px;
+}
+
+#searchbar_nav input {
+  padding: 0 4px;
+  margin: 10px;
+  height: 28px;
+  border: 2px solid #FBFBFB;
+  border-radius: 2px;
 }
 
 #login_nav {
   float: right;
   padding: 6px 22px;
-  margin: 8px 0;
+  margin: 8px 10px;
   background-color: #00C100;
   border: solid 2px #00C100;
   border-radius: 2px;
@@ -49,10 +58,49 @@ header {
 main {
   width: 100%;
   height: calc(100% - 80px);
-  background-color: #1B0035;
+}
+
+footer {
+  width: 100%;
+  height: 30px;
+  background-color: #14011D;
+  color: #565656;
+  text-align: center;
+}
+
+#footer_content {
+  padding: 6px 0;
+}
+
+/*GENERIC PAGE STYLE STARTS*/
+#content_background {
+  width: 100%;
+  height: 100%;
+  background-color: #ECECEC;
 }
 
 #content_wrapper {
+  min-width: 320px;
+  max-width: 1000px;
+  height: 100%;
+  margin: auto;
+  color: #000000;
+  background-color: #F3F3F3;
+}
+
+#content {
+  padding: 20px;
+}
+/*GENERIC PAGE STYLE ENDS*/
+
+/*LANDING PAGE STYLE STARTS*/
+#showcase_background {
+  width: 100%;
+  height: 100%;
+  background-color: #21082E;
+}
+
+#showcase_wrapper {
   min-width: 320px;
   max-width: 1000px;
   height: 100%;
@@ -69,20 +117,20 @@ main {
   text-align: center;
   margin-top: 300px;
   border: 3px solid #0EBCF3;
-  border-radius: 10px;
+  border-radius: 5px;
   font-size: 18px;
 }
 
 #contract_showcase {
   display: inline-block;
-  background-color: #844ba1;
+  background-color: #805396;
   padding: 15px 40px;
   margin: 20px;
   width: 200px;
   text-align: center;
   margin-top: 300px;
-  border: 3px solid #844ba1;
-  border-radius: 10px;
+  border: 3px solid #805396;
+  border-radius: 5px;
   font-size: 18px;
 }
 
@@ -95,18 +143,7 @@ main {
   text-align: center;
   margin-top: 300px;
   border: 3px solid #29baa5;
-  border-radius: 10px;
+  border-radius: 5px;
   font-size: 18px;
 }
-
-footer {
-  width: 100%;
-  height: 30px;
-  background-color: #10001F;
-  color: #565656;
-  text-align: center;
-}
-
-#footer_content {
-  padding: 6px 0;
-}
+/*LANDING PAGE STYLE ENDS*/
