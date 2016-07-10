@@ -1,0 +1,54 @@
+/*THIS IS THE LANDING PAGE STYLESHEET
+IT CONTAINS STYLES FOR THE LANDING PAGE*/
+#showcase_background {
+  width: 100%;
+  height: 100%;
+  background-color: #44185C; #21082E;
+}
+
+#showcase_wrapper {
+  min-width: 320px;
+  max-width: 1000px;
+  height: 100%;
+  margin: auto;
+  color: #ffffff;
+}
+
+#explore_showcase {
+  display: inline-block;
+  background-color: #0EBCF3;
+  padding: 15px 40px;
+  margin: 20px;
+  width: 200px;
+  text-align: center;
+  margin-top: 300px;
+  border: 3px solid #0EBCF3;
+  border-radius: 5px;
+  font-size: 18px;
+}
+
+#contract_showcase {
+  display: inline-block;
+  background-color: #805396;
+  padding: 15px 40px;
+  margin: 20px;
+  width: 200px;
+  text-align: center;
+  margin-top: 300px;
+  border: 3px solid #805396;
+  border-radius: 5px;
+  font-size: 18px;
+}
+
+#earn_showcase {
+  display: inline-block;
+  background-color: #29baa5;
+  padding: 15px 40px;
+  margin: 20px;
+  width: 200px;
+  text-align: center;
+  margin-top: 300px;
+  border: 3px solid #29baa5;
+  border-radius: 5px;
+  font-size: 18px;
+}

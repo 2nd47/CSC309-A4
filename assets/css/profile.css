@@ -1,0 +1,62 @@
+/*THIS IS THE PROFILE PAGE STYLESHEET
+IT CONTAINS STYLES FOR THE PROFILE PAGE*/
+#profile_info {
+  position: relative;
+  width: 256px;
+  margin: 0;
+  display: inline-block;
+  float: left;
+}
+
+#profile_picture {
+  width: 256px;
+  height: 256px;
+  border: 1px solid #000000;
+}
+
+#profile_basics {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+#profile_basics h2 {
+  margin: 0;
+  padding-top: 5px;
+  font-size: 28px;
+}
+
+#profile_tagline {
+  font-size: 16px;
+}
+
+#profile_bio {
+  vertical-align: top;
+  width: calc(100% - 256px - 30px);
+  float: right;
+  background-color: #FFFFFF;
+}
+
+#profile_bio_tag {
+  background-color: #220231;
+  color: #FFFFFF;
+  border: 4px solid #220231;
+  border-radius: 2px;
+  padding: 6px;
+  font-weight: 700;
+}
+
+#profile_bio_content {
+  padding: 8px;
+  border: 1px solid #E9E9E9;
+  border-radius: 2px;
+}
+
+#skillset_wrapper {
+  position: relative;
+  border: 1px solid #E9E9E9;
+  border-radius: 2px;
+  background-color: #FFFFFF;
+  padding: 8px;
+  margin-top: 10px;
+}

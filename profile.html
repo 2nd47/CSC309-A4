@@ -8,8 +8,11 @@
     <meta name="description" content=""/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!--Stylesheets, scripts and that kind of jazz-->
-    <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <!--Stylesheets-->
+    <link rel="stylesheet" type="text/css" href="assets/css/generic.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/profile.css">
+
+    <!--Scripts-->
   </head>
 
   <body>
@@ -17,21 +20,36 @@
     <header>
       <div id="navbar_wrapper">
         <div id="navbar">
-          <div id="explore_nav">
-            Explore
+          <div id="logo_nav">
+            <a class="navbutton" href="landing.html">
+              <!--Replace this with our website logo (32px tall)-->
+              <img src="http://vignette3.wikia.nocookie.net/coasterpedia/images/5/53/Public_Domain_logo.png" height="32" width="32">
+            </a>
+          </div>
+          <div id="feed_nav">
+            <a class="navbutton" href="feed.html">Feed</a>
+          </div>
+          <div id="project_nav">
+            <a class="navbutton" href="project.html">Projects</a>
           </div>
           <div id="contract_nav">
-            Contract
+            <a class="navbutton" href="contract.html">Contracts</a>
+          </div>
+          <div id="people_nav">
+            <a class="navbutton" href="profile.html">People</a>
           </div>
           <div id="login_nav">
-            Log in
+            <a class="navbutton" href="#login">Log in</a>
           </div>
           <div id="searchbar_nav">
-            <input type="text" name="search" placeholder="Search...">
+            <!--The search button will be implemented in javascript later-->
+            <input id="searchbar_button" type="submit" value="">
+            <input id="searchbar_input" type="text" name="search" placeholder="Search...">
           </div>
         </div>
       </div>
     </header>
+
 
     <!--Main page content-->
     <main>

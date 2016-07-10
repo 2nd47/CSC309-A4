@@ -1,0 +1,176 @@
+/*THIS IS THE GENERIC PAGE STYLESHEET
+IT CONTAINS STYLES FOR THE GENERIC PAGE
+
+DO NOT EDIT THIS UNLESS YOU ARE CHANGING
+THE HEADER, FOOTER OR THE BODY
+
+INSTEAD, EDIT THE RESPECTIVE CSS FILE
+WITH THE SAME NAME AS THE HTML FILE*/
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: Arial;
+}
+
+header {
+  height: 50px;
+  background-color: #1b0326;
+  color: #FFFFFF;
+}
+
+#navbar_wrapper {
+  position: relative;
+  height: 100%;
+  min-width: 320px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+#navbar {
+  position: relative;
+  height: 100%;
+}
+
+#logo_nav {
+  margin: 9px 10px;
+  display: inline-block;
+}
+
+#feed_nav {
+  padding: 16px 0;
+  margin: 0 16px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#project_nav {
+  padding: 16px 0;
+  margin: 0 16px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#people_nav {
+  padding: 16px 0;
+  margin: 0 16px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#contract_nav {
+  padding: 16px 0;
+  margin: 0 16px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.navbutton:link {
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+.navbutton:visited {
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+.navbutton:hover {
+    text-decoration: none;
+    color: #CBCBCB;
+}
+
+.navbutton:active {
+    text-decoration: none;
+    color: #A1A1A1;
+}
+
+#searchbar_nav {
+  height: 28px;
+  display: inline-block;
+  float:right;
+  border: 2px solid #FBFBFB;
+  border-radius: 2px;
+  margin: 9px 0;
+}
+
+/*Maginifying glass image is public domain:
+https://pixabay.com/en/magnifying-glass-search-1083373/*/
+#searchbar_nav input[type=submit] {
+  width: 28px;
+  height: 28px;
+  text-decoration: none;
+  background-color: #F5F5F5;
+  border: none;
+  display: inline-block;
+  padding: 0;
+  background-image: url('../images/search.png');
+  background-size: 22px 22px;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+}
+
+#searchbar_nav input[type=submit]:focus {
+  outline: none;
+}
+
+#searchbar_input {
+  float: right;
+  padding: 0 4px;
+  height: 28px;
+  background-color: #F5F5F5;
+  border: none;
+  display: inline-block;
+}
+
+#searchbar_input:focus {
+  outline: none;
+}
+
+#login_nav {
+  float: right;
+  padding: 6px 22px;
+  margin: 8px 10px;
+  background-color: #8B42A8;
+  border: solid 2px #8B42A8;
+  border-radius: 2px;
+}
+
+main {
+  width: 100%;
+  height: calc(100% - 80px);
+}
+
+#content_background {
+  width: 100%;
+  height: 100%;
+  background-color: #ECECEC;
+}
+
+#content_wrapper {
+  min-width: 320px;
+  max-width: 1000px;
+  height: 100%;
+  margin: auto;
+  color: #000000;
+  background-color: #F3F3F3;
+}
+
+#content {
+  padding: 20px;
+}
+
+footer {
+  width: 100%;
+  height: 30px;
+  background-color: #1b0326;
+  color: #565656;
+  text-align: center;
+  font-size: 12px;
+}
+
+#footer_content {
+  padding: 8px 0;
+}
