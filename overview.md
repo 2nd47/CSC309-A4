@@ -30,5 +30,4 @@ So, the process includes: creating a project post or contract profile; looking t
 
 ** Work Assignment
 
-Daniil and Alex -
-Izzy and Annie -
+Team members will partner up into pairs. These pairs will then review one another's work continuously throughout development and occasionally review the other pair's work. Pairs will be split into Daniil/Alex and Izzy/Annie.
