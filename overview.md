@@ -12,7 +12,7 @@ So, the process includes: creating a project post or contract profile; looking t
 
 ** Challenges **
 
-
+Independent development teams typically struggle to find permanent team members who can fulfill every skillset that a development team needs. At the same time, several individuals who possess this skillset do not or cannot dedicate themselves to being a permanent team member to any given project but would still want to fulfill this work. xyz will match together project teams and individuals who are willing to fulfill contract work for project teams for a period of time and price that is at the discretion of the two parties. xyz will also provide ways for project teams to show off their work, generate interest in their project, and potentially find more high-quality work from the web app.
 
 ** Your Project: **
 * User Authentication:
