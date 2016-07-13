@@ -40,6 +40,7 @@ https://pixabay.com/en/magnifying-glass-search-1083373/*/
   background-color: #F5F5F5;
 }
 #search {
+  color: white;
   float: right;
   padding: 6px 22px;
   margin: 8px 10px;
@@ -49,8 +50,9 @@ https://pixabay.com/en/magnifying-glass-search-1083373/*/
 }
 
 #checkbox {
-	display:inline-block;
+	display: inline-block;
 	float: rihgt;
+  margin: 9px;
 }
 
 #result{
@@ -67,7 +69,6 @@ https://pixabay.com/en/magnifying-glass-search-1083373/*/
   margin: auto;
   color: #000000;
   background-color: #F3F3F3;
-
   border-radius: 2px;
 }
 
@@ -78,6 +79,7 @@ h6 {
     border-radius: 2px;
     padding: 6px;
     font-weight: 700;
+    font-size: 12px;
 
 }
 
