@@ -1,2 +1,95 @@
 /*THIS IS THE PROJECT PAGE STYLESHEET
 IT CONTAINS STYLES FOR THE PROJECT PAGE*/
+
+aside {
+	height: 100%;
+	width: 20%;
+	position: fixed;
+	overflow: hidden;
+}
+
+#basic_info {
+	float: left;
+	margin: 0;
+	margin-left: calc(20% + 10px);
+	width: calc(30% - 20px);
+}
+
+#basic_info_tag, #showcase_tag, #showcase_control, #details_tag {
+  background-color: #220231;
+  color: #FFFFFF;
+  border: 4px solid #220231;
+  border-radius: 2px;
+  padding: 6px;
+  font-weight: 700;
+}
+
+#basic_info_content, #showcase_content, #details_content {
+  padding: 8px;
+  border: 1px solid #E9E9E9;
+  border-radius: 2px;
+}
+
+#showcase_content {
+	background-color: #000000;
+}
+
+#showcase {
+	margin: 0;
+	margin-left: calc(50% + 20px);
+	width: calc(50% - 20px);
+}
+
+#showcase_display img {
+	width: calc(100% - 10px);
+	height: calc(100% - 10px);
+	margin: 5px;
+}
+
+.hidden {
+	display: none;
+}
+
+#showcase_control button {
+	color: white;
+	outline: none;
+	padding: 3px 10px;
+	margin: 3px 5px;
+	background-color: #8B42A8;
+	border: solid 2px #8B42A8;
+	border-radius: 2px;
+}
+
+#showcase_control button:link {
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+#showcase_control button:visited {
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+#showcase_control button:hover {
+    text-decoration: none;
+    color: #CBCBCB;
+}
+
+#showcase_control button:active {
+    text-decoration: none;
+    color: #A1A1A1;
+}
+
+#details {
+	float: left;
+	margin: 0;
+	margin-left: calc(20% + 10px);
+	width: calc(80% - 10px);
+}
+.level_wrapper {
+	clear: both;
+	padding-top: 20px;
+}
+#divider {
+	clear:both;
+}
