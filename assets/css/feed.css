@@ -19,11 +19,6 @@ IT CONTAINS STYLES FOR THE FEED PAGE*/
     display:block;
     clear:both;
 }
-#content::after {
-    content:"";
-    display:block;
-    clear:both;
-}
 .feed-item {
   background-color: #FFFFFF;
   transition: 0.2s background-color ease-in-out;
