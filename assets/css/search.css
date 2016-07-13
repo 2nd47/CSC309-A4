@@ -56,10 +56,26 @@ https://pixabay.com/en/magnifying-glass-search-1083373/*/
 }
 
 #result{
-  border: 3px solid #1b0326;
-  border-radius:5px;  
-  margin: 5px;
-  padding: 5px;
+  background-color: #FFFFFF;
+  transition: 0.2s background-color ease-in-out;
+  padding: 0.25em;
+  width: auto;
+  height: auto;
+  margin: 10px;
+  margin-bottom: 0.5em;
+}
+
+#result:hover {
+  background-color: #E6E6E6;
+}
+#result::after {
+    content:"";
+    display:block;
+    clear:both;
+}
+
+#result_people{
+  margin: 10px;
 }
 
 #result_wrapper {
@@ -80,6 +96,7 @@ h6 {
     padding: 6px;
     font-weight: 700;
     font-size: 12px;
-
 }
+
+
 
