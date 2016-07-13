@@ -71,10 +71,3 @@ IT CONTAINS STYLES FOR THE FEED PAGE*/
 .feed-header h2{
   margin: 0.25em;
 }
-main {
-  min-height: 100%;
-  margin: 0 auto -30px;
-}
-.push {
-  height: 30px;
-}
