@@ -19,7 +19,7 @@ IT CONTAINS STYLES FOR THE FEED PAGE*/
     display:block;
     clear:both;
 }
-main::after {
+#content::after {
     content:"";
     display:block;
     clear:both;
