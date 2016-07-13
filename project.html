@@ -13,6 +13,8 @@
     <link rel="stylesheet" type="text/css" href="assets/css/project.css">
 
     <!--Scripts-->
+    <script type="text/javascript" src="assets/scripts/jquery-2.2.4.min.js" defer></script>
+    <script type="text/javascript" src="assets/scripts/project.js" defer></script>
   </head>
 
   <body>
@@ -57,7 +59,102 @@
       <div id="content_background">
         <div id="content_wrapper">
           <div id="content">
-            Display projects here
+            <!--Sticky side bar-->
+      			<aside id="navigator_wrapper">
+      				<figure>
+      					<img src="assets/images/gs_icon.png" width="64px" height="64px"/>
+      				</figure>
+      				<nav>
+      					<h3>Contents</h3>
+      					<a href="#details_introduction">Introduction</a>
+      					<br>
+      					<a href="#details_contracts">Contracts</a>
+      				</nav>
+      			</aside>
+      			<section id="basic_info">
+      				<div id="basic_info_tag">
+      					Basic Info
+      				</div>
+      				<div id="basic_info_content">
+      					<h2>Goat Simulator</h2>
+      					<p>by <a href="profile.html">Donald Trump</a></p>
+      					<p>
+      						Goat Simulator is the latest in goat simulation technology,
+      						bringing next-gen goat simulation to YOU.
+      						You no longer have to fantasize about being a goat,
+      						your dreams have finally come true! WASD to write history.
+      					</p>
+      					<p>Last updated on: 2016-07-07 16:45</p>
+      					<p><strong>Status:</strong> in-progess</p>
+      					<div id="tags">
+      						<p>
+      							<strong>Tags added by developer:</strong>
+      						</p>
+      						<!--Links to search-->
+      						<a>Comedy</a>
+      						<a>Simulation</a>
+      					</div>
+      				</div>
+      			</section>
+      			<section id="showcase">
+      				<div id="showcase_tag">
+      					Showcase
+      				</div>
+      				<div id="showcase_content">
+      					<div id="showcase_display">
+      						<img id="media_1" src="assets/images/gs1.jpg"/>
+      						<img id="media_2" src="assets/images/gs2.jpg" class="hidden"/>
+      					</div>
+      					<div id="showcase_control">
+      						<button id="showcase_control_prev">Prev</button>
+      						<button id="showcase_control_next">Next</button>
+      					</div>
+      				</div>
+      			</section>
+      			<!--Container for the second level of blocks-->
+      			<div class="level_wrapper">
+      				<section id="details">
+      					<div id="details_tag">
+      						Project Details
+      					</div>
+      					<div id="details_content">
+      						<section id="details_introduction">
+      							<h2>Introduction</h2>
+      							<p>
+      								Powered by Unreal Engine 3, Goat Simulator is the latest in goat simulation technology,
+      								bringing next-gen goat simulation to YOU.
+      								You no longer have to fantasize about being a goat, your dreams have finally come true! WASD to write history.
+      								Gameplay-wise, Goat Simulator is all about causing as much destruction as you possibly can as a goat.
+      								It has been compared to an old-school skating game, except instead of being a skater, you're a goat,
+      								and instead of doing tricks, you wreck stuff. Destroy things with style,
+      								such as doing a backflip while headbutting a bucket through a window, and you'll earn even more points!
+      								Or you could just give Steam Workshop a spin and create your own goats, levels, missions, and more!
+      								When it comes to goats, not even the sky is the limit, as you can probably just bug through it and crash the game.
+      							</p>
+      						</section>
+      						<section id="details_contracts">
+      							<h2>Contracts</h2>
+      							<ul id="contract_listing">
+      								<li>
+      									<div class="contract_intro">
+      										<p>Title: 3d Artist</p>
+      										<p>Required skills:</p>
+      										<ul>
+      											<li>3d modelling: ★★★★☆</li>
+      											<li>Concept art: ★★★☆☆</li>
+      										</ul>
+      										<p>Budget: $$$$ ($5000~10000)</p>
+      										<a href="contract.html">View</a>
+      									</div>
+      								</li>
+      							</ul>
+      						</section>
+      					</div>
+      				</section>
+      			</div>
+          </div>
+        </div>
+      </div>
           </div>
         </div>
       </div>
