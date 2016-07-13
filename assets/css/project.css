@@ -29,9 +29,15 @@ aside {
   border-radius: 2px;
 }
 
-#showcase_content {
-	background-color: #000000;
-  border: none;
+#contract_listing li {
+	list-style-type: none;
+}
+
+.contract_intro {
+	display: block;
+	width: 30%;
+	padding: 10px;
+	background-color: #EEEEEE;
 }
 
 #showcase {
@@ -49,6 +55,10 @@ aside {
 
 .hidden {
 	display: none;
+}
+
+a {
+	color: #111111;
 }
 
 #showcase_control button {
