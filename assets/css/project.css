@@ -11,8 +11,7 @@ aside {
 #basic_info {
 	float: left;
 	margin: 0;
-	margin-left: calc(20% + 10px);
-	width: calc(30% - 20px);
+	width: 30%;
 }
 
 #basic_info_tag, #showcase_tag, #showcase_control, #details_tag {
@@ -32,12 +31,14 @@ aside {
 
 #showcase_content {
 	background-color: #000000;
+  border: none;
 }
 
 #showcase {
+  float: right;
 	margin: 0;
-	margin-left: calc(50% + 20px);
-	width: calc(50% - 20px);
+	width: calc(70% - 20px);
+  display: inline-block;
 }
 
 #showcase_display img {
@@ -81,10 +82,9 @@ aside {
 }
 
 #details {
-	float: left;
+	float: right;
 	margin: 0;
-	margin-left: calc(20% + 10px);
-	width: calc(80% - 10px);
+	width: 100%;
 }
 .level_wrapper {
 	clear: both;
