@@ -1,23 +1,10 @@
 /*THIS IS THE CONTRACT PAGE STYLESHEET
 IT CONTAINS STYLES FOR THE CONTRACT PAGE*/
 
-aside {
-	height: 100%;
-	width: 15%;
-	position: fixed;
-	overflow: hidden;
-	color: black;
-	line-height: 150%;
-}
-aside figure {
-	margin: 5px;
-}
-
 #basic_info {
 	float: left;
 	margin: 0;
-	margin-left: calc(20% + 10px);
-	width: calc(40% - 20px);
+	width: 50%;
 }
 
 #basic_info_tag, #showcase_tag, #showcase_control, #details_tag {
@@ -57,10 +44,12 @@ a {
 }
 
 #showcase {
+	float: right;
 	margin: 0;
-	margin-left: calc(60% + 20px);
-	width: calc(40% - 20px);
+	width: calc(50% - 20px);
+	display: inline-block;
 }
+
 
 #showcase_display img {
 	width: calc(100% - 10px);
@@ -103,10 +92,10 @@ a {
 }
 
 #details {
-	float: left;
+	float: right;
 	margin: 0;
 	margin-left: calc(20% + 10px);
-	width: calc(80% - 10px);
+	width: 100%;
 }
 .level_wrapper {
 	clear: both;
