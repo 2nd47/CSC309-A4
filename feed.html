@@ -11,6 +11,7 @@
     <!--Stylesheets-->
     <link rel="stylesheet" type="text/css" href="assets/css/generic.css">
     <link rel="stylesheet" type="text/css" href="assets/css/feed.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/modal.css">
 
     <!--Scripts-->
     <script type="text/javascript" src="assets/scripts/jquery-2.2.4.min.js" defer></script>
@@ -62,7 +63,9 @@
     <div id="myModal" class="modal">
       <!-- Modal content -->
       <div class="modal-content">
-        <h2>Login</h2>
+        <div id="modal_title">
+          <h2>Login</h2>
+        </div>
         <div id="login_signup_content">
           <div id="modal-login-box">
             <input type="text" placeholder="Username"><br>
@@ -75,7 +78,7 @@
           </div>
           <div id="login_button">Login</div>
           <div id="signup_button">Sign up</div>
-          <h3 id="signup_text">Don't have an account? <span id="signup_switch">Sign up!</span></h3>
+          <h3 id="signup_text">No account yet? <span id="signup_switch">Sign up!</span></h3>
           <h3 id="login_text">Have an account? <span id="login_switch">Login!</span></h3>
         </div>
         <div id="verify_content">
@@ -83,7 +86,6 @@
           <input id="verify_input" type="text">
         </div>
       </div>
-
     </div>
 
     <!--Main page content-->
