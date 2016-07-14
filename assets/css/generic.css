@@ -59,6 +59,13 @@ header {
   vertical-align: top;
 }
 
+#inbox_nav {
+  padding: 16px 0;
+  margin: 0 16px;
+  display: inline-block;
+  vertical-align: top;
+}
+
 #contract_nav {
   padding: 16px 0;
   margin: 0 16px;
