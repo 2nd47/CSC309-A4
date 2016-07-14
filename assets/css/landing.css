@@ -7,6 +7,9 @@ IT CONTAINS STYLES FOR THE LANDING PAGE*/
   background-color: #440D73;
   font-size: 18px;
   text-align: center;
+  background-image: url('../images/tetris_background.png');
+  background-repeat: repeat-x;
+  background-position: bottom;
 }
 
 h1 {
