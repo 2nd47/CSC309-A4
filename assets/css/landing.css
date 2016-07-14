@@ -36,7 +36,7 @@ a {
 
 #showcase_background {
   width: 100%;
-  min-height: 300px;
+  min-height: calc(100vh - 80px - 500px);
   color: white;
   background-color: #F3F3F3;
   font-size: 18px;
