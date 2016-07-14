@@ -47,7 +47,7 @@ IT CONTAINS STYLES FOR THE PROFILE PAGE*/
 	font-size: 16px;
 }
 
-#profile_bio_tag {
+.box_tag {
   background-color: #220231;
   color: #FFFFFF;
   border: 4px solid #220231;
@@ -56,11 +56,19 @@ IT CONTAINS STYLES FOR THE PROFILE PAGE*/
   font-weight: 700;
 }
 
+#profile_projects {
+  margin-top: 20px;
+}
+
+#profile_contracts {
+  margin-top: 20px;
+}
+
 button {
   float: right;
 }
 
-#profile_bio_content {
+.box_content {
   padding: 8px;
   border: 1px solid #E9E9E9;
   border-radius: 2px;
