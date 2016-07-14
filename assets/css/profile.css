@@ -30,10 +30,14 @@ IT CONTAINS STYLES FOR THE PROFILE PAGE*/
   font-size: 16px;
 }
 
-#profile_bio {
+#profile_details {
+  float: right;
   vertical-align: top;
   width: calc(100% - 256px - 30px);
-  float: right;
+}
+
+#profile_bio {
+  width: 100%;
   background-color: #FFFFFF;
 }
 
