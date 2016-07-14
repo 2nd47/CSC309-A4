@@ -1,1 +1,80 @@
 <!DOCTYPE html>
+<html>
+  <head>
+    <!--Title, description, authors and any other metadata we might need-->
+    <meta charset="utf-8">
+    <title>xyz</title>
+    <meta name="author" content="ADIA"/>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--Stylesheets-->
+    <link rel="stylesheet" type="text/css" href="assets/css/generic.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/profile.css">
+
+    <!--Scripts-->
+  </head>
+
+  <body>
+    <!--Header bar at the top-->
+    <header>
+      <div id="navbar_wrapper">
+        <div id="navbar">
+          <div id="logo_nav">
+            <a class="navbutton" href="landing.html">
+              <!--Replace this with our website logo (32px tall)-->
+              <img src="http://vignette3.wikia.nocookie.net/coasterpedia/images/5/53/Public_Domain_logo.png" height="32" width="32">
+            </a>
+          </div>
+          <div id="feed_nav">
+            <a class="navbutton" href="feed.html">Feed</a>
+          </div>
+          <div id="project_nav">
+            <a class="navbutton" href="project.html">Projects</a>
+          </div>
+          <div id="contract_nav">
+            <a class="navbutton" href="contract.html">Contracts</a>
+          </div>
+          <div id="people_nav">
+            <a class="navbutton" href="profile.html">People</a>
+          </div>
+          <div id="login_nav">
+            <a class="navbutton" href="#login">Log in</a>
+          </div>
+          <div id="searchbar_nav">
+            <!--The search button will be implemented in javascript later-->
+            <form action="search.html">
+              <input id="searchbar_button" type="submit" value="">
+              <input id="searchbar_input" type="text" name="search" placeholder="Search...">
+            </form>
+          </div>
+        </div>
+      </div>
+    </header>
+
+
+    <!--Main page content-->
+    <main>
+      <div id="content_background">
+        <div id="content_wrapper">
+          <div id="content">
+			<a href="admin.html">Admin panel</a><br>
+			<a href="contract.html">Contract page</a><br>
+			<a href="feed.html">Feed page</a><br>
+			<a href="landing.html">Landing page</a><br>
+            <a href="profile.html">Profile page</a><br>
+			<a href="project.html">Project page</a><br>
+			<a href="search.html">Search result page</a><br>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!--Footer at the bottom-->
+    <footer>
+      <div id="footer_content">
+        Footer stuff goes here
+      </div>
+    </footer>
+  </body>
+</html>
