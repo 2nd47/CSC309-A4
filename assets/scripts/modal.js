@@ -22,6 +22,7 @@ window.onclick = function(event) {
         modal.style.display = "none";
         document.getElementById("login_signup_content").style.display = "block";
         document.getElementById("verify_content").style.display = "none";
+        $("#proceed_button").remove();
 
         clearFields();
     }
@@ -48,6 +49,10 @@ loginSwitch.onclick = function(event) {
 loginButton.onclick = function(event) {
   document.getElementById("login_signup_content").style.display = "none";
   document.getElementById("verify_content").style.display = "block";
+  var $proceedButton = $('<div>')
+    .attr("id", "proceed_button")
+    .text("Login");
+  $('#verify_content').append($proceedButton);
 }
 
 signupButton.onclick = function(event) {
@@ -58,7 +63,7 @@ signupButton.onclick = function(event) {
 //clear the fields
 function clearFields() {
   var elements = document.getElementsByTagName("input");
-  
+
   for (var i=0; i < elements.length; i++)
   {
     elements[i].value = "";

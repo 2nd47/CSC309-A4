@@ -71,11 +71,6 @@ IT CONTAINS STYLES FOR THE LOGIN/SIGNUP MODAL THAT POPS UP*/
 
 #signup_button {
   display: none;
-  color: #FFFFFF;
-}
-
-#login_button {
-  color: #FFFFFF;
 }
 
 #login_switch {
@@ -92,6 +87,7 @@ IT CONTAINS STYLES FOR THE LOGIN/SIGNUP MODAL THAT POPS UP*/
   background-color: #8B42A8;
   border: solid 2px #8B42A8;
   border-radius: 2px;
+  color: #FFFFFF;
 }
 
 #signup_button {
@@ -100,6 +96,16 @@ IT CONTAINS STYLES FOR THE LOGIN/SIGNUP MODAL THAT POPS UP*/
   background-color: #8B42A8;
   border: solid 2px #8B42A8;
   border-radius: 2px;
+  color: #FFFFFF;
+}
+
+#proceed_button {
+  padding: 6px 22px;
+  margin: 8px 10px;
+  background-color: #8B42A8;
+  border: solid 2px #8B42A8;
+  border-radius: 2px;
+  color: #FFFFFF;
 }
 
 .modal-content input {
