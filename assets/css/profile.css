@@ -38,7 +38,7 @@ IT CONTAINS STYLES FOR THE PROFILE PAGE*/
 }
 
 #profile_bio_editor {
-	width: 90%;
+	width: calc(100% - 6px);
 	height: 500px;
 	font-size: 16px;
 }
@@ -50,6 +50,10 @@ IT CONTAINS STYLES FOR THE PROFILE PAGE*/
   border-radius: 2px;
   padding: 6px;
   font-weight: 700;
+}
+
+button {
+  float: right;
 }
 
 #profile_bio_content {
