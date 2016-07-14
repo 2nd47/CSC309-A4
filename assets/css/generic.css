@@ -59,13 +59,6 @@ header {
   vertical-align: top;
 }
 
-#inbox_nav {
-  padding: 16px 0;
-  margin: 0 16px;
-  display: inline-block;
-  vertical-align: top;
-}
-
 #contract_nav {
   padding: 16px 0;
   margin: 0 16px;
@@ -100,6 +93,13 @@ header {
   border: 2px solid #FBFBFB;
   border-radius: 2px;
   margin: 9px 0;
+}
+
+#inbox_nav {
+  padding: 9px;
+  display: inline-block;
+  vertical-align: top;
+  float: right;
 }
 
 /*Maginifying glass image is public domain:
