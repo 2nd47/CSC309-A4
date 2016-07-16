@@ -1,0 +1,38 @@
+{
+  "name": "AIDA",
+  "version": "1.0.0",
+  "description": "CSC309 Assignment 4 Sharing Economy App",
+  "main": "app/server.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.3.0",
+    "chai": "^3.5.0",
+    "express": "^4.14.0",
+    "mocha": "^2.5.3",
+    "nodemon": "^1.9.2",
+    "passport": "^0.3.2",
+    "sequelize": "^3.23.4",
+    "sqlite3": "^3.1.4",
+    "validator": "^5.4.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.5.3"
+  },
+  "scripts": {
+    "test": "mocha",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/2nd47/CSC309-A4.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/2nd47/CSC309-A4/issues"
+  },
+  "homepage": "https://github.com/2nd47/CSC309-A4#readme"
+}
