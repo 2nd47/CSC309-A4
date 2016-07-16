@@ -25,13 +25,6 @@ CREATE TABLE contracts (
   FOREIGN KEY(project_owner_id) REFERENCES users(id)
 );
 
-CREATE TABLE projects (
-  id INTEGER,
-  project_owner_id INTEGER NOT NULL,
-  PRIMARY KEY(id),
-  FOREIGN KEY(project_owner_id) REFERENCES users(id)
-);
-
 CREATE TABLE messages (
   id INTEGER,
   user_id_one INTEGER NOT NULL,
