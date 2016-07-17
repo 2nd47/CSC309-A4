@@ -10,7 +10,7 @@
 
     <!--Stylesheets-->
     <link rel="stylesheet" type="text/css" href="assets/css/generic.css">
-    <link rel="stylesheet" type="text/css" href="assets/css/inbox.css">
+    <link rel="stylesheet" type="text/css" href="assets/css/control.css">
     <link rel="stylesheet" type="text/css" href="assets/css/modal.css">
 
     <!--Scripts-->
@@ -95,10 +95,38 @@
       <div id="content_background">
         <div id="content_wrapper">
           <div id="content">
-            <aside>
+            <aside id="left_menu">
+              <!--Regular panel-->
               <nav>
-
+                <div class="box_tag">
+                  Control Panel
+                </div>
+                <ul class="box_content">
+                  <li><a href="#myprofile">Profile Settings</a></li>
+                  <li><a href="#myaccount">Account Settings</a></li>
+                  <li><a href="#myprojects">Your Projects</a></li>
+                  <li><a href="#mycontracts">Your Contracts</a></li>
+                </ul>
               </nav>
+              <nav>
+                <div class="box_tag">
+                  Admin Panel
+                </div>
+                <ul class="box_content">
+                  <li><a href="#adminreports">View Reports</a></li>
+                  <li><a href="#adminaccounts">Manage Accounts</a></li>
+                  <li><a href="#adminprojects">Manage Projects</a></li>
+                  <li><a href="#admincontracts">Manage Contracts</a></li>
+                </ul>
+              </nav>
+            </aside>
+            <aside id="right_view">
+              <div class="box_tag" id="view_name">
+                View name
+              </div>
+              <div id="view_content" class="box_content">
+                Load whatever content in here
+              </div>
             </aside>
           </div>
         </div>
