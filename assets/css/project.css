@@ -14,6 +14,12 @@ aside {
 	width: 30%;
 }
 
+video {
+	width: calc(100% - 10px);
+	height: calc(100% - 10px);
+	margin: 5px;
+}
+
 #basic_info_tag, #showcase_tag, #showcase_control, #details_tag {
   background-color: #220231;
   color: #FFFFFF;
