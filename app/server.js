@@ -7,6 +7,7 @@
 var bcrypt = require('bcryptjs');
 var express = require('express');
 var sequelize = require('sequelize');
+var session = require('express-session');
 var sqlite3 = require('sqlite3').verbose();
 var validator = require('validator');
 
