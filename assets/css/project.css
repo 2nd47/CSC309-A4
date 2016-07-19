@@ -20,19 +20,23 @@ video {
 	margin: 5px;
 }
 
-#basic_info_tag, #showcase_tag, #showcase_control, #details_tag {
+#showcase_control {
   background-color: #220231;
   color: #FFFFFF;
-  border: 4px solid #220231;
+  border: 2px solid #220231;
   border-radius: 2px;
-  padding: 6px;
+  padding: 2px;
   font-weight: 700;
+  margin: 0 5px;
 }
 
-#basic_info_content, #showcase_content, #details_content {
-  padding: 8px;
-  border: 1px solid #E9E9E9;
-  border-radius: 2px;
+#showcase_control_prev {
+  display: inline-block;
+}
+
+#showcase_control_next {
+  display: inline-block;
+  float: right;
 }
 
 #contract_listing li {
