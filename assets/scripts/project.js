@@ -1,14 +1,31 @@
 //////////////////////
 // Showcase control //
 //////////////////////
+var current = 0;
+var numMedia = 3;
+
+function calcNext(cur, total) {
+	return (cur + 1) % total;
+}
+
+function calcPrev(cur, total) {
+	return (cur - 1 + total) % total;
+}
+
 $("#showcase_control_prev").click(function(){
-	$("#media_1").toggleClass("hidden");
-	$("#media_2").toggleClass("hidden");
+	// hide current
+	$("#media_" + current).addClass("hidden");
+	// show next
+	current = calcPrev(current, numMedia);
+	$("#media_" + current).removeClass("hidden");
 });
 
 $("#showcase_control_next").click(function(){
-	$("#media_1").toggleClass("hidden");
-	$("#media_2").toggleClass("hidden");
+	// hide current
+	$("#media_" + current).addClass("hidden");
+	// show next
+	current = calcNext(current, numMedia);
+	$("#media_" + current).removeClass("hidden");
 });
 
 ///////////////////
