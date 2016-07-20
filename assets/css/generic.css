@@ -178,6 +178,22 @@ main {
     clear:both;
 }
 
+.box_tag {
+  background-color: #220231;
+  color: #FFFFFF;
+  border: 4px solid #220231;
+  border-radius: 2px;
+  padding: 6px;
+  font-weight: 700;
+}
+
+.box_content {
+  padding: 8px;
+  border: 1px solid #E9E9E9;
+  border-radius: 2px;
+  background-color: #FFFFFF;
+}
+
 footer {
   width: 100%;
   height: 30px;
