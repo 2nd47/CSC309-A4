@@ -18,11 +18,12 @@ var assertions = require('mocha').it;
 var assert = require('chai').assert;
 
 // module init
-var app = express()
+var app = express();
 // router import keeps main file clean
-var router = require('./router')
+var router = require('./router');
 
 // app init
+var db = new sqlite3.Database('./db/db.db');
 const saltRounds = 10;
 
 function main() {
