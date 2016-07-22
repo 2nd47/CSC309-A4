@@ -36,7 +36,7 @@ a {
 
 #showcase_background {
   width: 100%;
-  min-height: calc(100vh - 80px - 500px);
+  min-height: calc(100vh - 30px - 500px);
   color: white;
   background-color: #F3F3F3;
   font-size: 18px;
@@ -84,4 +84,48 @@ a {
 
 #showcase_3_title {
   background-color: #0EBCF3;
+}
+
+/*Tablet portrait*/
+@media screen and (min-width: 768px)
+{
+  .showcase_wrapper {
+    width: 30%;
+  }
+
+  .showcase_dropdown {
+    height: 85px;
+  }
+}
+
+/*Mobile landscape*/
+@media screen and (max-width: 480px)
+{
+  #brief_wrapper {
+    margin: 0 10px;
+  }
+
+  #brief_wrapper h1 {
+    padding-top: 70px;
+  }
+
+  #brief_signup_button {
+    margin-top: 20px;
+  }
+
+  .showcase_wrapper {
+    display: block;
+    width: 85%;
+    margin: auto;
+    padding-bottom: 25px;
+    height: 140px;
+  }
+
+  .showcase_wrapper:first-child {
+    padding-top: 20px;
+  }
+
+  .showcase_title {
+    margin: 0;
+  }
 }

@@ -18,6 +18,8 @@ header {
   height: 50px;
   background-color: #1b0326;
   color: #FFFFFF;
+  position: fixed;
+  width: 100%;
 }
 
 #navbar_wrapper {
@@ -38,28 +40,7 @@ header {
   display: inline-block;
 }
 
-#feed_nav {
-  padding: 16px 0;
-  margin: 0 16px;
-  display: inline-block;
-  vertical-align: top;
-}
-
-#project_nav {
-  padding: 16px 0;
-  margin: 0 16px;
-  display: inline-block;
-  vertical-align: top;
-}
-
-#people_nav {
-  padding: 16px 0;
-  margin: 0 16px;
-  display: inline-block;
-  vertical-align: top;
-}
-
-#contract_nav {
+.navpiece {
   padding: 16px 0;
   margin: 0 16px;
   display: inline-block;
@@ -92,7 +73,7 @@ header {
   float:right;
   border: 2px solid #FBFBFB;
   border-radius: 2px;
-  margin: 9px 0;
+  margin: 9px 12px 9px 0px;
 }
 
 #inbox_nav {
@@ -138,12 +119,24 @@ https://pixabay.com/en/magnifying-glass-search-1083373/*/
 
 #login_nav {
   float: right;
-  padding: 4px 22px;
-  margin: 9px 10px;
+  padding: 5px 22px;
+  margin: 8px 10px;
   background-color: #8B42A8;
   border: solid 2px #8B42A8;
   border-radius: 2px;
   font-size: 18px;
+}
+
+#mobile_nav {
+  z-index: 1;
+  overflow: hidden;
+  width: 32px;
+  height: 32px;
+  background: url('../images/dropmenu.png');
+  background-size: cover;
+  border-radius: 2px;
+  margin: 9px;
+  display: none;
 }
 
 main {
@@ -164,6 +157,7 @@ main {
   margin: auto;
   color: #000000;
   background-color: #F3F3F3;
+  padding-top: 50px;
 }
 
 #content {
@@ -201,8 +195,55 @@ footer {
   color: #565656;
   text-align: center;
   font-size: 12px;
+  bottom: 0;
 }
 
 #footer_content {
   padding: 8px 0;
+}
+
+/*Tablet landscape*/
+@media screen and (max-width: 1024px)
+{
+
+}
+
+/*Tablet portrait*/
+@media screen and (max-width: 768px)
+{
+  .navpiece {
+    margin: 0 10px;
+  }
+}
+
+/*Mobile landscape*/
+@media screen and (max-width: 480px)
+{
+  header {
+    position: fixed;
+    width: 100%;
+  }
+
+  #mobile_nav {
+    display: inline-block;
+  }
+
+  .navpiece {
+    display: none;
+  }
+
+  #logo_nav {
+    display: none;
+  }
+
+  #inbox_nav {
+    display: none;
+  }
+
+}
+
+/*Mobile portrait*/
+@media screen and (max-width: 320px)
+{
+
 }
