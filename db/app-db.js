@@ -40,6 +40,11 @@ text: { type: String },
 { timestamps: true }
 });
 
+var detailedInfoSchema = new Schema({
+  title: { type: String },
+  content: { type: String }
+});
+
 var projectSchema = new Schema({
 name: { type: String },
 tags: { type: String },
@@ -48,7 +53,7 @@ members: { type: projectMemberSchema },
 contracts: { type: Schema.Types.ObjectID }
 showcase: { type: showcaseSchema },
 basicInfo: { type: String },
-extraInfo: { type: String },
+detailedInfo: [detailedInfoSchema],
 status: { type: String }
 { collection : 'projects',
 timestamps: true
