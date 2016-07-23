@@ -277,6 +277,21 @@ router.get('/inbox', function (req, res) {
 
 // search page
 router.get('/search', function (req, res) {
+	/*
+	Probable Queries:
+	- category
+	  - all (default)
+		- projects
+		- people
+	- query
+		- the key word for the search
+	- time
+		- all (default)
+		- 3: only include stuff updated in the last 3 months
+		- 6: only include stuff updated in the last 6 months
+	*/
+	var results = [];
+	var queries = url.parse(req.url, true).query;
 });
 
 // etc...
