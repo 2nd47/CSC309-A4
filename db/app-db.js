@@ -88,7 +88,7 @@ owner: { Schema.Types.ObjectId },
 takers: [Schema.Types.ObjectId],
 details: { type: String },
 deadline: { type: Date },
-budget: { type: String },
+budget: { type: Number },
 { timestamps: true }
 });
 
