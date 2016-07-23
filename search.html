@@ -17,6 +17,7 @@
     <script type="text/javascript" src="assets/scripts/jquery-2.2.4.min.js" defer></script>
     <script type="text/javascript" src="assets/scripts/modal.js" defer></script>
     <script type="text/javascript" src="assets/scripts/search.js" defer></script>
+    <script type="text/javascript" src="assets/scripts/generic.js" defer></script>
   </head>
 
   <body>
@@ -24,11 +25,22 @@
     <header>
       <div id="navbar_wrapper">
         <div id="navbar">
+          <div id="mobile_nav"></div>
           <div id="logo_nav">
             <a class="navbutton" href="landing.html">
-              <!--Replace this with our own custom website logo (32px tall)-->
+              <!--Replace this with our website logo (32px tall)-->
               <img src="http://vignette3.wikia.nocookie.net/coasterpedia/images/5/53/Public_Domain_logo.png" height="32" width="32">
             </a>
+          </div>
+          <div id="login_nav">
+            <a class="navbutton" href="#login">Log in</a>
+          </div>
+          <div id="searchbar_nav">
+            <!--The search button will be implemented in javascript later-->
+            <form action="search.html">
+              <input id="searchbar_button" type="submit" value="">
+              <input id="searchbar_input" type="text" name="search" placeholder="Search">
+            </form>
           </div>
           <div class="navpiece"  id="feed_nav">
             <a class="navbutton" href="feed.html">Feed</a>
@@ -42,21 +54,8 @@
           <div class="navpiece"  id="people_nav">
             <a class="navbutton" href="profile.html">People</a>
           </div>
-          <div id="login_nav">
-            <a class="navbutton" href="#login">Log in</a>
-          </div>
-          <div id="searchbar_nav">
-            <!--The search button will be implemented in javascript later-->
-            <form action="search.html">
-              <input id="searchbar_button" type="submit" value="">
-              <input id="searchbar_input" type="text" name="search" placeholder="Search...">
-            </form>
-          </div>
-          <div id="inbox_nav">
-            <a class="navbutton" href="inbox.html">
-              <!--ROYALTY FREE: https://pixabay.com/en/mail-message-email-send-message-1454733/-->
-              <img src="assets/images/inbox.png" height="32" width="32">
-            </a>
+          <div class="navpiece" id="inbox_nav">
+            <a class="navbutton" href="inbox.html">Inbox</a>
           </div>
         </div>
       </div>

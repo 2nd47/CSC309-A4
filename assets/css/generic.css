@@ -73,14 +73,7 @@ header {
   float:right;
   border: 2px solid #FBFBFB;
   border-radius: 2px;
-  margin: 9px 12px 9px 0px;
-}
-
-#inbox_nav {
-  padding: 9px;
-  display: inline-block;
-  vertical-align: top;
-  float: right;
+  margin: 9px 8px 9px 8px;
 }
 
 /*Maginifying glass image is public domain:
@@ -120,7 +113,8 @@ https://pixabay.com/en/magnifying-glass-search-1083373/*/
 #login_nav {
   float: right;
   padding: 5px 22px;
-  margin: 8px 10px;
+  margin: 10px;
+  margin-top: 8px;
   background-color: #8B42A8;
   border: solid 2px #8B42A8;
   border-radius: 2px;
@@ -214,6 +208,10 @@ footer {
   .navpiece {
     margin: 0 10px;
   }
+
+  #searchbar_input {
+    width: 100px;
+  }
 }
 
 /*Mobile landscape*/
@@ -221,7 +219,7 @@ footer {
 {
   header {
     position: fixed;
-    width: 100%;
+    max-width: 480px;
   }
 
   #mobile_nav {
@@ -230,20 +228,40 @@ footer {
 
   .navpiece {
     display: none;
+    background-color: #1b0326;
+    margin: 0;
+    padding-left: 12px;
+    width: 100px;
+  }
+
+  #feed_nav {
+    margin-top: -4px;
   }
 
   #logo_nav {
-    display: none;
+    margin: 0;
+    margin-top: 9px;
+    display: inline-block;
+    vertical-align: top;
   }
 
   #inbox_nav {
     display: none;
   }
 
+  #searchbar_input {
+    width: 85px;
+  }
 }
 
 /*Mobile portrait*/
 @media screen and (max-width: 320px)
 {
+  header {
+    max-width: 320px;
+  }
 
+  #searchbar_input {
+    width: 50px;
+  }
 }

@@ -5,35 +5,24 @@ $(document).ready(function() {
   $('#mobile_nav').click(function() {
     if (nav_show == false)
     {
-      //hide searchbar and login button
-      $('#searchbar_nav').hide();
-      $('#login_nav').hide();
-
       //show all the navigation pieces
       $('.navpiece').each(function(index) {
-        $(this).css("display","inline-block");
-        $(this).css("margin","0 5px");
+        $(this).show();
       });
 
-      //show the inbox, change button picture
-      $('#inbox_nav').show();
+      //change button picture
       $(this).css("background-image", "url('assets/images/closemenu.png')");
 
       nav_show = true;
     }
     else
     {
-      //hide searchbar and login button
-      $('#searchbar_nav').show();
-      $('#login_nav').show();
-
-      //show all the navigation pieces
+      //hide all the navigation pieces
       $('.navpiece').each(function(index) {
         $(this).hide();
       });
 
-      //show the inbox, change button picture
-      $('#inbox_nav').hide();
+      //change button picture
       $(this).css("background-image", "url('assets/images/dropmenu.png')");
 
       nav_show = false;
