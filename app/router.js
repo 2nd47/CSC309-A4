@@ -123,6 +123,7 @@ router.get('/projects/:project_id', function (req, res, next) {
 		newMember.member_id = project.members[i].user;
 		var memberName = db.User.findOne({"username": project.members[i].user}, {name: 1});
 		newMember.member_name = memberName.name;
+		json.members.push(newMember);
 	}
 	json.short_intro = project.basicInfo;
 	json.long_intro = [];
@@ -132,6 +133,15 @@ router.get('/projects/:project_id', function (req, res, next) {
 		newParagraph.paragraph_title = project.detailedInfo[i].title;
 		newParagraph.paragraph_content = project.detailedInfo[i].content;
 		json.long_intro.push(newParagraph);
+	}
+	json.showcase = [];
+	var numShowcase = project.showcase.assetPaths.length;
+	for (i=0;i<numShowcase;i++) {
+		var current_path = project.showcase.assetPaths[i];
+		var current_type = project.showcase.mediaTypes[i];
+		var newShowcase = new Object();
+		newShowcase.path = current_path;
+		newShowcase.type = currentcurrent_type;
 	}
 	json.latest_update = project.updatedAt;
 	json.status = project.status;
