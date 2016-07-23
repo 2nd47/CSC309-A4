@@ -60,7 +60,95 @@ router.get('/projects/new', function (req, res, next) {
 
 // details of project with project_id
 router.get('/projects/:project_id', function (req, res, next) {
-  res.send('AIDA Home Page!');
+	/*
+	{
+		id: project id,
+		title: project title,
+		publisher:
+		{
+			publisher_id: id of owner,
+			publisher_name: name of project owner
+		},
+		members:
+		[
+			{
+				member_id: id of owner,
+				member_name: name of project owner
+			}
+		],
+		short_intro: short description, 300 characters max,
+		long_intro:
+		[
+			{
+				paragraph_title: title,
+				paragraph_content: content
+			}
+		],
+		showcase:
+		[
+			{
+				path: path to the file,
+				type: type of the file
+			}
+		]
+		latest_update: date of the latest update, in seconds,
+		status: project status,
+		tags: [list of tags],
+		open_contracts:
+		[
+			{
+				contract_id: contract id,
+				contract_title: contract title,
+				contract_tags: [list of skill names with ratings],
+				contract_budget: budget level estimation between 1 to 5,
+				contract_deadline: contract deadline
+			}
+		],
+	}*/
+	var json = new Object();
+	var project_id = req.params.project_id;
+	var project = db.Project.findOne({"_id" : ObjectId(project_id)});
+	// Build the file
+	json.id = project_id;
+	json.title = project.name;
+	json.publisher = new Object();
+	json.publisher.publisher_id = project.ownerUsername;
+	var publisher_info = db.User.findOne({"username": project.ownerUsername}, {name: 1});
+	json.publisher.publisher_name = publisher_info.name;
+	json.members = [];
+	var i;
+	var numMembers = project.members.length;
+	for (i=0;i<numMembers;i++) {
+		var newMember = new Object();
+		newMember.member_id = project.members[i].user;
+		var memberName = db.User.findOne({"username": project.members[i].user}, {name: 1});
+		newMember.member_name = memberName.name;
+	}
+	json.short_intro = project.basicInfo;
+	json.long_intro = [];
+	var numParagraph = project.detailedInfo.length;
+	for (i=0;i<numParagraph;i++) {
+		var newParagraph = new Object();
+		newParagraph.paragraph_title = project.detailedInfo[i].title;
+		newParagraph.paragraph_content = project.detailedInfo[i].content;
+		json.long_intro.push(newParagraph);
+	}
+	json.latest_update = project.updatedAt;
+	json.status = project.status;
+	json.tags = project.tags;
+	var contracts = db.Contract.find({"project": ObjectId(project_id)});
+	json.open_contracts = [];
+	while (contracts.hasNext()) {
+		var newContract = new Object();
+		var current = contracts.next();
+		newContract.contract_id = current._id;
+		newContract.contract_title = current.name;
+		newContract.contract_tags = current.skillTags;
+		newContract.contract_budget = current.budget;
+		newContract.contract_deadline = current.deadline;
+	}
+	res.send(JSON.stringify(json));
+  //res.send('AIDA Home Page!');
 });
 
 // message inbox
