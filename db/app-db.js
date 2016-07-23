@@ -47,7 +47,7 @@ var detailedInfoSchema = new Schema({
 
 var projectSchema = new Schema({
 name: { type: String },
-tags: [String],
+tags: { type: String },
 ownerUsername: { type: String },
 members: [projectMemberSchema],
 contracts: { type: Schema.Types.ObjectID }
@@ -83,7 +83,6 @@ status: { type: String},
 skillTags: [skillSchema],
 descriptionTags: [String],
 // ID of project member who created the contract
-project: { Schema.Types.ObjectId },
 owner: { Schema.Types.ObjectId },
 project: { Schema.Types.ObjectID },
 applicants: [Schema.Types.ObjectId],
