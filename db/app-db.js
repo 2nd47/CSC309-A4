@@ -20,7 +20,7 @@ powerLevel: { type: Number, default: 0 },
 // for further explanation of why this is the case
 followings: [Schema.Types.ObjectId],
 messages: [messageSchema],
-contacts: [Schema.Type.ObjectId],
+contracts: [Schema.Type.ObjectId],
 { collection : 'users',
 timestamps: true
 }
@@ -49,7 +49,7 @@ var projectSchema = new Schema({
 name: { type: String },
 tags: { type: String },
 ownerUsername: { type: String },
-members: { type: projectMemberSchema },
+members: [projectMemberSchema],
 contracts: { type: Schema.Types.ObjectID }
 showcase: { type: showcaseSchema },
 basicInfo: { type: String },
@@ -61,8 +61,7 @@ timestamps: true
 });
 
 var projectMemberSchema = new Schema({
-user: { type: String },
-//user: { type: Schema.Types.ObjectID },
+user: { type: Schema.Types.ObjectID },
 { timestamps: true }
 });
 
@@ -86,7 +85,9 @@ descriptionTags: [String],
 // ID of project member who created the contract
 owner: { Schema.Types.ObjectId },
 project: { Schema.Types.ObjectID },
-takers: [Schema.Types.ObjectId],
+applicants: [Schema.Types.ObjectId],
+prices: [Number],
+taker: { Schema.Types.ObjectId },
 details: { type: String },
 deadline: { type: Date },
 budget: { type: Number },

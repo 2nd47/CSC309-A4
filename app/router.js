@@ -38,7 +38,35 @@ router.get('/contracts/new', function (req, res) {
 
 // details of contract with contract_id
 router.get('/contracts/:contract_id', function (req, res) {
+	/*
+	Contract page:
+
+	{
+		id: contract id,
+		title: contract title,
+		employer_id: employer id,
+		employer_name: employer name,
+		project_id: project id,
+		project_name: project name,
+		status: contract status,
+		latest_update: date of the latest update,
+		tags: [tag names],
+		budget: budget level estimation between 1 to 5,
+		deadline: contract deadline,
+		intro: introduction to the contract details
+	}*/
+	var json = new Object();
+	var contrat_id = req.params.contract_id;
+	var contract = db.Contract.findOne({"_id": ObjectId(contract_id)});
+	json.id = contract_id;
+	json.title = contract.name;
+	json.employer_id = contract.owner;
+	json.employer_name = db.User.findOne({"_id": ObjectId(contract.owner)},{name: 1}).name;
+	json.project_id = contract.project;
+	json.project_name = db.Project.findOne({"_id": ObjectId(contract.project)},{name: 1}).name;
+	
 });
+
 
 // list of profiles
 router.get('/people', function (req, res) {
@@ -121,7 +149,7 @@ router.get('/projects/:project_id', function (req, res, next) {
 	for (i=0;i<numMembers;i++) {
 		var newMember = new Object();
 		newMember.member_id = project.members[i].user;
-		var memberName = db.User.findOne({"username": project.members[i].user}, {name: 1});
+		var memberName = db.User.findOne({"_id": project.members[i].user}, {name: 1});
 		newMember.member_name = memberName.name;
 		json.members.push(newMember);
 	}
