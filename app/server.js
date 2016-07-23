@@ -21,9 +21,9 @@ var assert = require('chai').assert;
 var app = express();
 // router import keeps main file clean
 var router = require('./router');
+var db = require('../db/db.js');
 
 // app init
-var db = mongoose.connect('mongodb://localhost/myapp');
 const APP_PORT = 3000;
 const saltRounds = 10;
 
