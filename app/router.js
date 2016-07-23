@@ -85,6 +85,77 @@ router.get('/people', function (req, res) {
 
 // details of people with user_id
 router.get('/people/:user_id', function (req, res) {
+	/*
+	{
+		id: person id,
+		name: person's name,
+		skills:
+		[
+			{
+				skill_id: skill id,
+				skill_name: skill name,
+				skill_level: self rating on the skill between 1 to 5
+			}
+		],
+		biography: person's biography,
+		projects:
+		[
+			{
+				project_id: project id,
+				project_name: project name
+			}
+		],
+		contracts:
+		[
+			{
+				contract_id: contract id,
+				contract_name: contract name,
+				completion_date: completion date,
+				contract_rating: contract_rating,
+				contract_comment: comment on the work
+			}
+		]
+	}*/
+	var json = new Object();
+	var user_id = req.params.user_id;
+	var user = db.User.findOne({"_id" : ObjectId(user_id)});
+	json.id = user_id;
+	json.name = user.name;
+	json.skills = user.skillTags;
+	json.biography = user.bio;
+	json.projects = [];
+	// Where the user is the owner
+	var projects = db.Project.find({"ownerUsername": user.username},{name: 1});
+	while (projects.hasNext()) {
+		var newProject = new Object();
+		var current = projects.next();
+		newProject.project_id = current._id;
+		newProject.project_name = current.name;
+		json.projects.push(newProject);
+	}
+	// Where the user is a member
+	var member_projects = db.Project.find({members: {$elemMatch: {"user": user_id}}});
+	while (member_projects.hasNext()) {
+		var newProject = new Object();
+		var current = member_projects.next();
+		newProject.project_id = current._id;
+		newProject.project_name = current.name;
+		json.projects.push(newProject);
+	}
+	json.contracts = [];
+	var contracts = db.Contract.find({"taker": user_id});
+	while (contracts.hasNext()) {
+		var newContract = new Object();
+		var current = contracts.next();
+		newContract.contract_id = current._id;
+		newContract.contract_name = current.name;
+		newContract.completion_date = current.completion;
+		newContract.contract_rating = current.rating;
+		newContract.contract_comment = current.comment;
+		json.projects.push(newContract);
+	}
+	
+	res.send(JSON.stringify(json));
 });
 
 // list of projects

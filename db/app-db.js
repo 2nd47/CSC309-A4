@@ -20,7 +20,7 @@ powerLevel: { type: Number, default: 0 },
 // for further explanation of why this is the case
 followings: [Schema.Types.ObjectId],
 messages: [messageSchema],
-contracts: [Schema.Type.ObjectId],
+contacts: [Schema.Type.ObjectId],
 { collection : 'users',
 timestamps: true
 }
@@ -90,6 +90,9 @@ prices: [Number],
 taker: { Schema.Types.ObjectId },
 details: { type: String },
 deadline: { type: Date },
+completion: { type: Date },
+rating: { type: Number },
+comment: { type: String },
 budget: { type: Number },
 { timestamps: true }
 });
