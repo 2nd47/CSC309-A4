@@ -64,7 +64,18 @@ router.get('/contracts/:contract_id', function (req, res) {
 	json.employer_name = db.User.findOne({"_id": ObjectId(contract.owner)},{name: 1}).name;
 	json.project_id = contract.project;
 	json.project_name = db.Project.findOne({"_id": ObjectId(contract.project)},{name: 1}).name;
-	
+	if (contract.taker) {
+		json.status = "signed";
+	}
+	else {
+		json.status = "open";
+	}
+	json.latest_update = contract.updatedAt;
+	json.tags = contract.skillTags;
+	json.budget = contract.budget;
+	json.deadline = contract.deadline;
+	json.intro = contract.details;
+	res.send(JSON.stringify(json));
 });
 
 
