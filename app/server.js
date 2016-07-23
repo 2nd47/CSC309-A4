@@ -6,9 +6,9 @@
 // server modules
 var bcrypt = require('bcryptjs');
 var express = require('express');
+var mongoose = require('mongoose');
 var sequelize = require('sequelize');
 var session = require('express-session');
-var sqlite3 = require('sqlite3').verbose();
 var validator = require('validator');
 
 // testing modules
@@ -23,13 +23,19 @@ var app = express();
 var router = require('./router');
 
 // app init
-var db = new sqlite3.Database('./db/db.db');
+var db = mongoose.connect('mongodb://localhost/myapp');
+const APP_PORT = 3000;
 const saltRounds = 10;
+
+function init() {
+  return;
+}
 
 function main() {
   init();
   app.use('/', router);
-  app.listen(3000);
+  app.listen(APP_PORT);
+  console.log('Server listening on port ' + APP_PORT);
 }
 
 main();
