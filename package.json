@@ -12,10 +12,10 @@
     "express": "^4.14.0",
     "express-session": "^1.14.0",
     "mocha": "^2.5.3",
+    "mongoose": "^4.5.5",
     "nodemon": "^1.9.2",
     "passport": "^0.3.2",
     "sequelize": "^3.23.4",
-    "sqlite3": "^3.1.4",
     "validator": "^5.4.0"
   },
   "devDependencies": {
