@@ -61,7 +61,8 @@ timestamps: true
 });
 
 var projectMemberSchema = new Schema({
-user: { type: Schema.Types.ObjectID },
+user: { type: String },
+//user: { type: Schema.Types.ObjectID },
 { timestamps: true }
 });
 
@@ -85,6 +86,7 @@ descriptionTags: [String],
 // ID of project member who created the contract
 project: { Schema.Types.ObjectId },
 owner: { Schema.Types.ObjectId },
+project: { Schema.Types.ObjectID },
 takers: [Schema.Types.ObjectId],
 details: { type: String },
 deadline: { type: Date },
