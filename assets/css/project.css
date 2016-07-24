@@ -39,15 +39,24 @@ video {
   float: right;
 }
 
+#contract_listing {
+  margin: 0;
+  padding: 0;
+}
+
 #contract_listing li {
 	list-style-type: none;
+  display: inline-block;
+  vertical-align: top;
+  width: 33%;
 }
 
 .contract_intro {
+  width: 90%;
 	display: block;
-	width: 30%;
-	padding: 10px;
+	padding: 2px 10px;
 	background-color: #EEEEEE;
+  margin: 10px 10px;
 }
 
 #showcase {
@@ -101,15 +110,17 @@ a {
     color: #A1A1A1;
 }
 
-#details {
+#details, #ongoing_contracts {
 	float: right;
 	margin: 0;
 	width: 100%;
 }
+
 .level_wrapper {
 	clear: both;
 	padding-top: 20px;
 }
+
 #divider {
 	clear:both;
 }

@@ -6,12 +6,16 @@ var model = mongoose.model;
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
+
+//SKILLS
 var skillSchema = new Schema({
   name: { type: String },
   rating: { type: Number}
 });
+
 var Skill = mongoose.model('Skill', skillSchema);
 
+//MESSAGES
 var messageSchema = new Schema({
   // This should be the ID of the sending user
   // If it isn't the user this message list was retrieved
@@ -19,8 +23,10 @@ var messageSchema = new Schema({
   sender: { type: ObjectId },
   text: { type: String }
 }, { timestamps: true });
+
 var Message = mongoose.model('Message', messageSchema);
 
+//USERS
 var userSchema = new Schema({
   username: { type: String },
   passwordHash: { type: String },
@@ -41,19 +47,25 @@ var userSchema = new Schema({
   blocked: [ObjectId],
   contracts: [ObjectId]
 }, { collection : 'users', timestamps: true });
+
 var User = mongoose.model('User', userSchema);
 
+//PROJECT MEMBERS
 var projectMemberSchema = new Schema({
   user: { type: ObjectId }
 }, { timestamps: true });
+
 var ProjectMember = mongoose.model('ProjectMember', projectMemberSchema);
 
-var detailedInfoSchema = new Schema({
+//PROJECT INFO
+var detailedProjectInfoSchema = new Schema({
   title: { type: String },
   content: { type: String }
 });
-var DetailedInfo = mongoose.model('DetailedInfo', detailedInfoSchema);
 
+var DetailedInfo = mongoose.model('DetailedInfo', detailedProjectInfoSchema);
+
+//SHOWCASE
 var showcaseSchema = new Schema({
   project: { type: ObjectId },
   // Display order inferred from indices
@@ -61,8 +73,10 @@ var showcaseSchema = new Schema({
   // Can extract mediatype from full path
   mediaTypes: [String]
 }, { collection: 'showcases', timestamps: true });
+
 var Showcase = mongoose.model('Showcase', showcaseSchema);
 
+//PROJECT
 var projectSchema = new Schema({
   name: { type: String },
   tags: [String],
@@ -74,6 +88,7 @@ var projectSchema = new Schema({
   detailedInfo: [detailedInfoSchema],
   status: { type: String }
 }, { collection : 'projects',timestamps: true });
+
 var Project = mongoose.model('Project', projectSchema);
 
 var contractSchema = new Schema({
@@ -91,6 +106,7 @@ var contractSchema = new Schema({
   deadline: { type: Date },
   budget: { type: Number }
 }, { timestamps: true });
+
 var Contract = mongoose.model('Contract', contractSchema);
 
 var reportSchema = new Schema({
@@ -100,6 +116,7 @@ var reportSchema = new Schema({
   webpage: { type: String },
   status: { type: String }
 }, { collection: 'reports', timestamps: true });
+
 var Report = mongoose.model('Report', contractSchema);
 
 module.exports.Skill = Skill;
