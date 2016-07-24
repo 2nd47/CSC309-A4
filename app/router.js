@@ -38,7 +38,46 @@ router.get('/contracts/new', function (req, res) {
 
 // details of contract with contract_id
 router.get('/contracts/:contract_id', function (req, res) {
+	/*
+	Contract page:
+
+	{
+		id: contract id,
+		title: contract title,
+		employer_id: employer id,
+		employer_name: employer name,
+		project_id: project id,
+		project_name: project name,
+		status: contract status,
+		latest_update: date of the latest update,
+		tags: [tag names],
+		budget: budget level estimation between 1 to 5,
+		deadline: contract deadline,
+		intro: introduction to the contract details
+	}*/
+	var json = new Object();
+	var contrat_id = req.params.contract_id;
+	var contract = db.Contract.findOne({"_id": ObjectId(contract_id)});
+	json.id = contract_id;
+	json.title = contract.name;
+	json.employer_id = contract.owner;
+	json.employer_name = db.User.findOne({"_id": ObjectId(contract.owner)},{name: 1}).name;
+	json.project_id = contract.project;
+	json.project_name = db.Project.findOne({"_id": ObjectId(contract.project)},{name: 1}).name;
+	if (contract.taker) {
+		json.status = "signed";
+	}
+	else {
+		json.status = "open";
+	}
+	json.latest_update = contract.updatedAt;
+	json.tags = contract.skillTags;
+	json.budget = contract.budget;
+	json.deadline = contract.deadline;
+	json.intro = contract.details;
+	res.send(JSON.stringify(json));
 });
+
 
 // list of profiles
 router.get('/people', function (req, res) {
@@ -46,6 +85,77 @@ router.get('/people', function (req, res) {
 
 // details of people with user_id
 router.get('/people/:user_id', function (req, res) {
+	/*
+	{
+		id: person id,
+		name: person's name,
+		skills:
+		[
+			{
+				skill_id: skill id,
+				skill_name: skill name,
+				skill_level: self rating on the skill between 1 to 5
+			}
+		],
+		biography: person's biography,
+		projects:
+		[
+			{
+				project_id: project id,
+				project_name: project name
+			}
+		],
+		contracts:
+		[
+			{
+				contract_id: contract id,
+				contract_name: contract name,
+				completion_date: completion date,
+				contract_rating: contract_rating,
+				contract_comment: comment on the work
+			}
+		]
+	}*/
+	var json = new Object();
+	var user_id = req.params.user_id;
+	var user = db.User.findOne({"_id" : ObjectId(user_id)});
+	json.id = user_id;
+	json.name = user.name;
+	json.skills = user.skillTags;
+	json.biography = user.bio;
+	json.projects = [];
+	// Where the user is the owner
+	var projects = db.Project.find({"ownerUsername": user.username},{name: 1});
+	while (projects.hasNext()) {
+		var newProject = new Object();
+		var current = projects.next();
+		newProject.project_id = current._id;
+		newProject.project_name = current.name;
+		json.projects.push(newProject);
+	}
+	// Where the user is a member
+	var member_projects = db.Project.find({members: {$elemMatch: {"user": user_id}}});
+	while (member_projects.hasNext()) {
+		var newProject = new Object();
+		var current = member_projects.next();
+		newProject.project_id = current._id;
+		newProject.project_name = current.name;
+		json.projects.push(newProject);
+	}
+	json.contracts = [];
+	var contracts = db.Contract.find({"taker": user_id});
+	while (contracts.hasNext()) {
+		var newContract = new Object();
+		var current = contracts.next();
+		newContract.contract_id = current._id;
+		newContract.contract_name = current.name;
+		newContract.completion_date = current.completion;
+		newContract.contract_rating = current.rating;
+		newContract.contract_comment = current.comment;
+		json.projects.push(newContract);
+	}
+	
+	res.send(JSON.stringify(json));
 });
 
 // list of projects
@@ -121,7 +231,7 @@ router.get('/projects/:project_id', function (req, res, next) {
 	for (i=0;i<numMembers;i++) {
 		var newMember = new Object();
 		newMember.member_id = project.members[i].user;
-		var memberName = db.User.findOne({"username": project.members[i].user}, {name: 1});
+		var memberName = db.User.findOne({"_id": project.members[i].user}, {name: 1});
 		newMember.member_name = memberName.name;
 		json.members.push(newMember);
 	}
@@ -167,6 +277,21 @@ router.get('/inbox', function (req, res) {
 
 // search page
 router.get('/search', function (req, res) {
+	/*
+	Probable Queries:
+	- category
+	  - all (default)
+		- projects
+		- people
+	- query
+		- the key word for the search
+	- time
+		- all (default)
+		- 3: only include stuff updated in the last 3 months
+		- 6: only include stuff updated in the last 6 months
+	*/
+	var results = [];
+	var queries = url.parse(req.url, true).query;
 });
 
 // etc...
