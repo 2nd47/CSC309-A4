@@ -290,8 +290,12 @@ router.get('/search', function (req, res) {
 		- 3: only include stuff updated in the last 3 months
 		- 6: only include stuff updated in the last 6 months
 	*/
-	var results = [];
+	
+	// Priority: match name: +3 match tag: +2 match content: +1
+	var results = new Object; //Store {object_id,object_priority}
 	var queries = url.parse(req.url, true).query;
+	
+	
 });
 
 // etc...
