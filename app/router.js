@@ -89,6 +89,7 @@ router.get('/people/:user_id', function (req, res) {
 	{
 		id: person id,
 		name: person's name,
+		title: person's title,
 		skills:
 		[
 			{
@@ -97,6 +98,7 @@ router.get('/people/:user_id', function (req, res) {
 				skill_level: self rating on the skill between 1 to 5
 			}
 		],
+		tags: [tags]
 		biography: person's biography,
 		projects:
 		[
@@ -121,7 +123,9 @@ router.get('/people/:user_id', function (req, res) {
 	var user = db.User.findOne({"_id" : ObjectId(user_id)});
 	json.id = user_id;
 	json.name = user.name;
+	json.title = user.title;
 	json.skills = user.skillTags;
+	json.tags = user.tags;
 	json.biography = user.bio;
 	json.projects = [];
 	// Where the user is the owner
@@ -187,13 +191,7 @@ router.get('/projects/:project_id', function (req, res, next) {
 			}
 		],
 		short_intro: short description, 300 characters max,
-		long_intro:
-		[
-			{
-				paragraph_title: title,
-				paragraph_content: content
-			}
-		],
+		long_intro: longer intro with no character limit,
 		showcase:
 		[
 			{
@@ -236,14 +234,15 @@ router.get('/projects/:project_id', function (req, res, next) {
 		json.members.push(newMember);
 	}
 	json.short_intro = project.basicInfo;
-	json.long_intro = [];
+	json.long_intro = project.detailedInfo;
+	/*json.long_intro = [];
 	var numParagraph = project.detailedInfo.length;
 	for (i=0;i<numParagraph;i++) {
 		var newParagraph = new Object();
 		newParagraph.paragraph_title = project.detailedInfo[i].title;
 		newParagraph.paragraph_content = project.detailedInfo[i].content;
 		json.long_intro.push(newParagraph);
-	}
+	}*/
 	json.showcase = [];
 	var numShowcase = project.showcase.assetPaths.length;
 	for (i=0;i<numShowcase;i++) {
@@ -279,22 +278,329 @@ router.get('/inbox', function (req, res) {
 router.get('/search', function (req, res) {
 	/*
 	Probable Queries:
+	- page
+	  - page number (default=1)
+	- perpage
+		- number of results per page (default = 10)
 	- category
 	  - all (default)
 		- projects
 		- people
-	- query
-		- the key word for the search
-	- time
-		- all (default)
-		- 3: only include stuff updated in the last 3 months
-		- 6: only include stuff updated in the last 6 months
+	- keywords
+		- the key word(s) for the search (e.g. hello,world,python)
+	
+	If it were a project, get
+	_id: {
+		type: project,
+		title: project title,
+		short_intro: short description, 300 characters max,
+		latest_update: date of the latest update, in seconds,
+		status: project status,
+		tags: [list of tags],
+		priority: accumulating as encountering the object
+	}
+	
+	If it were a person, get
+	_id: {
+		type: person,
+		name: person's name,
+		title: person's title,
+		skills:
+		[
+			{
+				skill_id: skill id,
+				skill_name: skill name,
+				skill_level: self rating on the skill between 1 to 5
+			}
+		]
+		tags: [list of tags]
+		priority: accumulating as encountering the object
+	}
 	*/
 	
-	// Priority: match name: +3 match tag: +2 match content: +1
-	var results = new Object; //Store {object_id,object_priority}
+	////////////////////////////////////////////////////
+	//                                                //
+	// TODO: using the user id stored in the login    //
+	// session, adjust the search results based on    //
+	// common tags between the user and the search    //
+	// results                                        //
+	//                                                //
+	////////////////////////////////////////////////////
+	
+	
+	var results = new Object; //Store object_id: {...,priority_level:number}
 	var queries = url.parse(req.url, true).query;
 	
+	// Parse the queries
+	var category;
+	if (queries.category) {
+		category = queries.category;
+	}
+	else {
+		category = "all";
+	}
+	
+	var keywords = queries.keywords.split(",");
+	/*
+	var time;
+	if (queries.time) {
+		time = queries.time;
+	}
+	else {
+		time = "all";
+	}*/
+	
+	var page;
+	if (queries.page) {
+		page = queries.page;
+	}
+	else {
+		page = 1;
+	}
+	
+	var perpage;
+	if (queries.perpage) {
+		perpage = queries.perpage;
+	}
+	else {
+		perpage = 1;
+	}
+	
+	// Priority: match name: +4 match tag: +2 match content: +1
+	// for each keyword:
+	var i;
+	var numKeywords = keywords.length;
+	for (i=0;i<numKeywords;i++) {
+		var keyword = keywords[i];
+		// Get projects
+		if (category === "all" || category === "projects") {
+			var projectsByName = db.Project.find({"name": {$regex: ".*" + keyword + ".*/i"}});
+			var projectsByTags = db.Project.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}});
+			var projectsByIntro = db.Project.find({"basicInfo": {$regex: ".*" + keyword + ".*/i"}});
+			var projectsByDetail = db.Project.find({"detailedInfo": {$regex: ".*" + keyword + ".*/i"}});
+			
+			// match projects by name
+			while (projectsByName.hasNext()) {
+				var newProject = new Object();
+				var current = projectsByName.next();
+				if (current_id in results) {
+					// The object is found before
+					results[current._id].priority += 4;
+				}
+				else {
+					// The object is found in current iteration
+					results[current._id] = new Object();
+					results[current._id].type = "project";
+					results[current._id].title = current.name;
+					results[current._id].short_intro = current.basicInfo;
+					results[current._id].latest_update = current.updatedAt;
+					results[current._id].status =  current.status;
+					results[current._id].tags = current.tags;
+					results[current._id].priority = 4;
+				}
+			}
+			
+			// match projects by tags
+			while (projectsByTags.hasNext()) {
+				var newProject = new Object();
+				var current = projectsByTags.next();
+				if (current_id in results) {
+					// The object is found before
+					results[current._id].priority += 2;
+				}
+				else {
+					// The object is found in current iteration
+					results[current._id] = new Object();
+					results[current._id].type = "project";
+					results[current._id].title = current.name;
+					results[current._id].short_intro = current.basicInfo;
+					results[current._id].latest_update = current.updatedAt;
+					results[current._id].status =  current.status;
+					results[current._id].tags = current.tags;
+					results[current._id].priority = 2;
+				}
+			}
+			
+			// match projects by intro
+			while (projectsByIntro.hasNext()) {
+				var newProject = new Object();
+				var current = projectsByIntro.next();
+				if (current_id in results) {
+					// The object is found before
+					results[current._id].priority += 1;
+				}
+				else {
+					// The object is found in current iteration
+					results[current._id] = new Object();
+					results[current._id].type = "project";
+					results[current._id].title = current.name;
+					results[current._id].short_intro = current.basicInfo;
+					results[current._id].latest_update = current.updatedAt;
+					results[current._id].status =  current.status;
+					results[current._id].tags = current.tags;
+					results[current._id].priority = 1;
+				}
+			}
+			
+			// match projects by detail
+			while (projectsByDetail.hasNext()) {
+				var newProject = new Object();
+				var current = projectsByDetail.next();
+				if (current_id in results) {
+					// The object is found before
+					results[current._id].priority += 1;
+				}
+				else {
+					// The object is found in current iteration
+					results[current._id] = new Object();
+					results[current._id].type = "project";
+					results[current._id].title = current.name;
+					results[current._id].short_intro = current.basicInfo;
+					results[current._id].latest_update = current.updatedAt;
+					results[current._id].status =  current.status;
+					results[current._id].tags = current.tags;
+					results[current._id].priority = 1;
+				}
+			}
+		}
+		
+		
+		// Get people
+		if (category === "all" || category === "people") {
+			var peopleByName = db.Project.find({"name": {$regex: ".*" + keyword + ".*/i"}});
+			var peopleByTags = db.Project.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}});
+			var peopleBySkill = db.Project.find({"skillTags": {$elemMatch: {"name": {$regex: ".*" + keyword + ".*/i"}}}});
+			var peopleByTitle = db.Project.find({"title": {$regex: ".*" + keyword + ".*/i"}});
+			var peopleByBio = db.Project.find({"bio": {$regex: ".*" + keyword + ".*/i"}});
+			
+			// match people by name
+			while (peopleByName.hasNext()) {
+				var newProject = new Object();
+				var current = peopleByName.next();
+				if (current_id in results) {
+					// The object is found before
+					results[current._id].priority += 4;
+				}
+				else {
+					// The object is found in current iteration
+					results[current._id] = new Object();
+					results[current._id].type = "project";
+					results[current._id].title = current.name;
+					results[current._id].short_intro = current.basicInfo;
+					results[current._id].latest_update = current.updatedAt;
+					results[current._id].status =  current.status;
+					results[current._id].tags = current.tags;
+					results[current._id].priority = 4;
+				}
+			}
+			
+			// match people by tags
+			while (peopleByTags.hasNext()) {
+				var newProject = new Object();
+				var current = peopleByTags.next();
+				if (current_id in results) {
+					// The object is found before
+					results[current._id].priority += 2;
+				}
+				else {
+					// The object is found in current iteration
+					results[current._id] = new Object();
+					results[current._id].type = "project";
+					results[current._id].title = current.name;
+					results[current._id].short_intro = current.basicInfo;
+					results[current._id].latest_update = current.updatedAt;
+					results[current._id].status =  current.status;
+					results[current._id].tags = current.tags;
+					results[current._id].priority = 2;
+				}
+			}
+			
+			// match people by skill
+			while (peopleBySkill.hasNext()) {
+				var newProject = new Object();
+				var current = peopleBySkill.next();
+				if (current_id in results) {
+					// The object is found before
+					results[current._id].priority += 2;
+				}
+				else {
+					// The object is found in current iteration
+					results[current._id] = new Object();
+					results[current._id].type = "project";
+					results[current._id].title = current.name;
+					results[current._id].short_intro = current.basicInfo;
+					results[current._id].latest_update = current.updatedAt;
+					results[current._id].status =  current.status;
+					results[current._id].tags = current.tags;
+					results[current._id].priority = 2;
+				}
+			}
+			
+			// match people by title
+			while (peopleByTitle.hasNext()) {
+				var newProject = new Object();
+				var current = peopleByTitle.next();
+				if (current_id in results) {
+					// The object is found before
+					results[current._id].priority += 2;
+				}
+				else {
+					// The object is found in current iteration
+					results[current._id] = new Object();
+					results[current._id].type = "project";
+					results[current._id].title = current.name;
+					results[current._id].short_intro = current.basicInfo;
+					results[current._id].latest_update = current.updatedAt;
+					results[current._id].status =  current.status;
+					results[current._id].tags = current.tags;
+					results[current._id].priority = 2;
+				}
+			}
+			
+			// match people by bio
+			while (peopleByBio.hasNext()) {
+				var newProject = new Object();
+				var current = peopleByBio.next();
+				if (current_id in results) {
+					// The object is found before
+					results[current._id].priority += 1;
+				}
+				else {
+					// The object is found in current iteration
+					results[current._id] = new Object();
+					results[current._id].type = "project";
+					results[current._id].title = current.name;
+					results[current._id].short_intro = current.basicInfo;
+					results[current._id].latest_update = current.updatedAt;
+					results[current._id].status =  current.status;
+					results[current._id].tags = current.tags;
+					results[current._id].priority = 1;
+				}
+			}
+		}
+		
+		var resultArray = [];
+		for (var id in results) {
+			if (results.hasOwnProperty(id)) {
+				resultArray.push(results[id]);
+			}
+		}
+		
+		// sort by priority
+		resultArray.sort(
+			function(a, b) {
+				if (a.priority > b.priority) {
+					return -1;
+				}
+				if (a.priority < b.priority) {
+					return 1;
+				}
+				return 0;
+			}
+		);
+		
+		res.send(JSON.stringify(resultArray.slice((page-1)*perpage,page*perpage)));
+	}	
 	
 });
 
