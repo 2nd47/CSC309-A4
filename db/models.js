@@ -103,7 +103,6 @@ var contractSchema = new Schema({
   // ID of project member who created the contract
   project: { ObjectId },
   owner: { ObjectId },
-  project: { ObjectId },
   takers: [ObjectId],
   details: { type: String },
   deadline: { type: Date },
