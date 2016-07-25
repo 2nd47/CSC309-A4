@@ -5,6 +5,7 @@
 
 var express = require('express');
 var router = express.Router();
+var User = require('../db/app-db');
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -20,11 +21,77 @@ router.get('/', function (req, res, next) {
   res.send('AIDA Home Page!');
 });
 
-router.post('/login', function (req, res, next) {
-  res.send('AIDA Home Page!');
+router.post('/signup', function (req, res, next) {
+  var username = req.body.username;
+  var password = req.body.password;
+  var password2 = req.body.password2;
+  var email = req.body.email;
+  var email2 = req.body.email2;
+
+  // Validation
+  req.checkBody(‘username’, 'Username is required').notEmpty();
+  req.checkBody(‘password’, 'Password is required').notEmpty();
+  req.checkBody(‘password2’, 'Passwords do not match').equals(req.body.password);
+  req.checkBody(‘email’, 'Email is required').notEmpty();
+  req.checkBody('email', 'Email is not valid').isEmail();
+  req.checkBody(‘email2’, 'Emails do not match').equals(req.body.email);
+
+  var errors = req.validationErrors();
+
+  if(errors) {
+    console.log(msg);
+    /*
+    res.render('landingSignup', {
+      errors:errors
+    });
+
+    On The Frontend add this placeholder:
+    {{#if errors}}
+      {{#each errors}}
+        <div class="notice error">{{msg}}</div>
+      {{/each}}
+    {{/if}}
+    */
+  } else {
+    console.log('Signup No Error');
+    // Create the user
+    var newUser = new User({
+      username: username,
+      password: password;
+      email: email;
+    });
+
+    User.createUser(newUser, function(err, user){
+      if(err) throw err;
+      console.log(user);
+    });
+
+    req.flash('success_msg', 'You are registered and can now login');
+    /* On Frontend add these placeholders
+    {{#if success_msg}}
+      <div class="notice_success">
+        {{success_msg}}
+      </div>
+    {{/if}}
+
+    {{#if error_msg}}
+      <div class="notice_success">
+        {{error_msg}}
+      </div>
+    {{/if}}
+
+    {{#if error}}
+      <div class="notice_success">
+        {{error}}
+      </div>
+    {{/if}}
+    */
+
+    res.redirect('/login');
+  }
 });
 
-router.post('/signup', function (req, res, next) {
+router.post('/login', function (req, res, next) {
   res.send('AIDA Home Page!');
 });
 
@@ -154,7 +221,7 @@ router.get('/people/:user_id', function (req, res) {
 		newContract.contract_comment = current.comment;
 		json.projects.push(newContract);
 	}
-	
+
 	res.send(JSON.stringify(json));
 });
 

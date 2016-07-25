@@ -4,6 +4,7 @@
 // Separate into different files before integrating to master
 
 var mongoose = require('mongoose');
+var bcrypt = require('bcryptjs');
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
@@ -25,6 +26,17 @@ contacts: [Schema.Type.ObjectId],
 timestamps: true
 }
 });
+
+// Create User Method
+var User = module.exports = mongoose.model('User', UserSchema);
+module.exports.createUser = function(newUser, callback) {
+  bcrypt.genSalt(10, function(err, salt) {
+    bcrypt.hash(newUser.password, salt, function(err, hash) {
+      newUser.passwordHash = hash;
+      newUser.save(callback);
+    });
+  });
+}
 
 var skillSchema = new Schema({
 name: { type: String },
