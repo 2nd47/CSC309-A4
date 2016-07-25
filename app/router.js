@@ -56,7 +56,7 @@ router.get('/contracts/:contract_id', function (req, res) {
 		intro: introduction to the contract details
 	}*/
 	var json = new Object();
-	var contrat_id = req.params.contract_id;
+	var contract_id = req.params.contract_id;
 	var contract = db.Contract.findOne({"_id": ObjectId(contract_id)});
 	json.id = contract_id;
 	json.title = contract.name;
@@ -90,14 +90,7 @@ router.get('/people/:user_id', function (req, res) {
 		id: person id,
 		name: person's name,
 		title: person's title,
-		skills:
-		[
-			{
-				skill_id: skill id,
-				skill_name: skill name,
-				skill_level: self rating on the skill between 1 to 5
-			}
-		],
+		skills: person's skillTags,
 		tags: [tags]
 		biography: person's biography,
 		projects:
@@ -138,7 +131,7 @@ router.get('/people/:user_id', function (req, res) {
 		json.projects.push(newProject);
 	}
 	// Where the user is a member
-	var member_projects = db.Project.find({members: {$elemMatch: {"user": user_id}}});
+	var member_projects = db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}});
 	while (member_projects.hasNext()) {
 		var newProject = new Object();
 		var current = member_projects.next();
@@ -147,7 +140,7 @@ router.get('/people/:user_id', function (req, res) {
 		json.projects.push(newProject);
 	}
 	json.contracts = [];
-	var contracts = db.Contract.find({"taker": user_id});
+	var contracts = db.Contract.find({"taker": ObjectId(user_id)});
 	while (contracts.hasNext()) {
 		var newContract = new Object();
 		var current = contracts.next();
@@ -229,7 +222,7 @@ router.get('/projects/:project_id', function (req, res, next) {
 	for (i=0;i<numMembers;i++) {
 		var newMember = new Object();
 		newMember.member_id = project.members[i].user;
-		var memberName = db.User.findOne({"_id": project.members[i].user}, {name: 1});
+		var memberName = db.User.findOne({"_id": ObjectId(project.members[i].user)}, {name: 1});
 		newMember.member_name = memberName.name;
 		json.members.push(newMember);
 	}
@@ -286,6 +279,7 @@ router.get('/search', function (req, res) {
 	  - all (default)
 		- projects
 		- people
+		- contracts: open contracts only
 	- keywords
 		- the key word(s) for the search (e.g. hello,world,python)
 	
@@ -305,30 +299,69 @@ router.get('/search', function (req, res) {
 		type: person,
 		name: person's name,
 		title: person's title,
-		skills:
-		[
-			{
-				skill_id: skill id,
-				skill_name: skill name,
-				skill_level: self rating on the skill between 1 to 5
-			}
-		]
+		skills: person's skillTag,
 		tags: [list of tags]
 		priority: accumulating as encountering the object
 	}
+	
+	If it were a contract, get from OPEN contracts:
+	_id: {
+		type: contract,
+		name: contract name,
+		intro: contract intro,
+		skills: skillTags,
+		project_id: project id,
+		project_name: project name,
+		project_tags: tags for the project,
+		deadline: contract deadline
+		budget: contract budget
+	}
+	priorities adjusted based on user's skills
 	*/
 	
 	////////////////////////////////////////////////////
 	//                                                //
-	// TODO: using the user id stored in the login    //
-	// session, adjust the search results based on    //
-	// common tags between the user and the search    //
-	// results                                        //
+	// TODO: are ObjectIds hashable                   //
 	//                                                //
 	////////////////////////////////////////////////////
+	var userId = req.session.userId;
+	var userTags = [];
+	var userSkills = [];
+	var userProjectTags = [];
+	var userContractSkills = [];
+	if (userName) {
+		var user = db.User.findOne({"_id": ObjectId(userId)});
+		var userProjects = db.Project.find({"ownerUsername": user.username, "status": "ongoing"});
+		var userContracts = db.Contract.find({"owner": ObjectId(userId), "status": "open"});
+		// User's tags on themselves
+		userTags = user.tags;
+		// User's skills
+		var i;
+		var numSkills = user.skillTags.length;
+		for (i=0;i<numSkills;i++) {
+			userSkills.push(user.skillTags[i].name);
+		}
+		// User's tags on ongoing projects
+		while (userProjects.hasNext()) {
+			var current = userProjects.next();
+			var tags = current.tags;
+			for (i=0;i<tags.length;i++) {
+				userProjectTags.push(tags[i]);
+			}
+		}
+		// User's contracts' required skills
+		while (userContracts.hasNext()) {
+			var current = userContracts.next();
+			var skillTags = current.skillTags;
+			for (i=0;i<skillTags.length;i++) {
+				userContractSkills.push(skillTags[i].name);
+			}
+		}
+	}
 	
-	
-	var results = new Object; //Store object_id: {...,priority_level:number}
+	var projects_results = new Object(); //Store object_id: {...,priority_level:number}
+	var people_results = new Object();
+	var contracts_results = new Object();
 	var queries = url.parse(req.url, true).query;
 	
 	// Parse the queries
@@ -368,6 +401,90 @@ router.get('/search', function (req, res) {
 	
 	// Priority: match name: +4 match tag: +2 match content: +1
 	// for each keyword:
+	const MATCH_USER = 2;
+	const MATCH_NAME = 4;
+	const MATCH_TAGS = 2;
+	const MATCH_REST = 1;
+	
+	// helper function to decide matching priority based on two arrays' common elements
+	function matchPriority(arr1, arr2) {
+		var concatTags = arr1.concat(arr2);
+		var concatSet = new Set(concatTags);
+		var numMatchTag = concatTags.length - concatSet.size;
+		return MATCH_USER * numMatchTag;
+	}
+	// helper function to add priority to a project
+	function updateProjectPriority(project, value) {
+		projects_results[project._id].priority += value;
+	}
+	
+	// helper function to add new project
+	function addNewProject(project, basePriority) {
+		projects_results[project._id] = new Object();
+		projects_results[project._id].type = "project";
+		projects_results[project._id].title = current.name;
+		projects_results[project._id].short_intro = current.basicInfo;
+		projects_results[project._id].latest_update = current.updatedAt;
+		projects_results[project._id].status =  current.status;
+		projects_results[project._id].tags = current.tags;
+		// base priority
+		projects_results[project._id].priority = basePriority;
+		// match priority by user's tags and project's tags
+		updateProjectPriority(project, matchPriority(userTags, project.tags));
+	}
+	
+	function updatePersonPriority(person, value) {
+		people_results[person._id].priority += value;
+	}
+	// helper function to add new person
+	function addNewPerson(person, basePriority) {
+		people_results[person._id] = new Object();
+		people_results[person._id].type = "person";
+		people_results[person._id].name = person.name;
+		people_results[person._id].title = person.title;
+		people_results[person._id].skills = person.skillTags;
+		people_results[person._id].tags = person.tags;
+		// base priority
+		people_results[person._id].priority = basePriority;
+		// match priority by contracts' required skills posted by user
+		var personSkills = [];
+		var n;
+		var num = person.skillTags.length;
+		for (n=0;n<num;n++) {
+			personSkills.push(person.skillTags[n].name);
+		}
+		updatePersonPriority(person, matchPriority(userContractSkills, personSkills));
+		// match priority by user's projects' tags and the person's tags
+		updatePersonPriority(person, matchPriority(userProjectTags, person.tags));
+	}
+	
+	function updateContractPriority(contract, value) {
+		contracts_results[contract._id].priority += value;
+	}
+	
+	function addNewContract(contract, basePriority) {
+		contracts_results[contract._id] = new Object();
+		contracts_results[contract._id].type = "contract";
+		contracts_results[contract._id].name = contract.name;
+		contracts_results[contract._id].intro = contract.intro;
+		contracts_results[contract._id].skills = contract.skillTags;
+		contracts_results[contract._id].project_id = contract.project;
+		contracts_results[contract._id].project_name = db.Project.findOne({"_id": ObjectId(contract.project)}).name;
+		contracts_results[contract._id].project_tags = contract.descriptionTags;
+		contracts_results[contract._id].deadline = contract.deadline;
+		contracts_results[contract._id].budget = contract.budget;
+		// base priority
+		contracts_results[contract._id].priority = basePriority;
+		// match priority by user's skills and the contract's required skills
+		var contractSkills = [];
+		var n;
+		var num = contract.skillTags.length;
+		for (n=0;n<num;n++) {
+			contractSkills.push(contract.skillTags[n].name);
+		}
+		updateContractPriority(contract, matchPriority(userSkills, contractSkills));
+	}
+	
 	var i;
 	var numKeywords = keywords.length;
 	for (i=0;i<numKeywords;i++) {
@@ -383,20 +500,13 @@ router.get('/search', function (req, res) {
 			while (projectsByName.hasNext()) {
 				var newProject = new Object();
 				var current = projectsByName.next();
-				if (current_id in results) {
+				if (current._id in projects_results) {
 					// The object is found before
-					results[current._id].priority += 4;
+					updateProjectPriority(current, MATCH_NAME);
 				}
 				else {
 					// The object is found in current iteration
-					results[current._id] = new Object();
-					results[current._id].type = "project";
-					results[current._id].title = current.name;
-					results[current._id].short_intro = current.basicInfo;
-					results[current._id].latest_update = current.updatedAt;
-					results[current._id].status =  current.status;
-					results[current._id].tags = current.tags;
-					results[current._id].priority = 4;
+					addNewProject(current, MATCH_NAME);
 				}
 			}
 			
@@ -404,20 +514,13 @@ router.get('/search', function (req, res) {
 			while (projectsByTags.hasNext()) {
 				var newProject = new Object();
 				var current = projectsByTags.next();
-				if (current_id in results) {
+				if (current._id in projects_results) {
 					// The object is found before
-					results[current._id].priority += 2;
+					updateProjectPriority(current, MATCH_TAGS);
 				}
 				else {
 					// The object is found in current iteration
-					results[current._id] = new Object();
-					results[current._id].type = "project";
-					results[current._id].title = current.name;
-					results[current._id].short_intro = current.basicInfo;
-					results[current._id].latest_update = current.updatedAt;
-					results[current._id].status =  current.status;
-					results[current._id].tags = current.tags;
-					results[current._id].priority = 2;
+					addNewProject(current, MATCH_TAGS);
 				}
 			}
 			
@@ -425,20 +528,13 @@ router.get('/search', function (req, res) {
 			while (projectsByIntro.hasNext()) {
 				var newProject = new Object();
 				var current = projectsByIntro.next();
-				if (current_id in results) {
+				if (current._id in projects_results) {
 					// The object is found before
-					results[current._id].priority += 1;
+					updateProjectPriority(current, MATCH_REST);
 				}
 				else {
 					// The object is found in current iteration
-					results[current._id] = new Object();
-					results[current._id].type = "project";
-					results[current._id].title = current.name;
-					results[current._id].short_intro = current.basicInfo;
-					results[current._id].latest_update = current.updatedAt;
-					results[current._id].status =  current.status;
-					results[current._id].tags = current.tags;
-					results[current._id].priority = 1;
+					addNewProject(current, MATCH_REST);
 				}
 			}
 			
@@ -446,20 +542,13 @@ router.get('/search', function (req, res) {
 			while (projectsByDetail.hasNext()) {
 				var newProject = new Object();
 				var current = projectsByDetail.next();
-				if (current_id in results) {
+				if (current._id in projects_results) {
 					// The object is found before
-					results[current._id].priority += 1;
+					updateProjectPriority(current, MATCH_REST);
 				}
 				else {
 					// The object is found in current iteration
-					results[current._id] = new Object();
-					results[current._id].type = "project";
-					results[current._id].title = current.name;
-					results[current._id].short_intro = current.basicInfo;
-					results[current._id].latest_update = current.updatedAt;
-					results[current._id].status =  current.status;
-					results[current._id].tags = current.tags;
-					results[current._id].priority = 1;
+					addNewProject(current, MATCH_REST);
 				}
 			}
 		}
@@ -477,20 +566,13 @@ router.get('/search', function (req, res) {
 			while (peopleByName.hasNext()) {
 				var newProject = new Object();
 				var current = peopleByName.next();
-				if (current_id in results) {
+				if (current._id in people_results) {
 					// The object is found before
-					results[current._id].priority += 4;
+					updatePersonPriority(current, MATCH_NAME);
 				}
 				else {
 					// The object is found in current iteration
-					results[current._id] = new Object();
-					results[current._id].type = "project";
-					results[current._id].title = current.name;
-					results[current._id].short_intro = current.basicInfo;
-					results[current._id].latest_update = current.updatedAt;
-					results[current._id].status =  current.status;
-					results[current._id].tags = current.tags;
-					results[current._id].priority = 4;
+					addNewPerson(current, MATCH_NAME);
 				}
 			}
 			
@@ -498,20 +580,13 @@ router.get('/search', function (req, res) {
 			while (peopleByTags.hasNext()) {
 				var newProject = new Object();
 				var current = peopleByTags.next();
-				if (current_id in results) {
+				if (current._id in people_results) {
 					// The object is found before
-					results[current._id].priority += 2;
+					updatePersonPriority(current, MATCH_TAGS);
 				}
 				else {
 					// The object is found in current iteration
-					results[current._id] = new Object();
-					results[current._id].type = "project";
-					results[current._id].title = current.name;
-					results[current._id].short_intro = current.basicInfo;
-					results[current._id].latest_update = current.updatedAt;
-					results[current._id].status =  current.status;
-					results[current._id].tags = current.tags;
-					results[current._id].priority = 2;
+					addNewPerson(current, MATCH_TAGS);
 				}
 			}
 			
@@ -519,20 +594,13 @@ router.get('/search', function (req, res) {
 			while (peopleBySkill.hasNext()) {
 				var newProject = new Object();
 				var current = peopleBySkill.next();
-				if (current_id in results) {
+				if (current._id in people_results) {
 					// The object is found before
-					results[current._id].priority += 2;
+					updatePersonPriority(current, MATCH_TAGS);
 				}
 				else {
 					// The object is found in current iteration
-					results[current._id] = new Object();
-					results[current._id].type = "project";
-					results[current._id].title = current.name;
-					results[current._id].short_intro = current.basicInfo;
-					results[current._id].latest_update = current.updatedAt;
-					results[current._id].status =  current.status;
-					results[current._id].tags = current.tags;
-					results[current._id].priority = 2;
+					addNewPerson(current, MATCH_TAGS);
 				}
 			}
 			
@@ -540,20 +608,13 @@ router.get('/search', function (req, res) {
 			while (peopleByTitle.hasNext()) {
 				var newProject = new Object();
 				var current = peopleByTitle.next();
-				if (current_id in results) {
+				if (current._id in people_results) {
 					// The object is found before
-					results[current._id].priority += 2;
+					updatePersonPriority(current, MATCH_TAGS);
 				}
 				else {
 					// The object is found in current iteration
-					results[current._id] = new Object();
-					results[current._id].type = "project";
-					results[current._id].title = current.name;
-					results[current._id].short_intro = current.basicInfo;
-					results[current._id].latest_update = current.updatedAt;
-					results[current._id].status =  current.status;
-					results[current._id].tags = current.tags;
-					results[current._id].priority = 2;
+					addNewPerson(current, MATCH_TAGS);
 				}
 			}
 			
@@ -561,45 +622,122 @@ router.get('/search', function (req, res) {
 			while (peopleByBio.hasNext()) {
 				var newProject = new Object();
 				var current = peopleByBio.next();
-				if (current_id in results) {
+				if (current._id in people_results) {
 					// The object is found before
-					results[current._id].priority += 1;
+					updatePersonPriority(current, MATCH_REST);
 				}
 				else {
 					// The object is found in current iteration
-					results[current._id] = new Object();
-					results[current._id].type = "project";
-					results[current._id].title = current.name;
-					results[current._id].short_intro = current.basicInfo;
-					results[current._id].latest_update = current.updatedAt;
-					results[current._id].status =  current.status;
-					results[current._id].tags = current.tags;
-					results[current._id].priority = 1;
+					addNewPerson(current, MATCH_REST);
 				}
 			}
 		}
 		
-		var resultArray = [];
-		for (var id in results) {
-			if (results.hasOwnProperty(id)) {
-				resultArray.push(results[id]);
+		// Get contracts
+		if (category === "all" || category === "contracts") {
+			var contractsByName = db.Contract.find({"name": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
+			var contractsByTags = db.Contract.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"});
+			var contractsByIntro = db.Contract.find({"info": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
+			var contractsByDetail = db.Contract.find({"details": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
+			
+			// match contracts by name
+			while (contractsByName.hasNext()) {
+				var newContract = new Object();
+				var current = contractsByName.next();
+				if (current._id in contracts_results) {
+					// The object is found before
+					updateContractPriority(current, MATCH_NAME);
+				}
+				else {
+					// The object is found in current iteration
+					addNewContract(current, MATCH_NAME);
+				}
+			}
+			
+			// match contracts by tags
+			while (contractsByTags.hasNext()) {
+				var newContract = new Object();
+				var current = contractsByTags.next();
+				if (current._id in contracts_results) {
+					// The object is found before
+					updateContractPriority(current, MATCH_TAGS);
+				}
+				else {
+					// The object is found in current iteration
+					addNewContract(current, MATCH_TAGS);
+				}
+			}
+			
+			// match contracts by intro
+			while (contractsByIntro.hasNext()) {
+				var newContract = new Object();
+				var current = contractsByIntro.next();
+				if (current._id in contracts_results) {
+					// The object is found before
+					updateContractPriority(current, MATCH_REST);
+				}
+				else {
+					// The object is found in current iteration
+					addNewContract(current, MATCH_REST);
+				}
+			}
+			
+			// match contracts by detail
+			while (contractsByDetail.hasNext()) {
+				var newContract = new Object();
+				var current = contractsByDetail.next();
+				if (current._id in contracts_results) {
+					// The object is found before
+					updateContractPriority(current, MATCH_REST);
+				}
+				else {
+					// The object is found in current iteration
+					addNewContract(current, MATCH_REST);
+				}
 			}
 		}
 		
-		// sort by priority
-		resultArray.sort(
-			function(a, b) {
-				if (a.priority > b.priority) {
-					return -1;
-				}
-				if (a.priority < b.priority) {
-					return 1;
-				}
-				return 0;
-			}
-		);
 		
-		res.send(JSON.stringify(resultArray.slice((page-1)*perpage,page*perpage)));
+		var projectsArray = [];
+		for (var id in projects_results) {
+			if (projects_results.hasOwnProperty(id)) {
+				projectsArray.push(projects_results[id]);
+			}
+		}
+		
+		var peopleArray = [];
+		for (var id in people_results) {
+			if (people_results.hasOwnProperty(id)) {
+				peopleArray.push(people_results[id]);
+			}
+		}
+		
+		var contractsArray = [];
+		for (var id in contracts_results) {
+			if (contracts_results.hasOwnProperty(id)) {
+				contractsArray.push(contracts_results[id]);
+			}
+		}
+		
+		// sort each array by priority
+		function prioritySort(a, b) {
+			if (a.priority > b.priority) {
+				return -1;
+			}
+			if (a.priority < b.priority) {
+				return 1;
+			}
+			return 0;
+		}
+		projectsArray.sort(prioritySort);
+		peopleArray.sort(prioritySort);
+		contractsArray.sort(prioritySort);
+		
+		var json = new Object();
+		json.projects = projectsArray.slice((page-1)*perpage, page*perpage);
+		json.people = peopleArray.slice((page-1)*perpage, page*perpage);
+		json.contracts = contractsArray.slice((page-1)*perpage, page*perpage);
+		res.send(JSON.stringify(json));
 	}	
 	
 });
