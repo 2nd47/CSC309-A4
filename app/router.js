@@ -6,6 +6,8 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../db/app-db');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -17,9 +19,20 @@ router.use(function timeLog(req, res, next) {
 // refer to express documentation for more details
 
 // if logged in: feed; else: landing page
-router.get('/', function (req, res, next) {
+router.get('/', ensureAuthenticated, function (req, res, next) {
   res.send('AIDA Home Page!');
 });
+
+// Ensure authenticated so the user cannot access the home page if not logged in
+
+function ensureAuthenticated(req, res, next) {
+  if(req.isAuthenticated()) {
+    return next();
+  } else {
+    req.flash('error_msg', 'You are not logged in');
+    res.redirect('/login');
+  }
+}
 
 router.post('/signup', function (req, res, next) {
   var username = req.body.username;
@@ -91,8 +104,44 @@ router.post('/signup', function (req, res, next) {
   }
 });
 
-router.post('/login', function (req, res, next) {
-  res.send('AIDA Home Page!');
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.getUserByUsername(username, function(err, user){
+      if(err) throw err;
+      if(!user){
+        return done(null, false, {message: 'Unknown User'});
+      }
+      User.comparePassword(password, user.passwordHash, function(err, isMatch){
+        if(err) throw err;
+        if(isMatch){
+          return done(null, user);
+        } else {
+          return done(null, false, {message: 'Invalid password'});
+        }
+      });
+    });
+}));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.getUserById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
+router.post('/login',
+            passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login', failureFlash: true}),
+            function (req, res, next) {
+              res.redirect('/');
+});
+
+router.get('/logout', function(req, res, next) {
+  req.logout();
+  req.flash('success_msg', 'You are logged out');
+  res.redirect('/login');
 });
 
 // list of contracts

@@ -38,6 +38,24 @@ module.exports.createUser = function(newUser, callback) {
   });
 }
 
+// Login User Methods
+module.exports.getUserByUsername = function(username, callback) {
+  User.findOne(query, callback);
+}
+
+module.exports.getUserById = function(id, callback) {
+  var query = {username: username};
+  User.findById(id, callback);
+}
+
+module.exports.comparePassword = function(candidatePassword, hash, callback){
+  bcrypt.compare(candidatePassword, hash, function(err, isMatch) {
+    if(err) throw err;
+    callback(null, isMatch);
+  });
+};
+
+
 var skillSchema = new Schema({
 name: { type: String },
 rating: { type: Number}

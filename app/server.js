@@ -73,6 +73,15 @@ app.use(function (req, res, next) {
   res.locals.success_msg = req.flash('success_msg');
   res.locals.error_msg = req.flash('error_msg');
   res.locals.error = req.flash('error');
+  /* If user is logged in, it can be accessed anywhere globally. O.w null.
+     Add these placeholders in frontend:
+     {{#if user}}
+      Show Logout and Landingpage maybe
+     {{else}}
+      Show Login and Signup and Feed maybe
+     {{/if}}
+  */
+  res.locals.user = req.user || null;
   next();
 });
 
