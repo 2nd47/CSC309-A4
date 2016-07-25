@@ -9,8 +9,15 @@ var ObjectId = Schema.Types.ObjectId;
 
 //SKILLS
 var skillSchema = new Schema({
-  name: { type: String },
-  rating: { type: Number}
+  name: {
+    type: String,
+    required: true},
+  rating: {
+    type: Number,
+    required: true,
+    min: [0, 'Skill must be at least 0'],
+    max: [5, 'Skill must be no greater than 5']
+  }
 });
 
 var Skill = mongoose.model('Skill', skillSchema);
@@ -20,25 +27,56 @@ var messageSchema = new Schema({
   // This should be the ID of the sending user
   // If it isn't the user this message list was retrieved
   // from then it was sent to them from someone else
-  sender: { type: ObjectId },
-  text: { type: String }
+  sender: {
+    type: ObjectId,
+    required: true
+  },
+  text: {
+    type: String,
+    required: true
+  }
 }, { timestamps: true });
 
 var Message = mongoose.model('Message', messageSchema);
 
 //USERS
 var userSchema = new Schema({
-  username: { type: String },
-  passwordHash: { type: String },
-  twoFactorMethod: { type: String },
-  name: { type: String },
-  title: { type: String },
+  username: {
+    type: String,
+    required: true
+  },
+  passwordHash: {
+    type: String,
+    required: true
+  },
+  twoFactorMethod: {
+    type: String
+  },
+  name: {
+    type: String
+  },
+  title: {
+    type: String
+  },
   skillTags: [skillSchema],
-  bio: { type: String },
-  email: { type: String },
-  isVerified: { type: Boolean, default: false },
-  timeVerified: { type: Date },
-  powerLevel: { type: Number, default: 0 },
+  bio: {
+    type: String
+  },
+  email: {
+    type: String ,
+    required: true
+  },
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  timeVerified: {
+    type: Date
+  },
+  powerLevel: {
+    type: Number,
+    default: 0
+  },
   // Refer to http://stackoverflow.com/questions/4677237
   // for further explanation of why this is the case
   followings: [ObjectId],
@@ -52,15 +90,24 @@ var User = mongoose.model('User', userSchema);
 
 //PROJECT MEMBERS
 var projectMemberSchema = new Schema({
-  user: { type: ObjectId }
+  user: {
+    type: ObjectId,
+    required: true
+  }
 }, { timestamps: true });
 
 var ProjectMember = mongoose.model('ProjectMember', projectMemberSchema);
 
 //PROJECT INFO
 var detailedProjectInfoSchema = new Schema({
-  title: { type: String },
-  content: { type: String }
+  title: {
+    type: String,
+    required: true
+  },
+  content: {
+    type: String,
+    required: true
+  }
 });
 
 var DetailedInfo = mongoose.model('DetailedInfo', detailedProjectInfoSchema);
@@ -78,43 +125,92 @@ var Showcase = mongoose.model('Showcase', showcaseSchema);
 
 //PROJECT
 var projectSchema = new Schema({
-  name: { type: String },
+  name: {
+    type: String,
+    required: true
+  },
   tags: [String],
-  ownerUsername: { type: String },
+  ownerUsername: {
+    type: String,
+    required: true
+  },
   members: [projectMemberSchema],
-  contracts: { type: ObjectId },
-  showcase: { type: showcaseSchema },
-  basicInfo: { type: String },
+  contracts: {
+    type: ObjectId
+  },
+  showcase: {
+    type: showcaseSchema
+  },
+  basicInfo: {
+    type: String
+  },
   detailedInfo: [detailedInfoSchema],
-  status: { type: String }
+  status: {
+    type: String
+  }
 }, { collection : 'projects',timestamps: true });
 
 var Project = mongoose.model('Project', projectSchema);
 
 var contractSchema = new Schema({
-  name: { type: String },
-  intro: { type: String },
-  status: { type: String},
+  name: {
+    type: String,
+    required: true
+  },
+  intro: {
+    type: String
+  },
+  status: {
+    type: String
+  },
   skillTags: [skillSchema],
   descriptionTags: [String],
   // ID of project member who created the contract
-  project: { ObjectId },
-  owner: { ObjectId },
-  project: { ObjectId },
+  project: {
+    ObjectId,
+    required: true
+  },
+  owner: {
+    ObjectId,
+    required: true
+  },
   takers: [ObjectId],
-  details: { type: String },
-  deadline: { type: Date },
-  budget: { type: Number }
+  details: {
+    type: String
+  },
+  deadline: {
+    type: Date,
+    required: true
+  },
+  budget: {
+    type: Number,
+    required: true
+  }
 }, { timestamps: true });
 
 var Contract = mongoose.model('Contract', contractSchema);
 
 var reportSchema = new Schema({
-  reporter: { type: ObjectId },
-  reportee: { type: ObjectId },
-  reason: { type: String },
-  webpage: { type: String },
-  status: { type: String }
+  reporter: {
+    type: ObjectId,
+    required: true
+  },
+  reportee: {
+    type: ObjectId,
+    required: true
+  },
+  reason: {
+    type: String,
+    required: true
+  },
+  webpage: {
+    type: String,
+    required: true
+  },
+  status: {
+    type: String,
+    required: true
+  }
 }, { collection: 'reports', timestamps: true });
 
 var Report = mongoose.model('Report', contractSchema);
