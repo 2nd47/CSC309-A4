@@ -35,6 +35,7 @@ var userSchema = new Schema({
   title: { type: String },
   skillTags: [skillSchema],
   bio: { type: String },
+	tags: [String],
   email: { type: String },
   isVerified: { type: Boolean, default: false },
   timeVerified: { type: Date },
@@ -85,7 +86,8 @@ var projectSchema = new Schema({
   contracts: { type: ObjectId },
   showcase: { type: showcaseSchema },
   basicInfo: { type: String },
-  detailedInfo: [detailedInfoSchema],
+  //detailedInfo: [detailedInfoSchema],
+	detailedInfo: { type: String },
   status: { type: String }
 }, { collection : 'projects',timestamps: true });
 
