@@ -30,6 +30,10 @@ router.post('/signup', function (req, res, next) {
 
 // list of contracts
 router.get('/contracts', function (req, res) {
+	/*
+	get id, name, status, skillTags, tags*/
+	var cursor = db.Contract.find({},{"name": 1, "status": 1, "skillTags": 1, "tags": 1}).sort({"updatedAt": -1});
+	res.send(JSON.stringify(cursor.toArray()));
 });
 
 // create a new contract
@@ -81,6 +85,10 @@ router.get('/contracts/:contract_id', function (req, res) {
 
 // list of profiles
 router.get('/people', function (req, res) {
+	/*
+	get id, name, title, skillTags, tags*/
+	var cursor = db.People.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}).sort({"updatedAt": -1});
+	res.send(JSON.stringify(cursor.toArray()));
 });
 
 // details of people with user_id
@@ -157,7 +165,10 @@ router.get('/people/:user_id', function (req, res) {
 
 // list of projects
 router.get('/projects', function (req, res, next) {
-  res.send('AIDA Home Page!');
+	// get name, owner user name, title, tags, showcase
+	var cursor = db.Projects.find({},{"name": 1, "ownerUsername": 1, "title": 1, "tags": 1, "showcase": 1}).sort({"updatedAt": -1});
+	res.send(JSON.stringify(cursor.toArray()));
+  //res.send('AIDA Home Page!');
 });
 
 // create a new project
