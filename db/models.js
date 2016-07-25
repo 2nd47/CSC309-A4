@@ -62,6 +62,7 @@ var userSchema = new Schema({
   bio: {
     type: String
   },
+  tags: [String],
   email: {
     type: String ,
     required: true
@@ -144,7 +145,9 @@ var projectSchema = new Schema({
   basicInfo: {
     type: String
   },
-  detailedInfo: [detailedInfoSchema],
+  detailedInfo: {
+    type: String
+  },
   status: {
     type: String
   }
