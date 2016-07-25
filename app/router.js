@@ -421,6 +421,7 @@ router.get('/search', function (req, res) {
 	// helper function to add new project
 	function addNewProject(project, basePriority) {
 		projects_results[project._id] = new Object();
+		projects_results[project._id].id = current._id;
 		projects_results[project._id].type = "project";
 		projects_results[project._id].title = current.name;
 		projects_results[project._id].short_intro = current.basicInfo;
@@ -439,6 +440,7 @@ router.get('/search', function (req, res) {
 	// helper function to add new person
 	function addNewPerson(person, basePriority) {
 		people_results[person._id] = new Object();
+		people_results[person._id].id = current._id;
 		people_results[person._id].type = "person";
 		people_results[person._id].name = person.name;
 		people_results[person._id].title = person.title;
@@ -464,6 +466,7 @@ router.get('/search', function (req, res) {
 	
 	function addNewContract(contract, basePriority) {
 		contracts_results[contract._id] = new Object();
+		contracts_results[contract._id].id = current._id;
 		contracts_results[contract._id].type = "contract";
 		contracts_results[contract._id].name = contract.name;
 		contracts_results[contract._id].intro = contract.intro;
