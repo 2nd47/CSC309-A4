@@ -138,7 +138,7 @@ router.get('/people/:user_id', function (req, res) {
 		json.projects.push(newProject);
 	}
 	// Where the user is a member
-	var member_projects = db.Project.find({members: {$elemMatch: {"user": user_id}}});
+	var member_projects = db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}});
 	while (member_projects.hasNext()) {
 		var newProject = new Object();
 		var current = member_projects.next();
@@ -286,6 +286,7 @@ router.get('/search', function (req, res) {
 	  - all (default)
 		- projects
 		- people
+		- contracts: open contracts only
 	- keywords
 		- the key word(s) for the search (e.g. hello,world,python)
 	
@@ -326,7 +327,35 @@ router.get('/search', function (req, res) {
 	// results                                        //
 	//                                                //
 	////////////////////////////////////////////////////
-	
+	var userId = req.session.userId;
+	var userTags = [];
+	var userSkills = [];
+	var userProjectTags = [];
+	var userContractSkills = [];
+	if (userName) {
+		var user = db.User.findOne({"_id": ObjectId(userId)});
+		var userProjects = db.Project.find({"ownerUsername": user.username});
+		var userContracts = db.Contract.find({"owner": ObjectId(userId)});
+		// User's tags on themselves
+		userTags = user.tags;
+		// User's skills
+		var i;
+		var numSkills = user.skillTags.length;
+		for (i=0;i<numSkills;i++) {
+			userSkills.push(user.skillTags[i].name);
+		}
+		// User's tags on ongoing projects
+		while (userProjects.hasNext()) {
+			var current = userProjects.next();
+			var tags = current.tags;
+			var j;
+			for (j=0;j<tags.length;j++) {
+				userProjectTags.push(tags[j]);
+			}
+		}
+		// User's contracts' required skills
+		while ()
+	}
 	
 	var results = new Object; //Store object_id: {...,priority_level:number}
 	var queries = url.parse(req.url, true).query;
