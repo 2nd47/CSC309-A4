@@ -133,14 +133,12 @@ var projectSchema = new Schema({
     required: true
   },
   tags: [String],
-  ownerUsername: {
-    type: String,
+  owner: {
+    type: ObjectId,
     required: true
   },
   members: [projectMemberSchema],
-  contracts: {
-    type: ObjectId
-  },
+  contracts: [ObjectId],
   showcase: {
     type: showcaseSchema
   },
