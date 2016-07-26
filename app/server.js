@@ -12,7 +12,7 @@ var sqlite3 = require('sqlite3').verbose();
 var validator = require('validator'); //added express-validator below, not sure if this one should be deleted
 //login
 var path = require('path');
-var cookieParser = require('coockie-parser');
+//var cookieParser = require('coockie-parser');
 var bodyParser = require('body-parser');
 var exphbs = require('express-handlebars');
 var expressValidator = require('express-validator');
