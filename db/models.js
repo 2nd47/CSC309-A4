@@ -6,7 +6,6 @@ var model = mongoose.model;
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
-
 //SKILLS
 var skillSchema = new Schema({
   name: {
@@ -77,6 +76,9 @@ var userSchema = new Schema({
   powerLevel: {
     type: Number,
     default: 0
+  },
+  url: {
+    type: String
   },
   // Refer to http://stackoverflow.com/questions/4677237
   // for further explanation of why this is the case
@@ -150,6 +152,9 @@ var projectSchema = new Schema({
   },
   status: {
     type: String
+  },
+  url: {
+    type: String
   }
 }, { collection : 'projects',timestamps: true });
 
@@ -188,6 +193,9 @@ var contractSchema = new Schema({
   budget: {
     type: Number,
     required: true
+  },
+  url: {
+    type: String
   }
 }, { timestamps: true });
 
