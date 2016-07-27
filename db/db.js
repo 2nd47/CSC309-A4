@@ -79,6 +79,13 @@ module.exports.getUserByUsername = function(username) {
   });
 }
 
+// Set a user document field, searching user by ID
+module.exports.setUserField = function(id, field, value) {
+  var fieldSet = [];
+  fieldSet[field] = value;
+  return models.User.findByIdAndUpdate(id, {$set: fieldSet});
+}
+
 // Get individual project by searching for ID
 module.exports.getProject = function(id) {
   return models.Project.findById(id);
@@ -88,7 +95,7 @@ module.exports.getProject = function(id) {
 module.exports.getProjectByName = function(name) {
   return models.Project.findOne({
     'name' : name
-  })
+  });
 }
 
 // Get the owner of a project given some project id
@@ -114,6 +121,13 @@ module.exports.getProjectsByTag = function(tagString) {
   return models.Project.find({tags: tagString});
 }
 
+// Set a user document field, searching user by ID
+module.exports.setProjectField = function(id, field, value) {
+  var fieldSet = [];
+  fieldSet[field] = value;
+  return models.Project.findByIdAndUpdate(id, {$set: fieldSet});
+}
+
 // Get individual contract by searching for ID
 module.exports.getContract = function(id) {
   return models.Contract.findById(id);
@@ -130,6 +144,13 @@ module.exports.getContractsByPrice = function(lowlimit, highlimit) {
 // Get contracts by skill tag
 module.exports.getContractsByTag = function(skill) {
   return models.Contract.find({skillTags: skill});
+}
+
+// Set a user document field, searching user by ID
+module.exports.setContractField = function(id, field, value) {
+  var fieldSet = [];
+  fieldSet[field] = value;
+  return models.Contract.findByIdAndUpdate(id, {$set: fieldSet});
 }
 
 module.exports.models = models;
