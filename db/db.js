@@ -70,6 +70,11 @@ module.exports.getUser = function(id) {
   return models.User.findById(id);
 }
 
+// Get a field of a user document, searching user by ID
+module.exports.getUserField = function(id, field) {
+  return models.User.findById(id, field, function(err, user) {});
+}
+
 // Get individual user by searching for username
 module.exports.getUserByUsername = function(username) {
   return models.User.findOne({
@@ -79,14 +84,19 @@ module.exports.getUserByUsername = function(username) {
 
 // Set a user document field, searching user by ID
 module.exports.setUserField = function(id, field, value) {
-  var fieldSet = [];
-  fieldSet[field] = value;
-  return models.User.findByIdAndUpdate(id, {$set: fieldSet});
+  var query = [];
+  query[field] = value;
+  return models.User.findByIdAndUpdate(id, {$set: fieldSet}, function(err, user) {});
 }
 
 // Get individual project by searching for ID
 module.exports.getProject = function(id) {
   return models.Project.findById(id);
+}
+
+// Get a field of a project document, searching user by ID
+module.exports.getProjectField = function(id, field) {
+  return models.Project.findById(id, field, function(err, project) {});
 }
 
 // Get individual project by searching for name
@@ -129,6 +139,11 @@ module.exports.setProjectField = function(id, field, value) {
 // Get individual contract by searching for ID
 module.exports.getContract = function(id) {
   return models.Contract.findById(id);
+}
+
+// Get a field of a contract document, searching user by ID
+module.exports.getContractField = function(id, field) {
+  return models.Contract.findById(id, field, function(err, contract) {});
 }
 
 // Get contracts by price range
