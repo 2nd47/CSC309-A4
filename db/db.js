@@ -94,21 +94,25 @@ var getProjectByName = function(name) {
 // Get the owner of a project given some project id
 module.exports.getProjectOwnerByProject = function(id) {
   return models.Project.findById(id).
-    select('ownerUsername').
+    select('owner').
     exec();
 }
 
 // Get all projects associated with a user
 module.exports.getProjectsByUsername = function(user) {
   var userId = user._id;
-  var query = models.Project.find({
-    $or: [
+  var query = { $or: [
       {'owner': userId},
       {'members.user': userId}
     ]
   });
+  return Project.find(query).exec();
 }
 
+// Get projects by tag
+module.exports.getProjectsByTag = function(tagString) {
+  return models.Project.find({tags: tagString});
+}
 
 // Get individual contract by searching for ID
 module.exports.getContract = function(id) {
@@ -123,6 +127,10 @@ module.exports.getContractsByPrice = function(lowlimit, highlimit) {
     exec();
 }
 
+// Get contracts by skill tag
+module.exports.getContractsByTag = function(skill) {
+  return models.Contract.find({skillTags: skill});
+}
 
 module.exports.models = models;
 module.exports.connect = connect;
