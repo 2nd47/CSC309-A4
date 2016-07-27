@@ -40,11 +40,10 @@ var generateURL = function() {
 
 // Create a new user given the required fields
 module.exports.createUser = function(username, passwordHash, email) {
-  var user = new User({
-    'username': username,
-    'passwordHash': passwordHash,
-    'email': email
-  });
+  var user = new User();
+  user.username = username;
+  user.passwordHash = passwordHash;
+  user.email = email;
   user.save();
 }
 
