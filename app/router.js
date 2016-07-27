@@ -91,8 +91,8 @@ router.get('/people', function (req, res) {
 	res.send(JSON.stringify(cursor.toArray()));
 });
 
-// details of people with user_id
-router.get('/people/:user_id', function (req, res) {
+// details of people with username
+router.get('/people/:username', function (req, res) {
 	/*
 	{
 		id: person id,
@@ -120,9 +120,9 @@ router.get('/people/:user_id', function (req, res) {
 		]
 	}*/
 	var json = new Object();
-	var user_id = req.params.user_id;
-	var user = db.User.findOne({"_id" : ObjectId(user_id)});
-	json.id = user_id;
+	var user_name = req.params.username;
+	var user = db.User.findOne({"username" : ObjectId(user_name)});
+	json.id = user._id;
 	json.name = user.name;
 	json.title = user.title;
 	json.skills = user.skillTags;
@@ -130,7 +130,7 @@ router.get('/people/:user_id', function (req, res) {
 	json.biography = user.bio;
 	json.projects = [];
 	// Where the user is the owner
-	var projects = db.Project.find({"ownerUsername": user.username},{name: 1});
+	var projects = db.Project.find({"owner": user._id},{name: 1});
 	while (projects.hasNext()) {
 		var newProject = new Object();
 		var current = projects.next();
@@ -165,8 +165,8 @@ router.get('/people/:user_id', function (req, res) {
 
 // list of projects
 router.get('/projects', function (req, res, next) {
-	// get name, owner user name, title, tags, showcase
-	var cursor = db.Projects.find({},{"name": 1, "ownerUsername": 1, "title": 1, "tags": 1, "showcase": 1}).sort({"updatedAt": -1});
+	// get name, title, tags, showcase
+	var cursor = db.Projects.find({},{"name": 1, "title": 1, "tags": 1, "showcase": 1}).sort({"updatedAt": -1});
 	res.send(JSON.stringify(cursor.toArray()));
   //res.send('AIDA Home Page!');
 });
@@ -224,8 +224,8 @@ router.get('/projects/:project_id', function (req, res, next) {
 	json.id = project_id;
 	json.title = project.name;
 	json.publisher = new Object();
-	json.publisher.publisher_id = project.ownerUsername;
-	var publisher_info = db.User.findOne({"username": project.ownerUsername}, {name: 1});
+	json.publisher.publisher_id = project.owner;
+	var publisher_info = db.User.findOne({"_id": ObjectId(project.owner)}, {name: 1});
 	json.publisher.publisher_name = publisher_info.name;
 	json.members = [];
 	var i;
@@ -276,6 +276,82 @@ router.get('/projects/:project_id', function (req, res, next) {
 
 // message inbox
 router.get('/inbox', function (req, res) {
+	/*
+		send the user's unread messages sorted by creation date
+		{
+			success: true if no error occurred
+			contacts:
+			{
+				contact_id:
+				{
+					contact_name: sender's name
+					last_message: most recent message
+					num_unread: number of unread messages from the person
+				}
+			}
+		}
+		
+	*/
+	////////////////////////////////////////////////////////
+	// TODO:                                              //
+	// If the user is not logged in (or login expired),   //
+	// prompt them to log in. Could be done at front end  //
+	////////////////////////////////////////////////////////
+	var userId = req.session.userId;
+	var json = new Object();
+	json.contacts = new Object();
+	if (userId) {
+		// The user is logged in
+		db.User.findById(userId, function(err, found){
+			if (!err) {
+				// Add all existing contacts to the contact list
+				// Sort  messages in descending order by date, then
+				// update last_message at first encounter of unread, and
+				// update num_unread at each encounter of unread.
+				var i;
+				var contacts = found.contacts;
+				var numContacts = contacts.length;
+				for (i=0;i<numContacts;i++) {
+					var other;
+					if (userId === contacts.personOne) {
+						other = db.User.findOne({_id: ObjectId(contacts.personTwo)});
+						json.contacts[other._id] = new Object();
+						json.contacts[other._id].contact_name = other.name;
+						var messages = contact.messages;
+						messages = messages.sort(function(a,b){
+							if (a.createdAt > b.createdAt) {
+								return -1;
+							}
+							if (a.createdAt < b.createdAt) {
+								return 1;
+							}
+							return 0;
+						});
+						// There needs to be at least one message to start a contact so the array is
+						// non-empty
+						json.contacts[other._id].last_message = messages[0];
+						// count number of messages sent after the first read message
+						var numUnread = 0;
+						// while the current message is unread and it is a received message, keep counting
+						while (messages[numUnread].unread && messages[numUnread].sender === other._id) {
+							numUnread += 1;
+						}
+						json.contacts[other._id].num_unread = numUnread;
+					}
+				}
+				json.success = "true";
+			}
+			else {
+				json.success = "false";
+			}
+		});
+	}
+	else {
+		// The user is not logged in
+		json.success = "false";
+	}
+	res.send(JSON.stringify(json));
+	
 });
 
 // search page
@@ -342,7 +418,7 @@ router.get('/search', function (req, res) {
 	var userContractSkills = [];
 	if (userName) {
 		var user = db.User.findOne({"_id": ObjectId(userId)});
-		var userProjects = db.Project.find({"ownerUsername": user.username, "status": "ongoing"});
+		var userProjects = db.Project.find({"owner": user._id, "status": "ongoing"});
 		var userContracts = db.Contract.find({"owner": ObjectId(userId), "status": "open"});
 		// User's tags on themselves
 		userTags = user.tags;
