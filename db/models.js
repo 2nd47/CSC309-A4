@@ -56,7 +56,8 @@ var contactSchema = new Schema({
     ref: 'User'
 	},
 	messages: [{
-    type: messageSchema
+    type: messageSchema,
+    ref: 'Message'
   }]
 },{ collection : 'contacts', timestamps: true });
 
