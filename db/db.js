@@ -66,6 +66,30 @@ module.exports.createContract = function(name, project, owner, deadline, budget)
   contract.save();
 }
 
+// Create a new message
+module.exports.createMessage = function(sender, text) {
+  var message = new Message();
+  message.sender = sender;
+  message.text = text;
+  message.save();
+}
+
+// Create a new contact
+module.exports.createContact = function(contacter, contactee) {
+  var contact = new Contact();
+  contact.contacter = contacter;
+  contact.contactee = contactee;
+  contact.save();
+}
+
+// Create a new skill
+module.exports.createSkill = function(name, rating) {
+  var skill = new Skill();
+  skill.name = name;
+  skill.rating = rating;
+  skill.save();
+}
+
 // Get individual user by searching for ID
 module.exports.getUser = function(id) {
   return models.User.findById(id);
@@ -81,13 +105,6 @@ module.exports.getUserByField = function(field, value) {
   var query = [];
   query[field] = value;
   return models.User.find(query, function(err, user) {});
-}
-
-// Set a user document field, searching user by ID
-module.exports.setUserField = function(id, field, value) {
-  var query = [];
-  query[field] = value;
-  return models.User.findByIdAndUpdate(id, {$set: query}, function(err, user) {});
 }
 
 // Get individual project by searching for ID
@@ -107,13 +124,6 @@ module.exports.getProjectByField = function(field, value) {
   return models.Project.find(query, function(err, project) {});
 }
 
-// Get the owner of a project given some project id
-module.exports.getProjectOwnerByProject = function(id) {
-  return models.Project.findById(id).
-    select('owner').
-    exec();
-}
-
 // Get all projects associated with a user
 module.exports.getProjectsByUsername = function(user) {
   var userId = user._id;
@@ -128,13 +138,6 @@ module.exports.getProjectsByUsername = function(user) {
 // Get projects by tag
 module.exports.getProjectsByTag = function(tagString) {
   return models.Project.find({tags: tagString});
-}
-
-// Set a user document field, searching user by ID
-module.exports.setProjectField = function(id, field, value) {
-  var query = [];
-  query[field] = value;
-  return models.Project.findByIdAndUpdate(id, {$set: query});
 }
 
 // Get individual contract by searching for ID
@@ -165,6 +168,20 @@ module.exports.getContractsByPrice = function(lowlimit, highlimit) {
 // Get contracts by skill tag
 module.exports.getContractsByTag = function(skill) {
   return models.Contract.find({skillTags: skill});
+}
+
+// Set a user document field, searching user by ID
+module.exports.setUserField = function(id, field, value) {
+  var query = [];
+  query[field] = value;
+  return models.User.findByIdAndUpdate(id, {$set: query}, function(err, user) {});
+}
+
+// Set a user document field, searching user by ID
+module.exports.setProjectField = function(id, field, value) {
+  var query = [];
+  query[field] = value;
+  return models.Project.findByIdAndUpdate(id, {$set: query});
 }
 
 // Set a user document field, searching user by ID
