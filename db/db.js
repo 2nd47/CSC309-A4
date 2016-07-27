@@ -90,6 +90,16 @@ module.exports.createSkill = function(name, rating) {
   skill.save();
 }
 
+// Adds a user by ID to a project by ID
+module.exports.addProjectMember = function(project, userToAdd) {
+  return;
+}
+
+// Adds a showcase item to a project showcase
+module.exports.addShowcaseItem = function(project, itemPath) {
+  return;
+}
+
 // Get individual user by searching for ID
 module.exports.getUser = function(id) {
   return models.User.findById(id);
