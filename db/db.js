@@ -105,7 +105,7 @@ module.exports.getProjectsByUsername = function(user) {
       {'owner': userId},
       {'members.user': userId}
     ]
-  });
+  };
   return Project.find(query).exec();
 }
 

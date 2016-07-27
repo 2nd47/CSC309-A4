@@ -154,7 +154,7 @@ var projectSchema = new Schema({
   url: {
     type: String
   }
-}, { collection : 'projects',timestamps: true });
+}, { collection : 'projects', timestamps: true });
 
 var Project = mongoose.model('Project', projectSchema);
 
@@ -173,11 +173,11 @@ var contractSchema = new Schema({
   descriptionTags: [String],
   // ID of project member who created the contract
   project: {
-    ObjectId,
+    type: ObjectId,
     required: true
   },
   owner: {
-    ObjectId,
+    type: ObjectId,
     required: true
   },
   takers: [ObjectId],
