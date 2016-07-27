@@ -2,14 +2,16 @@ var mongoose = require('mongoose');
 
 var models = require("./models.js");
 
+/*
 var dbUser = 'aida-master';
 var dbPassword = 'dbpassword';
 var url = 'mongodb://' +
   dbUser + ':' +
   dbPassword +
   '@ds029735.mlab.com:29735/heroku_qdmfvghp'
+*/
 
-//var url = 'mongodb://localhost/appdb';
+var url = 'mongodb://localhost/appdb';
 
 var connect = function(callback) {
   mongoose.connect(url);
@@ -75,11 +77,11 @@ module.exports.getUserField = function(id, field) {
   return models.User.findById(id, field, function(err, user) {});
 }
 
-// Get individual user by searching for username
-module.exports.getUserByUsername = function(username) {
-  return models.User.findOne({
-    'username' : username
-  });
+// Get individual user by searching for a field value
+module.exports.getUserByField = function(field, value) {
+  var query = [];
+  query[field] = value;
+  return models.User.find(query, function(err, user) {});
 }
 
 // Set a user document field, searching user by ID
@@ -97,6 +99,13 @@ module.exports.getProject = function(id) {
 // Get a field of a project document, searching user by ID
 module.exports.getProjectField = function(id, field) {
   return models.Project.findById(id, field, function(err, project) {});
+}
+
+// Get individual project by searching for a field value
+module.exports.getProjectByField = function(field, value) {
+  var query = [];
+  query[field] = value;
+  return models.Project.find(query, function(err, project) {});
 }
 
 // Get individual project by searching for name
@@ -139,6 +148,13 @@ module.exports.setProjectField = function(id, field, value) {
 // Get individual contract by searching for ID
 module.exports.getContract = function(id) {
   return models.Contract.findById(id);
+}
+
+// Get individual contract by searching for a field value
+module.exports.getContractByField = function(field, value) {
+  var query = [];
+  query[field] = value;
+  return models.Contract.find(query, function(err, contract) {});
 }
 
 // Get a field of a contract document, searching user by ID
