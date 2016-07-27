@@ -90,6 +90,16 @@ module.exports.createSkill = function(name, rating) {
   skill.save();
 }
 
+// Adds a skill by ID to a user by ID
+module.exports.addUserSkill = function(user, skillToAdd) {
+  return;
+}
+
+// Adds a skill by ID to a contract by ID
+module.exports.addContractSkill = function(contract, skillToAdd) {
+  return;
+}
+
 // Adds a user by ID to a project by ID
 module.exports.addProjectMember = function(project, userToAdd) {
   return;
