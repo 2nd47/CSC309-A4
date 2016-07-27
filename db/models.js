@@ -28,7 +28,8 @@ var messageSchema = new Schema({
   // from then it was sent to them from someone else
   sender: {
     type: ObjectId,
-    required: true
+    required: true,
+    ref: 'User'
   },
   text: {
     type: String,
@@ -46,11 +47,13 @@ var Message = mongoose.model('Message', messageSchema);
 var contactSchema = new Schema({
 	contacter: {
 		type: ObjectId,
-		required: true
+    required: true,
+    ref: 'User'
 	},
 	contactee: {
 		type: ObjectId,
-		required: true
+		required: true,
+    ref: 'User'
 	},
 	messages: [{
     type: messageSchema
@@ -112,13 +115,16 @@ var userSchema = new Schema({
   }],
   //messages: [messageSchema],
   contacts: [{
-    type: ObjectId
+    type: ObjectId,
+    ref: 'User'
   }],
   blocked: [{
-    type: ObjectId
+    type: ObjectId,
+    ref: 'User'
   }],
   contracts: [{
-    type: ObjectId
+    type: ObjectId,
+    ref: 'Contract'
   }]
 }, { collection : 'users', timestamps: true });
 
@@ -128,7 +134,8 @@ var User = mongoose.model('User', userSchema);
 var projectMemberSchema = new Schema({
   user: {
     type: ObjectId,
-    required: true
+    required: true,
+    ref: 'User'
   }
 }, { timestamps: true });
 
@@ -150,7 +157,10 @@ var DetailedInfo = mongoose.model('DetailedInfo', detailedProjectInfoSchema);
 
 //SHOWCASE
 var showcaseSchema = new Schema({
-  project: { type: ObjectId },
+  project: {
+    type: ObjectId,
+    ref: 'Project'
+  },
   // Display order inferred from indices
   assetPaths: [{
     type: String
@@ -174,13 +184,15 @@ var projectSchema = new Schema({
   }],
   owner: {
     type: ObjectId,
-    required: true
+    required: true,
+    ref: 'User'
   },
   members: [{
     type: projectMemberSchema
   }],
   contracts: [{
-    type: ObjectId
+    type: ObjectId,
+    ref: 'Contract'
   }],
   showcase: {
     type: showcaseSchema
@@ -221,14 +233,17 @@ var contractSchema = new Schema({
   // ID of project member who created the contract
   project: {
     type: ObjectId,
-    required: true
+    required: true,
+    ref: 'Project'
   },
   owner: {
     type: ObjectId,
-    required: true
+    required: true,
+    ref: 'User'
   },
   takers: [{
-    type: ObjectId
+    type: ObjectId,
+    ref: 'User'
   }],
   details: {
     type: String
@@ -251,11 +266,13 @@ var Contract = mongoose.model('Contract', contractSchema);
 var reportSchema = new Schema({
   reporter: {
     type: ObjectId,
-    required: true
+    required: true,
+    ref: 'User'
   },
   reportee: {
     type: ObjectId,
-    required: true
+    required: true,
+    ref: 'User'
   },
   reason: {
     type: String,
