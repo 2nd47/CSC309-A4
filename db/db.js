@@ -85,7 +85,7 @@ module.exports.getProject = function(id) {
 }
 
 // Get individual project by searching for name
-var getProjectByName = function(name) {
+module.exports.getProjectByName = function(name) {
   return models.Project.findOne({
     'name' : name
   })
