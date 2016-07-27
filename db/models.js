@@ -55,6 +55,7 @@ var contactSchema = new Schema({
 	messages: [messageSchema]
 },{ collection : 'contacts', timestamps: true });
 
+var Contact = mongoose.model('Contact', contactSchema);
 
 //USERS
 var userSchema = new Schema({

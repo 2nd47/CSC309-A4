@@ -313,30 +313,20 @@ router.get('/inbox', function (req, res) {
 				var numContacts = contacts.length;
 				for (i=0;i<numContacts;i++) {
 					var other;
-					if (userId === contacts.personOne) {
-						other = db.User.findOne({_id: ObjectId(contacts.personTwo)});
-						json.contacts[other._id] = new Object();
-						json.contacts[other._id].contact_name = other.name;
-						var messages = contact.messages;
-						messages = messages.sort(function(a,b){
-							if (a.createdAt > b.createdAt) {
-								return -1;
-							}
-							if (a.createdAt < b.createdAt) {
-								return 1;
-							}
-							return 0;
-						});
-						// There needs to be at least one message to start a contact so the array is
-						// non-empty
-						json.contacts[other._id].last_message = messages[0];
+					var contact = contacts[i];
+					if (userId === contact.personOne) {
+						other = db.User.findOne({_id: ObjectId(contact.personTwo)});
+						json.contacts[contact._id] = new Object();
+						json.contacts[contact._id].contact_name = other.name;
+						// messages should be in ascending order by time
+						json.contacts[contact._id].last_message = messages[-1];
 						// count number of messages sent after the first read message
 						var numUnread = 0;
 						// while the current message is unread and it is a received message, keep counting
 						while (messages[numUnread].unread && messages[numUnread].sender === other._id) {
 							numUnread += 1;
 						}
-						json.contacts[other._id].num_unread = numUnread;
+						json.contacts[contact._id].num_unread = numUnread;
 					}
 				}
 				json.success = "true";
@@ -353,6 +343,72 @@ router.get('/inbox', function (req, res) {
 	res.send(JSON.stringify(json));
 	
 });
+
+// contact message detail
+router.get('/inbox/:contact_id', function (req, res) {
+	/*
+	Retrieve the contact by the id.
+	{
+		success: "true" if retrieved ok,
+		result:
+		{
+			personOne: person one,
+			personTwo: person two,
+			messages: latest ten messages
+		}
+	}
+	*/
+	
+	// Check if the person is logged in as personOne or personTwo
+	var userId = req.session.userId;
+	var contact_id = req.params.contact_id;
+	var contact = db.Contact.findOne({"_id": ObjectId(contact_id)});
+	var json = new Object();
+	if (userId === contact.personOne || userId === contact.personTwo) {
+		json.success = "true";
+		json.result = new Object();
+		json.result.personOne = contact.personOne;
+		json.result.personTwo = contact.personTwo;
+		json.messages = contact.messages.slice(-20); // Get the last 20 messages
+	}
+	else {
+		json.success = "false";
+		json.result = null;
+	}
+	res.send(JSON.stringify(json));
+}
+
+// load all messages from a contact history
+router.get('/inbox/:contact_id/all', function (req, res) {
+	/*
+	Retrieve the contact by the id.
+	{
+		success: "true" if retrieved ok,
+		result:
+		{
+			personOne: person one,
+			personTwo: person two,
+			messages: all messages
+		}
+	}
+	*/
+	
+	// Check if the person is logged in as personOne or personTwo
+	var userId = req.session.userId;
+	var contact_id = req.params.contact_id;
+	var contact = db.Contact.findOne({"_id": ObjectId(contact_id)});
+	var json = new Object();
+	if (userId === contact.personOne || userId === contact.personTwo) {
+		json.success = "true";
+		json.result = new Object();
+		json.messages = contact.messages;
+	}
+	else {
+		json.success = "false";
+		json.result = null;
+	}
+	res.send(JSON.stringify(json));
+}
 
 // search page
 router.get('/search', function (req, res) {
