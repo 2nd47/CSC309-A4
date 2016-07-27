@@ -107,13 +107,6 @@ module.exports.getProjectByField = function(field, value) {
   return models.Project.find(query, function(err, project) {});
 }
 
-// Get individual project by searching for name
-module.exports.getProjectByName = function(name) {
-  var query = [];
-  query['name'] = name;
-  return models.Project.findOne(query, function(err, project) {});
-}
-
 // Get the owner of a project given some project id
 module.exports.getProjectOwnerByProject = function(id) {
   return models.Project.findById(id).
