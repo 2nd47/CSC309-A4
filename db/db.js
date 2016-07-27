@@ -39,7 +39,7 @@ var generateURL = function() {
 */
 
 // Create a new user given the required fields
-var createUser = function(username, passwordHash, email) {
+module.exports.createUser = function(username, passwordHash, email) {
   var user = new User({
     'username': username,
     'passwordHash': passwordHash,
@@ -49,40 +49,38 @@ var createUser = function(username, passwordHash, email) {
 }
 
 // Create a new project given the required fields
-var createProject = function(name, ownerUsername) {
-  var project = new Project({
-    'name': name,
-    'ownerUsername': ownerUsername
-  });
+module.exports.createProject = function(name, ownerUsername) {
+  var project = new Project();
+  project.name = name;
+  project.ownerUsername = ownerUsername;
   project.save();
 }
 
 // Create a new contract given the required fields
-var createContract = function(name, project, owner, deadline, budget) {
-  var contract = new Contract({
-    'name': name,
-    'project': project,
-    'owner': owner,
-    'deadline': deadline,
-    'budget': budget
-  });
+module.exports.createContract = function(name, project, owner, deadline, budget) {
+  var contract = new Contract();
+  contract.name = name;
+  contract.project = project;
+  contract.owner = owner;
+  contract.deadline = deadline;
+  contract.budget = budget;
   contract.save();
 }
 
 // Get individual user by searching for ID
-var getUser = function(id) {
+module.exports.getUser = function(id) {
   return models.User.findById(id);
 }
 
 // Get individual user by searching for username
-var getUserByUsername = function(username) {
+module.exports.getUserByUsername = function(username) {
   return models.User.findOne({
     'username' : username
   });
 }
 
 // Get individual project by searching for ID
-var getProject = function(id) {
+module.exports.getProject = function(id) {
   return models.Project.findById(id);
 }
 
@@ -94,19 +92,31 @@ var getProjectByName = function(name) {
 }
 
 // Get the owner of a project given some project id
-var getProjectOwnerByProject = function(id) {
+module.exports.getProjectOwnerByProject = function(id) {
   return models.Project.findById(id).
     select('ownerUsername').
     exec();
 }
 
+// Get all projects associated with a user
+module.exports.getProjectsByUsername = function(user) {
+  var userId = user._id;
+  var query = models.Project.find({
+    $or: [
+      {'owner': userId},
+      {'members.user': userId}
+    ]
+  });
+}
+
+
 // Get individual contract by searching for ID
-var getContract = function(id) {
+module.exports.getContract = function(id) {
   return models.Contract.findById(id);
 }
 
 // Get contracts by price range
-var getContractsByPrice = function(lowlimit, highlimit) {
+module.exports.getContractsByPrice = function(lowlimit, highlimit) {
   return models.Contract.
     find().
     where('budget').gt(lowlimit).lt(highlimit).
