@@ -39,80 +39,177 @@ var generateURL = function() {
 */
 
 // Create a new user given the required fields
-var createUser = function(username, passwordHash, email) {
-  var user = new User({
-    'username': username,
-    'passwordHash': passwordHash,
-    'email': email
-  });
+module.exports.createUser = function(username, passwordHash, email) {
+  var user = new User();
+  user.username = username;
+  user.passwordHash = passwordHash;
+  user.email = email;
   user.save();
 }
 
 // Create a new project given the required fields
-var createProject = function(name, ownerUsername) {
-  var project = new Project({
-    'name': name,
-    'ownerUsername': ownerUsername
-  });
+module.exports.createProject = function(name, ownerUsername) {
+  var project = new Project();
+  project.name = name;
+  project.ownerUsername = ownerUsername;
   project.save();
 }
 
 // Create a new contract given the required fields
-var createContract = function(name, project, owner, deadline, budget) {
-  var contract = new Contract({
-    'name': name,
-    'project': project,
-    'owner': owner,
-    'deadline': deadline,
-    'budget': budget
-  });
+module.exports.createContract = function(name, project, owner, deadline, budget) {
+  var contract = new Contract();
+  contract.name = name;
+  contract.project = project;
+  contract.owner = owner;
+  contract.deadline = deadline;
+  contract.budget = budget;
   contract.save();
 }
 
+// Create a new message
+module.exports.createMessage = function(sender, text) {
+  var message = new Message();
+  message.sender = sender;
+  message.text = text;
+  message.save();
+}
+
+// Create a new contact
+module.exports.createContact = function(contacter, contactee) {
+  var contact = new Contact();
+  contact.contacter = contacter;
+  contact.contactee = contactee;
+  contact.save();
+}
+
+// Create a new skill
+module.exports.createSkill = function(name, rating) {
+  var skill = new Skill();
+  skill.name = name;
+  skill.rating = rating;
+  skill.save();
+}
+
+// Adds a skill by ID to a user by ID
+module.exports.addUserSkill = function(user, skillToAdd) {
+  return;
+}
+
+// Adds a skill by ID to a contract by ID
+module.exports.addContractSkill = function(contract, skillToAdd) {
+  return;
+}
+
+// Adds a user by ID to a project by ID
+module.exports.addProjectMember = function(project, userToAdd) {
+  return;
+}
+
+// Adds a showcase item to a project showcase
+module.exports.addShowcaseItem = function(project, itemPath) {
+  return;
+}
+
 // Get individual user by searching for ID
-var getUser = function(id) {
+module.exports.getUser = function(id) {
   return models.User.findById(id);
 }
 
-// Get individual user by searching for username
-var getUserByUsername = function(username) {
-  return models.User.findOne({
-    'username' : username
-  });
+// Get a field of a user document, searching user by ID
+module.exports.getUserField = function(id, field) {
+  return models.User.findById(id, field, function(err, user) {});
+}
+
+// Get individual user by searching for a field value
+module.exports.getUserByField = function(field, value) {
+  var query = [];
+  query[field] = value;
+  return models.User.find(query, function(err, user) {});
 }
 
 // Get individual project by searching for ID
-var getProject = function(id) {
+module.exports.getProject = function(id) {
   return models.Project.findById(id);
 }
 
-// Get individual project by searching for name
-var getProjectByName = function(name) {
-  return models.Project.findOne({
-    'name' : name
-  })
+// Get a field of a project document, searching user by ID
+module.exports.getProjectField = function(id, field) {
+  return models.Project.findById(id, field, function(err, project) {});
 }
 
-// Get the owner of a project given some project id
-var getProjectOwnerByProject = function(id) {
-  return models.Project.findById(id).
-    select('ownerUsername').
-    exec();
+// Get individual project by searching for a field value
+module.exports.getProjectByField = function(field, value) {
+  var query = [];
+  query[field] = value;
+  return models.Project.find(query, function(err, project) {});
+}
+
+// Get all projects associated with a user
+module.exports.getProjectsByUsername = function(user) {
+  var userId = user._id;
+  var query = { $or: [
+      {'owner': userId},
+      {'members.user': userId}
+    ]
+  };
+  return Project.find(query).exec();
+}
+
+// Get projects by tag
+module.exports.getProjectsByTag = function(tagString) {
+  return models.Project.find({tags: tagString});
 }
 
 // Get individual contract by searching for ID
-var getContract = function(id) {
+module.exports.getContract = function(id) {
   return models.Contract.findById(id);
 }
 
+// Get individual contract by searching for a field value
+module.exports.getContractByField = function(field, value) {
+  var query = [];
+  query[field] = value;
+  return models.Contract.find(query, function(err, contract) {});
+}
+
+// Get a field of a contract document, searching user by ID
+module.exports.getContractField = function(id, field) {
+  return models.Contract.findById(id, field, function(err, contract) {});
+}
+
 // Get contracts by price range
-var getContractsByPrice = function(lowlimit, highlimit) {
+module.exports.getContractsByPrice = function(lowlimit, highlimit) {
   return models.Contract.
     find().
     where('budget').gt(lowlimit).lt(highlimit).
     exec();
 }
 
+// Get contracts by skill tag
+module.exports.getContractsByTag = function(skill) {
+  return models.Contract.find({skillTags: skill});
+}
+
+// Set a user document field, searching user by ID
+module.exports.setUserField = function(id, field, value) {
+  var query = [];
+  query[field] = value;
+  return models.User.findByIdAndUpdate(id, {$set: query}, function(err, user) {});
+}
+
+// Set a user document field, searching user by ID
+module.exports.setProjectField = function(id, field, value) {
+  var query = [];
+  query[field] = value;
+  return models.Project.findByIdAndUpdate(id, {$set: query});
+}
+
+// Set a user document field, searching user by ID
+module.exports.setContractField = function(id, field, value) {
+  var query = [];
+  query[field] = value;
+  return models.Contract.findByIdAndUpdate(id, {$set: query});
+}
 
 module.exports.models = models;
 module.exports.connect = connect;
