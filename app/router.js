@@ -159,7 +159,7 @@ router.get('/people/:username', function (req, res) {
 		newContract.contract_comment = current.comment;
 		json.projects.push(newContract);
 	}
-	
+
 	res.send(JSON.stringify(json));
 });
 
@@ -290,7 +290,7 @@ router.get('/inbox', function (req, res) {
 				}
 			}
 		}
-		
+
 	*/
 	////////////////////////////////////////////////////////
 	// TODO:                                              //
@@ -341,7 +341,7 @@ router.get('/inbox', function (req, res) {
 		json.success = "false";
 	}
 	res.send(JSON.stringify(json));
-	
+
 });
 
 // contact message detail
@@ -358,7 +358,7 @@ router.get('/inbox/:contact_id', function (req, res) {
 		}
 	}
 	*/
-	
+
 	// Check if the person is logged in as personOne or personTwo
 	var userId = req.session.userId;
 	var contact_id = req.params.contact_id;
@@ -376,7 +376,7 @@ router.get('/inbox/:contact_id', function (req, res) {
 		json.result = null;
 	}
 	res.send(JSON.stringify(json));
-}
+});
 
 // load all messages from a contact history
 router.get('/inbox/:contact_id/all', function (req, res) {
@@ -392,7 +392,7 @@ router.get('/inbox/:contact_id/all', function (req, res) {
 		}
 	}
 	*/
-	
+
 	// Check if the person is logged in as personOne or personTwo
 	var userId = req.session.userId;
 	var contact_id = req.params.contact_id;
@@ -408,7 +408,7 @@ router.get('/inbox/:contact_id/all', function (req, res) {
 		json.result = null;
 	}
 	res.send(JSON.stringify(json));
-}
+});
 
 // search page
 router.get('/search', function (req, res) {
@@ -425,7 +425,7 @@ router.get('/search', function (req, res) {
 		- contracts: open contracts only
 	- keywords
 		- the key word(s) for the search (e.g. hello,world,python)
-	
+
 	If it were a project, get
 	_id: {
 		type: project,
@@ -436,7 +436,7 @@ router.get('/search', function (req, res) {
 		tags: [list of tags],
 		priority: accumulating as encountering the object
 	}
-	
+
 	If it were a person, get
 	_id: {
 		type: person,
@@ -446,7 +446,7 @@ router.get('/search', function (req, res) {
 		tags: [list of tags]
 		priority: accumulating as encountering the object
 	}
-	
+
 	If it were a contract, get from OPEN contracts:
 	_id: {
 		type: contract,
@@ -461,7 +461,7 @@ router.get('/search', function (req, res) {
 	}
 	priorities adjusted based on user's skills
 	*/
-	
+
 	////////////////////////////////////////////////////
 	//                                                //
 	// TODO: are ObjectIds hashable                   //
@@ -501,12 +501,12 @@ router.get('/search', function (req, res) {
 			}
 		}
 	}
-	
+
 	var projects_results = new Object(); //Store object_id: {...,priority_level:number}
 	var people_results = new Object();
 	var contracts_results = new Object();
 	var queries = url.parse(req.url, true).query;
-	
+
 	// Parse the queries
 	var category;
 	if (queries.category) {
@@ -515,7 +515,7 @@ router.get('/search', function (req, res) {
 	else {
 		category = "all";
 	}
-	
+
 	var keywords = queries.keywords.split(",");
 	/*
 	var time;
@@ -525,7 +525,7 @@ router.get('/search', function (req, res) {
 	else {
 		time = "all";
 	}*/
-	
+
 	var page;
 	if (queries.page) {
 		page = queries.page;
@@ -533,7 +533,7 @@ router.get('/search', function (req, res) {
 	else {
 		page = 1;
 	}
-	
+
 	var perpage;
 	if (queries.perpage) {
 		perpage = queries.perpage;
@@ -541,14 +541,14 @@ router.get('/search', function (req, res) {
 	else {
 		perpage = 1;
 	}
-	
+
 	// Priority: match name: +4 match tag: +2 match content: +1
 	// for each keyword:
 	const MATCH_USER = 2;
 	const MATCH_NAME = 4;
 	const MATCH_TAGS = 2;
 	const MATCH_REST = 1;
-	
+
 	// helper function to decide matching priority based on two arrays' common elements
 	function matchPriority(arr1, arr2) {
 		var concatTags = arr1.concat(arr2);
@@ -560,7 +560,7 @@ router.get('/search', function (req, res) {
 	function updateProjectPriority(project, value) {
 		projects_results[project._id].priority += value;
 	}
-	
+
 	// helper function to add new project
 	function addNewProject(project, basePriority) {
 		projects_results[project._id] = new Object();
@@ -576,7 +576,7 @@ router.get('/search', function (req, res) {
 		// match priority by user's tags and project's tags
 		updateProjectPriority(project, matchPriority(userTags, project.tags));
 	}
-	
+
 	function updatePersonPriority(person, value) {
 		people_results[person._id].priority += value;
 	}
@@ -602,11 +602,11 @@ router.get('/search', function (req, res) {
 		// match priority by user's projects' tags and the person's tags
 		updatePersonPriority(person, matchPriority(userProjectTags, person.tags));
 	}
-	
+
 	function updateContractPriority(contract, value) {
 		contracts_results[contract._id].priority += value;
 	}
-	
+
 	function addNewContract(contract, basePriority) {
 		contracts_results[contract._id] = new Object();
 		contracts_results[contract._id].id = current._id;
@@ -630,7 +630,7 @@ router.get('/search', function (req, res) {
 		}
 		updateContractPriority(contract, matchPriority(userSkills, contractSkills));
 	}
-	
+
 	var i;
 	var numKeywords = keywords.length;
 	for (i=0;i<numKeywords;i++) {
@@ -641,7 +641,7 @@ router.get('/search', function (req, res) {
 			var projectsByTags = db.Project.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}});
 			var projectsByIntro = db.Project.find({"basicInfo": {$regex: ".*" + keyword + ".*/i"}});
 			var projectsByDetail = db.Project.find({"detailedInfo": {$regex: ".*" + keyword + ".*/i"}});
-			
+
 			// match projects by name
 			while (projectsByName.hasNext()) {
 				var newProject = new Object();
@@ -655,7 +655,7 @@ router.get('/search', function (req, res) {
 					addNewProject(current, MATCH_NAME);
 				}
 			}
-			
+
 			// match projects by tags
 			while (projectsByTags.hasNext()) {
 				var newProject = new Object();
@@ -669,7 +669,7 @@ router.get('/search', function (req, res) {
 					addNewProject(current, MATCH_TAGS);
 				}
 			}
-			
+
 			// match projects by intro
 			while (projectsByIntro.hasNext()) {
 				var newProject = new Object();
@@ -683,7 +683,7 @@ router.get('/search', function (req, res) {
 					addNewProject(current, MATCH_REST);
 				}
 			}
-			
+
 			// match projects by detail
 			while (projectsByDetail.hasNext()) {
 				var newProject = new Object();
@@ -698,8 +698,8 @@ router.get('/search', function (req, res) {
 				}
 			}
 		}
-		
-		
+
+
 		// Get people
 		if (category === "all" || category === "people") {
 			var peopleByName = db.Project.find({"name": {$regex: ".*" + keyword + ".*/i"}});
@@ -707,7 +707,7 @@ router.get('/search', function (req, res) {
 			var peopleBySkill = db.Project.find({"skillTags": {$elemMatch: {"name": {$regex: ".*" + keyword + ".*/i"}}}});
 			var peopleByTitle = db.Project.find({"title": {$regex: ".*" + keyword + ".*/i"}});
 			var peopleByBio = db.Project.find({"bio": {$regex: ".*" + keyword + ".*/i"}});
-			
+
 			// match people by name
 			while (peopleByName.hasNext()) {
 				var newProject = new Object();
@@ -721,7 +721,7 @@ router.get('/search', function (req, res) {
 					addNewPerson(current, MATCH_NAME);
 				}
 			}
-			
+
 			// match people by tags
 			while (peopleByTags.hasNext()) {
 				var newProject = new Object();
@@ -735,7 +735,7 @@ router.get('/search', function (req, res) {
 					addNewPerson(current, MATCH_TAGS);
 				}
 			}
-			
+
 			// match people by skill
 			while (peopleBySkill.hasNext()) {
 				var newProject = new Object();
@@ -749,7 +749,7 @@ router.get('/search', function (req, res) {
 					addNewPerson(current, MATCH_TAGS);
 				}
 			}
-			
+
 			// match people by title
 			while (peopleByTitle.hasNext()) {
 				var newProject = new Object();
@@ -763,7 +763,7 @@ router.get('/search', function (req, res) {
 					addNewPerson(current, MATCH_TAGS);
 				}
 			}
-			
+
 			// match people by bio
 			while (peopleByBio.hasNext()) {
 				var newProject = new Object();
@@ -778,14 +778,14 @@ router.get('/search', function (req, res) {
 				}
 			}
 		}
-		
+
 		// Get contracts
 		if (category === "all" || category === "contracts") {
 			var contractsByName = db.Contract.find({"name": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
 			var contractsByTags = db.Contract.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"});
 			var contractsByIntro = db.Contract.find({"info": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
 			var contractsByDetail = db.Contract.find({"details": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
-			
+
 			// match contracts by name
 			while (contractsByName.hasNext()) {
 				var newContract = new Object();
@@ -799,7 +799,7 @@ router.get('/search', function (req, res) {
 					addNewContract(current, MATCH_NAME);
 				}
 			}
-			
+
 			// match contracts by tags
 			while (contractsByTags.hasNext()) {
 				var newContract = new Object();
@@ -813,7 +813,7 @@ router.get('/search', function (req, res) {
 					addNewContract(current, MATCH_TAGS);
 				}
 			}
-			
+
 			// match contracts by intro
 			while (contractsByIntro.hasNext()) {
 				var newContract = new Object();
@@ -827,7 +827,7 @@ router.get('/search', function (req, res) {
 					addNewContract(current, MATCH_REST);
 				}
 			}
-			
+
 			// match contracts by detail
 			while (contractsByDetail.hasNext()) {
 				var newContract = new Object();
@@ -842,29 +842,29 @@ router.get('/search', function (req, res) {
 				}
 			}
 		}
-		
-		
+
+
 		var projectsArray = [];
 		for (var id in projects_results) {
 			if (projects_results.hasOwnProperty(id)) {
 				projectsArray.push(projects_results[id]);
 			}
 		}
-		
+
 		var peopleArray = [];
 		for (var id in people_results) {
 			if (people_results.hasOwnProperty(id)) {
 				peopleArray.push(people_results[id]);
 			}
 		}
-		
+
 		var contractsArray = [];
 		for (var id in contracts_results) {
 			if (contracts_results.hasOwnProperty(id)) {
 				contractsArray.push(contracts_results[id]);
 			}
 		}
-		
+
 		// sort each array by priority
 		function prioritySort(a, b) {
 			if (a.priority > b.priority) {
@@ -878,14 +878,14 @@ router.get('/search', function (req, res) {
 		projectsArray.sort(prioritySort);
 		peopleArray.sort(prioritySort);
 		contractsArray.sort(prioritySort);
-		
+
 		var json = new Object();
 		json.projects = projectsArray.slice((page-1)*perpage, page*perpage);
 		json.people = peopleArray.slice((page-1)*perpage, page*perpage);
 		json.contracts = contractsArray.slice((page-1)*perpage, page*perpage);
 		res.send(JSON.stringify(json));
-	}	
-	
+	}
+
 });
 
 // etc...
