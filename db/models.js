@@ -34,9 +34,28 @@ var messageSchema = new Schema({
     type: String,
     required: true
   }
+	unread: {
+		type: Boolean,
+		required: true
+	}
 }, { timestamps: true });
 
 var Message = mongoose.model('Message', messageSchema);
+
+//CONTACTS
+var contactSchema = new Schema({
+	personOne: {
+		type: ObjectId,
+		required: true
+	}
+	personTwo: {
+		type: ObjectId,
+		required: true
+	}
+	messages: [messageSchema]
+},{ collection : 'contacts', timestamps: true });
+
+var Contact = mongoose.model('Contact', contactSchema);
 
 //USERS
 var userSchema = new Schema({
@@ -83,7 +102,7 @@ var userSchema = new Schema({
   // Refer to http://stackoverflow.com/questions/4677237
   // for further explanation of why this is the case
   followings: [ObjectId],
-  messages: [messageSchema],
+  //messages: [messageSchema],
   contacts: [ObjectId],
   blocked: [ObjectId],
   contracts: [ObjectId]
