@@ -116,7 +116,7 @@ var userSchema = new Schema({
   //messages: [messageSchema],
   contacts: [{
     type: ObjectId,
-    ref: 'User'
+    ref: 'Contact'
   }],
   blocked: [{
     type: ObjectId,
