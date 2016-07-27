@@ -33,10 +33,10 @@ var messageSchema = new Schema({
   text: {
     type: String,
     required: true
-  }
+  },
 	unread: {
 		type: Boolean,
-		required: true
+		default: false
 	}
 }, { timestamps: true });
 
@@ -44,15 +44,17 @@ var Message = mongoose.model('Message', messageSchema);
 
 //CONTACTS
 var contactSchema = new Schema({
-	personOne: {
+	contacter: {
 		type: ObjectId,
 		required: true
-	}
-	personTwo: {
+	},
+	contactee: {
 		type: ObjectId,
 		required: true
-	}
-	messages: [messageSchema]
+	},
+	messages: [{
+    type: messageSchema
+  }]
 },{ collection : 'contacts', timestamps: true });
 
 var Contact = mongoose.model('Contact', contactSchema);
@@ -76,11 +78,15 @@ var userSchema = new Schema({
   title: {
     type: String
   },
-  skillTags: [skillSchema],
+  skillTags: [{
+    type: skillSchema
+  }],
   bio: {
     type: String
   },
-  tags: [String],
+  tags: [{
+    type: String
+  }],
   email: {
     type: String ,
     required: true
@@ -101,11 +107,19 @@ var userSchema = new Schema({
   },
   // Refer to http://stackoverflow.com/questions/4677237
   // for further explanation of why this is the case
-  followings: [ObjectId],
+  followings: [{
+    type: ObjectId
+  }],
   //messages: [messageSchema],
-  contacts: [ObjectId],
-  blocked: [ObjectId],
-  contracts: [ObjectId]
+  contacts: [{
+    type: ObjectId
+  }],
+  blocked: [{
+    type: ObjectId
+  }],
+  contracts: [{
+    type: ObjectId
+  }]
 }, { collection : 'users', timestamps: true });
 
 var User = mongoose.model('User', userSchema);
@@ -138,9 +152,13 @@ var DetailedInfo = mongoose.model('DetailedInfo', detailedProjectInfoSchema);
 var showcaseSchema = new Schema({
   project: { type: ObjectId },
   // Display order inferred from indices
-  assetPaths: [String],
+  assetPaths: [{
+    type: String
+  }],
   // Can extract mediatype from full path
-  mediaTypes: [String]
+  mediaTypes: [{
+    type: String
+  }]
 }, { collection: 'showcases', timestamps: true });
 
 var Showcase = mongoose.model('Showcase', showcaseSchema);
@@ -151,13 +169,19 @@ var projectSchema = new Schema({
     type: String,
     required: true
   },
-  tags: [String],
+  tags: [{
+    type: String
+  }],
   owner: {
     type: ObjectId,
     required: true
   },
-  members: [projectMemberSchema],
-  contracts: [ObjectId],
+  members: [{
+    type: projectMemberSchema
+  }],
+  contracts: [{
+    type: ObjectId
+  }],
   showcase: {
     type: showcaseSchema
   },
@@ -188,8 +212,12 @@ var contractSchema = new Schema({
   status: {
     type: String
   },
-  skillTags: [skillSchema],
-  descriptionTags: [String],
+  skillTags: [{
+    type: skillSchema
+  }],
+  descriptionTags: [{
+    type: String
+  }],
   // ID of project member who created the contract
   project: {
     type: ObjectId,
@@ -199,7 +227,9 @@ var contractSchema = new Schema({
     type: ObjectId,
     required: true
   },
-  takers: [ObjectId],
+  takers: [{
+    type: ObjectId
+  }],
   details: {
     type: String
   },
