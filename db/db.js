@@ -48,10 +48,10 @@ module.exports.createUser = function(username, passwordHash, email) {
 }
 
 // Create a new project given the required fields
-module.exports.createProject = function(name, ownerUsername) {
+module.exports.createProject = function(name, owner) {
   var project = new Project();
   project.name = name;
-  project.ownerUsername = ownerUsername;
+  project.owner = owner;
   project.save();
 }
 
