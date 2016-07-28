@@ -17,6 +17,9 @@ var connect = function(callback) {
   mongoose.connect(url);
 
   var db = mongoose.connection;
+
+  module.exports.db = db;
+
   db.on("error", console.error.bind(console, "connection error:"));
   db.once("open", function() {
     callback();
@@ -57,7 +60,7 @@ module.exports.createProject = function(name, owner) {
 
 // Create a new contract given the required fields
 module.exports.createContract = function(name, project, owner, deadline, budget) {
-  var contract = new Contract();
+  var contract = new models.Contract();
   contract.name = name;
   contract.project = project;
   contract.owner = owner;

@@ -5,6 +5,7 @@
 
 var express = require('express');
 var router = express.Router();
+var dbfile = require('../db/db.js');
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -12,12 +13,14 @@ router.use(function timeLog(req, res, next) {
   next();
 });
 
+dbfile.createContract("Sample", "project", "owner", "deadline", "budget");
+
 // change the request methods as required
 // refer to express documentation for more details
 
-// if logged in: feed; else: landing page
+//TODO: if logged in: feed; else: landing page
 router.get('/', function (req, res, next) {
-  res.send('AIDA Home Page!');
+  res.sendFile('landing.html', {root: "../"});
 });
 
 router.post('/login', function (req, res, next) {
@@ -32,7 +35,7 @@ router.post('/signup', function (req, res, next) {
 router.get('/contracts', function (req, res) {
 	/*
 	get id, name, status, skillTags, tags*/
-	var cursor = db.Contract.find({},{"name": 1, "status": 1, "skillTags": 1, "tags": 1}).sort({"updatedAt": -1});
+	var cursor = dbfile.db.Contract.find({},{"name": 1, "status": 1, "skillTags": 1, "tags": 1}).sort({"updatedAt": -1});
 	res.send(JSON.stringify(cursor.toArray()));
 });
 

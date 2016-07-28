@@ -18,9 +18,12 @@ var assert = require('chai').assert;
 
 // module init
 var app = express();
+
+//set up static filepath
+app.use(express.static("../"));
+
 // router import keeps main file clean
 var router = require('./router');
-var db = require('../db/db.js');
 
 // app init
 const APP_PORT = 3000;
