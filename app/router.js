@@ -173,7 +173,7 @@ router.get('/projects', function (req, res, next) {
 
 // create a new project
 router.get('/projects/new', function (req, res, next) {
-  res.send('AIDA Home Page!');
+  //res.send('AIDA Home Page!');
 });
 
 // details of project with project_id

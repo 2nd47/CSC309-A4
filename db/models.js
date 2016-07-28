@@ -199,7 +199,11 @@ var contractSchema = new Schema({
     ObjectId,
     required: true
   },
-  takers: [ObjectId],
+	taker: {
+		ObjectId
+	}
+  applicants: [ObjectId],
+	prices: [Number],
   details: {
     type: String
   },
