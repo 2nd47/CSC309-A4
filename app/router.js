@@ -5,6 +5,7 @@
 
 var express = require('express');
 var router = express.Router();
+var auth = require('./controllers/auth.js');
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -16,13 +17,11 @@ router.use(function timeLog(req, res, next) {
 // refer to express documentation for more details
 
 // if logged in: feed; else: landing page
-router.get('/', function (req, res, next) {
+router.get('/', auth.ensureAuthenticated, function (req, res, next) {
   res.send('AIDA Home Page!');
 });
 
-router.post('/login', function (req, res, next) {
-  res.send('AIDA Home Page!');
-});
+router.post('/login', auth.login, res.redirect('/'));
 
 router.post('/signup', function (req, res, next) {
   res.send('AIDA Home Page!');

@@ -15,7 +15,18 @@
     "mongoose": "^4.5.5",
     "nodemon": "^1.9.2",
     "passport": "^0.3.2",
-    "validator": "^5.4.0"
+    "validator": "^5.4.0",
+    "body-parser": "*",
+    "connect-flash": "*",
+    "coockie-parser": "^1.4.1",
+    "express-handlebars": "*",
+    "express-messages": "*",
+    "express-validator": "*",
+    "mongodb": "*",
+    "mongoose": "*",
+    "passport": "*",
+    "passport-http": "*",
+    "passport-local": "*"
   },
   "devDependencies": {
     "mocha": "^2.5.3"
