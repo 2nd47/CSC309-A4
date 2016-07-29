@@ -53,6 +53,7 @@ module.exports.createProject = function(name, owner) {
   project.name = name;
   project.owner = owner;
   project.save();
+	return project;
 }
 
 // Create a new contract given the required fields
@@ -64,6 +65,7 @@ module.exports.createContract = function(name, project, owner, deadline, budget)
   contract.deadline = deadline;
   contract.budget = budget;
   contract.save();
+	return contract;
 }
 
 // Create a new message
@@ -72,6 +74,7 @@ module.exports.createMessage = function(sender, text) {
   message.sender = sender;
   message.text = text;
   message.save();
+	return message;
 }
 
 // Create a new contact
@@ -88,6 +91,7 @@ module.exports.createSkill = function(name, rating) {
   skill.name = name;
   skill.rating = rating;
   skill.save();
+	return skill;
 }
 
 // Adds a skill by ID to a user by ID

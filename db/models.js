@@ -37,7 +37,7 @@ var messageSchema = new Schema({
   },
 	unread: {
 		type: Boolean,
-		default: false
+		default: true
 	}
 }, { timestamps: true });
 
@@ -126,7 +126,15 @@ var userSchema = new Schema({
   contracts: [{
     type: ObjectId,
     ref: 'Contract'
-  }]
+  }],
+	frozen: [{
+		type: Boolean,
+		default: false
+	}]
+	times_frozen: [{
+		type: Number,
+		default: 0
+	}]
 }, { collection : 'users', timestamps: true });
 
 var User = mongoose.model('User', userSchema);
@@ -223,7 +231,8 @@ var contractSchema = new Schema({
     type: String
   },
   status: {
-    type: String
+    type: String,
+		default: "open"
   },
   skillTags: [{
     type: skillSchema
@@ -242,7 +251,10 @@ var contractSchema = new Schema({
     required: true,
     ref: 'User'
   },
-  takers: [{
+	taker: {
+		ObjectId
+	}
+  applicants: [{
     type: ObjectId,
     ref: 'User'
   }],

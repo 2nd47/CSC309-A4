@@ -34,10 +34,55 @@ router.get('/contracts', function (req, res) {
 	get id, name, status, skillTags, tags*/
 	var cursor = db.Contract.find({},{"name": 1, "status": 1, "skillTags": 1, "tags": 1}).sort({"updatedAt": -1});
 	res.send(JSON.stringify(cursor.toArray()));
+	
 });
 
 // create a new contract
-router.get('/contracts/new', function (req, res) {
+router.post('/contracts/new', function (req, res) {
+	/*
+		TODO:
+		after the posting, send to the front end the link
+		to the contract page, so that the front end will
+		redirect to the page
+		{
+			success: true/false
+			url: the link to the new contract page
+		}
+	*/
+	var json = new Object();
+	try {
+		var userId = req.session.userId;
+		var contractForm = qs.parse(req.data);
+		// may createContract return contract _id or something...
+		var newContractId = db.createContract(contractForm.name, contractForm.project,
+		userId, contractForm.deadline, contractForm.budget)._id;
+		db.setContractField(newContractId, "intro", contractForm.intro);
+		// Create new skill objects
+		var skills = contractForm.skillTags;
+		var numSkills = skills.length;
+		var i;
+		var skillTags = [];
+		for (i=0;i<numSkills;i++) {
+			var curSkill = skills[i];
+			var newSkill = db.createSkill(curSkill.name, curSkill.rating);
+			skillTags.push(newSkill);
+		}
+		db.setContractField(newContractId, "skillTags", skillTags);
+		// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
+		// into an array of strings
+		var tags = contractForm.descriptionTags.replace(/\s+/g, '');split(",");
+		db.setContractField(newContractId, "descriptionTags", tags);
+		db.setContractField(newContractId, "details", contractForm.details);
+		db.setContractField(newContractId, "url", contractIdToUrl(newContractId));//??
+		json.url = contractIdToUrl(newContractId);
+		json.success = "true";
+	}
+	catch (e) {
+		json.success = "false";
+		console.log(e.message);
+	}
+	
+	res.send(JSON.stringify(json));
 });
 
 // details of contract with contract_id
@@ -121,7 +166,7 @@ router.get('/people/:username', function (req, res) {
 	}*/
 	var json = new Object();
 	var user_name = req.params.username;
-	var user = db.User.findOne({"username" : ObjectId(user_name)});
+	var user = db.User.findOne({"username" : user_name});
 	json.id = user._id;
 	json.name = user.name;
 	json.title = user.title;
@@ -173,7 +218,39 @@ router.get('/projects', function (req, res, next) {
 
 // create a new project
 router.get('/projects/new', function (req, res, next) {
-  res.send('AIDA Home Page!');
+	/*
+		TODO:
+		after the posting, send to the front end the link
+		to the project page, so that the front end will
+		redirect to the page
+		{
+			success: true/false
+			url: the link to the new project page
+		}
+	*/
+	var json = new Object();
+	try {
+		var userId = req.session.userId;
+		var projectForm = qs.parse(req.data);
+		// may createContract return contract _id or something...
+		var newProjectId = db.createProject(projectForm.name, userId);
+		// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
+		// into an array of strings
+		var tags = contractForm.descriptionTags.replace(/\s+/g, '');split(",");
+		db.setProjectField(newProjectId, "tags", tags);
+		db.setProjectField(newProjectId, "members", projectForm.members);
+		db.setProjectField(newProjectId, "details", contractForm.details);
+		db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));//??
+		json.url = contractIdToUrl(newProjectId);
+		json.success = "true";
+	}
+	catch (e) {
+		json.success = "false";
+		console.log(e.message);
+	}
+	
+	res.send(JSON.stringify(json));
+  //res.send('AIDA Home Page!');
 });
 
 // details of project with project_id
@@ -370,6 +447,12 @@ router.get('/inbox/:contact_id', function (req, res) {
 		json.result.personOne = contact.personOne;
 		json.result.personTwo = contact.personTwo;
 		json.messages = contact.messages.slice(-20); // Get the last 20 messages
+		var i;
+		var numMessages = json.messages.length;
+		for (i=0;i<numMessages;i++) {
+			// Mark all the messages shown as read
+			db.Message.findByIdAndUpdate(contact_id, {$set: { 'unread': false }});
+		}
 	}
 	else {
 		json.success = "false";
@@ -402,6 +485,12 @@ router.get('/inbox/:contact_id/all', function (req, res) {
 		json.success = "true";
 		json.result = new Object();
 		json.messages = contact.messages;
+		var i;
+		var numMessages = json.messages.length;
+		for (i=0;i<numMessages;i++) {
+			// Mark all the messages shown as read
+			db.Message.findByIdAndUpdate(contact_id, {$set: { 'unread': false }});
+		}
 	}
 	else {
 		json.success = "false";
