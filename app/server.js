@@ -9,6 +9,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var validator = require('validator');
+var qs = require('querystring');
 
 // testing modules
 var testCase = require('mocha').describe;
