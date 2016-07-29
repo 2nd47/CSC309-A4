@@ -1,24 +1,24 @@
-function isAdmin(userId) {
+exports.isAdmin = function (userId) {
 	return (db.User.findById(userId).powerLevel != 0);
 }
 
-function canDeleteContract(userId, contractId){
+exports.canDeleteContract = function (userId, contractId){
 	var contract = db.Contract.findById(contractId);
 	return ((contract.owner === userId && contract.status === "open") || isAdmin(userId));
 }
 
-function canEditContract(userId, contractId){
+exports.canEditContract = function (userId, contractId){
 	return canDeleteContract(userId, contractId);
 }
 
 // only owner and admin may delete
-function canDeleteProject(userId, projectId){
+exports.canDeleteProject = function (userId, projectId){
 	var project = db.Project.findById(projectId);
 	return (project.owner === userId || isAdmin(userId));
 }
 
 // all members, owner and admin may edit
-function canEditProject(userId, projectId){
+exports.canEditProject = function (userId, projectId){
 	var project = db.Project.findById(projectId);
 	var members = project.members;
 	var membersArray = [];
@@ -31,10 +31,10 @@ function canEditProject(userId, projectId){
 }
 
 // return true iff the user is the profile owner or the user is admin
-function canEditProfile(userId, profileId) {
+exports.canEditProfile = function (userId, profileId) {
 	return (userId === profileId || isAdmin(userId));
 }
 
-function canDeleteProfile(userId, profileId) {
+exports.canDeleteProfile = function (userId, profileId) {
 	return canEditPrifile(userId, profileId);
 }
