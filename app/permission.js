@@ -2,13 +2,19 @@ exports.isAdmin = function (userId) {
 	return (db.User.findById(userId).powerLevel != 0);
 }
 
-exports.canDeleteContract = function (userId, contractId){
+exports.canDeleteContract = function (userId, contractId) {
 	var contract = db.Contract.findById(contractId);
 	return ((contract.owner === userId && contract.status === "open") || isAdmin(userId));
 }
 
-exports.canEditContract = function (userId, contractId){
+exports.canEditContract = function (userId, contractId) {
 	return canDeleteContract(userId, contractId);
+}
+
+// only the project owner may add contracts to the project
+exports.canAddContractToProject = function (userId, projectId) {
+	var project = db.Project.findById(projectId);
+	return project.owner === userId;
 }
 
 // only owner and admin may delete

@@ -52,30 +52,43 @@ router.post('/contracts/new', function (req, res) {
 	var json = new Object();
 	try {
 		var userId = req.session.userId;
-		var contractForm = qs.parse(req.data);
-		// may createContract return contract _id or something...
-		var newContractId = db.createContract(contractForm.name, contractForm.project,
-		userId, contractForm.deadline, contractForm.budget)._id;
-		db.setContractField(newContractId, "intro", contractForm.intro);
-		// Create new skill objects
-		var skills = contractForm.skillTags;
-		var numSkills = skills.length;
-		var i;
-		var skillTags = [];
-		for (i=0;i<numSkills;i++) {
-			var curSkill = skills[i];
-			var newSkill = db.createSkill(curSkill.name, curSkill.rating);
-			skillTags.push(newSkill);
+		if (userId) {
+			var contractForm = qs.parse(req.data);
+			var projectId = contractForm.project;
+			if (canAddContractToProject(userId, projectId)) {
+				// may createContract return contract _id or something...
+				var newContractId = db.createContract(contractForm.name, contractForm.project,
+				userId, contractForm.deadline, contractForm.budget)._id;
+				db.setContractField(newContractId, "intro", contractForm.intro);
+				// Create new skill objects
+				var skills = contractForm.skillTags;
+				var numSkills = skills.length;
+				var i;
+				var skillTags = [];
+				for (i=0;i<numSkills;i++) {
+					var curSkill = skills[i];
+					var newSkill = db.createSkill(curSkill.name, curSkill.rating);
+					skillTags.push(newSkill);
+				}
+				db.setContractField(newContractId, "skillTags", skillTags);
+				// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
+				// into an array of strings
+				var tags = contractForm.descriptionTags.replace(/\s+/g, '');split(",");
+				db.setContractField(newContractId, "descriptionTags", tags);
+				db.setContractField(newContractId, "details", contractForm.details);
+				db.setContractField(newContractId, "url", contractIdToUrl(newContractId));//??
+				json.url = contractIdToUrl(newContractId);
+				json.success = "true";
+			}
+			else {
+				json.success = "false";
+			}
+			
 		}
-		db.setContractField(newContractId, "skillTags", skillTags);
-		// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
-		// into an array of strings
-		var tags = contractForm.descriptionTags.replace(/\s+/g, '');split(",");
-		db.setContractField(newContractId, "descriptionTags", tags);
-		db.setContractField(newContractId, "details", contractForm.details);
-		db.setContractField(newContractId, "url", contractIdToUrl(newContractId));//??
-		json.url = contractIdToUrl(newContractId);
-		json.success = "true";
+		else {
+			json.success = "false";
+		}
+		
 	}
 	catch (e) {
 		json.success = "false";
