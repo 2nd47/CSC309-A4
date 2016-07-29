@@ -5,7 +5,7 @@
 
 var express = require('express');
 var router = express.Router();
-var auth = require('./controllers/auth.js');
+var auth = require('./controllers/auth');
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -16,12 +16,25 @@ router.use(function timeLog(req, res, next) {
 // change the request methods as required
 // refer to express documentation for more details
 
+// Ensure authenticated so the user cannot access the home page if not logged in
+var ensureAuthenticated = function(req, res, next) {
+  if(req.isAuthenticated()) {
+    return next();
+  } else {
+    req.flash('error_msg', 'You are not logged in');
+    res.redirect('/login');
+  }
+}
+
 // if logged in: feed; else: landing page
-router.get('/', auth.ensureAuthenticated, function (req, res, next) {
+router.get('/', ensureAuthenticated, function (req, res, next) {
   res.send('AIDA Home Page!');
+  next();
 });
 
-router.post('/login', auth.login, res.redirect('/'));
+router.post('/login', auth.login, function (req, res, next) {
+  res.redirect('/');
+});
 
 router.post('/signup', function (req, res, next) {
   res.send('AIDA Home Page!');

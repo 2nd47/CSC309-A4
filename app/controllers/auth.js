@@ -9,7 +9,6 @@ var User = require('../../db/db.js');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var exphbs = require('express-handlebars');
 var expressValidator = require('express-validator');
 var flash = require('connect-flash');
 var passport = require('passport');
@@ -19,7 +18,7 @@ var bcrypt = require('bcryptjs');
 var session = require('express-session');
 var validator = require('validator'); //added express-validator below, not sure if this one should be deleted
 
-module.exports = function(app, db) {
+module.exports = function(app) {
 
   // use cookies to transmit session info back and forth
   app.use(cookieParser('s00pers3kret'));
@@ -106,16 +105,6 @@ module.exports = function(app, db) {
     next();
   });
 
-  // Ensure authenticated so the user cannot access the home page if not logged in
-  this.ensureAuthenticated = function(req, res, next) {
-    if(req.isAuthenticated()) {
-      return next();
-    } else {
-      req.flash('error_msg', 'You are not logged in');
-      res.redirect('/login');
-    }
-  }
-
   this.register = function(req, res) {
     var username = req.body.username;
     var password = req.body.password;
@@ -153,8 +142,8 @@ module.exports = function(app, db) {
       // Create the user
       var newUser = new User({
         username: username,
-        password: password;
-        email: email;
+        password: password,
+        email: email
       });
 
       User.createUser(newUser, function(err, user){
@@ -197,7 +186,7 @@ module.exports = function(app, db) {
     req.logout();
     req.flash('success_msg', 'You are logged out');
     res.redirect('/');
-  });
+  };
 
   return this;
 }
