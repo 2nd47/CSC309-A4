@@ -7,6 +7,7 @@ var router = express.Router();
 var User = require('../../db/db.js');
 // login
 var path = require('path');
+var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var exphbs = require('express-handlebars');
 var expressValidator = require('express-validator');
@@ -19,6 +20,48 @@ var session = require('express-session');
 var validator = require('validator'); //added express-validator below, not sure if this one should be deleted
 
 module.exports = function(app, db) {
+
+  // use cookies to transmit session info back and forth
+  app.use(cookieParser('s00pers3kret'));
+
+  // enable reading data from form POST requests and JSON data
+  app.use(bodyParser.urlencoded({ extended: false }));
+  app.use(bodyParser.json());
+
+  // Express validator
+  app.use(expressValidator({
+    errorFormatter: function(param, msg, value) {
+      var namespace = param.split('.')
+      , root = namespace.shift()
+      , formParam = root;
+
+      while(namespace.length) {
+        formParam += '[' + namespace.shift() + ']';
+      }
+      return {
+        param : formParam,
+        msg   : msg,
+        value : value
+      };
+    }
+  }));
+
+  // login signup initialization
+  app.use(session({
+    secret: 's00pers3kret',
+    saveUninitialized: true,
+    resave: true
+  }))
+
+  passport.serializeUser(function(user, done) {
+    done(null, user.id);
+  });
+
+  passport.deserializeUser(function(id, done) {
+    User.getUserById(id, function(err, user) {
+      done(err, user);
+    });
+  });
 
   passport.use(new LocalStrategy(
     // YOU MUST HASH THE PASSWORD HERE
@@ -39,44 +82,9 @@ module.exports = function(app, db) {
       });
   }));
 
-  passport.serializeUser(function(user, done) {
-    done(null, user.id);
-  });
-
-  passport.deserializeUser(function(id, done) {
-    User.getUserById(id, function(err, user) {
-      done(err, user);
-    });
-  });
-
-  // login signup initialization
-  app.use(session({
-    secret: 'secret',
-    saveUninitialized: true,
-    resave: true
-  }))
-
   // Passport init
   app.use(passport.initialize());
   app.use(passport.session());
-
-  // Express validator
-  app.use(expressValidator({
-    errorFormatter: function(param, msg, value) {
-      var namespace = param.split('.')
-      , root = namespace.shift()
-      , formParam = root;
-
-      while(namespace.length) {
-        formParam += '[' + namespace.shift() + ']';
-      }
-      return {
-        param : formParam,
-        msg   : msg,
-        value : value
-      };
-    }
-  }));
 
   // Connect flash
   app.use(flash());
