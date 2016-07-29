@@ -30,9 +30,9 @@ function canEditProject(userId, projectId){
 	return (project.owner === userId || isAdmin(userId) || (userId in membersArray));
 }
 
-// return true iff the user is the profile owner
+// return true iff the user is the profile owner or the user is admin
 function canEditProfile(userId, profileId) {
-	return (userId === profileId || db.User.findById(userId).powerLevel);
+	return (userId === profileId || isAdmin(userId));
 }
 
 function canDeleteProfile(userId, profileId) {
