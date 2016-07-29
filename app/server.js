@@ -19,6 +19,7 @@ var assert = require('chai').assert;
 // module init
 var app = express();
 // router import keeps main file clean
+var auth = require('./app/controllers/auth')(app);
 var router = require('./router');
 var db = require('../db/db.js');
 
