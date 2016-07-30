@@ -9,7 +9,7 @@ var User = require('../db/db');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
-
+var flash = require('connect-flash');
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -17,12 +17,15 @@ router.use(function timeLog(req, res, next) {
   next();
 });
 
+//use static
+router.use(express.static("../"));
+
 // change the request methods as required
 // refer to express documentation for more details
 
 // if logged in: feed; else: landing page
-router.get('/', ensureAuthenticated, function (req, res, next) {
-  res.send('AIDA Home Page!');
+router.get('/', function (req, res, next) {
+  res.sendFile('landing.html', { root: "../" });
 });
 
 // Ensure authenticated so the user cannot access the home page if not logged in
