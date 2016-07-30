@@ -140,7 +140,6 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-<<<<<<< HEAD
 // Login
 router.post('/login',
             passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login', failureFlash: true}),
@@ -166,33 +165,31 @@ router.get('/contracts', function (req, res) {
 	
 });
 
-=======
->>>>>>> master
-// create a new contract
-router.post('/contracts/new', function (req, res) {
+// create a new job
+router.post('/jobs/new', function (req, res) {
 	/*
 		TODO:
 		after the posting, send to the front end the link
-		to the contract page, so that the front end will
+		to the job page, so that the front end will
 		redirect to the page
 		{
 			success: true/false
-			url: the link to the new contract page
+			url: the link to the new job page
 		}
 	*/
 	var json = new Object();
 	try {
 		var userId = req.session.userId;
 		if (userId) {
-			var contractForm = qs.parse(req.data);
-			var projectId = contractForm.project;
-			if (canAddContractToProject(userId, projectId)) {
-				// may createContract return contract _id or something...
-				var newContractId = db.createContract(contractForm.name, contractForm.project,
-				userId, contractForm.deadline, contractForm.budget)._id;
-				db.setContractField(newContractId, "intro", contractForm.intro);
+			var jobForm = qs.parse(req.data);
+			var projectId = jobForm.project;
+			if (canAddJobToProject(userId, projectId)) {
+				// may createJob return job _id or something...
+				var newJobId = db.createJob(jobForm.name, jobForm.project,
+				userId, jobForm.deadline, jobForm.budget)._id;
+				db.setJobField(newJobId, "intro", jobForm.intro);
 				// Create new skill objects
-				var skills = contractForm.skillTags;
+				var skills = jobForm.skillTags;
 				var numSkills = skills.length;
 				var i;
 				var skillTags = [];
@@ -201,18 +198,18 @@ router.post('/contracts/new', function (req, res) {
 					var newSkill = db.createSkill(curSkill.name, curSkill.rating);
 					skillTags.push(newSkill);
 				}
-				db.setContractField(newContractId, "skillTags", skillTags);
+				db.setJobField(newJobId, "skillTags", skillTags);
 				// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
 				// into an array of strings
-				var tags = contractForm.descriptionTags.replace(/\s+/g, '');split(",");
-				db.setContractField(newContractId, "descriptionTags", tags);
-				db.setContractField(newContractId, "details", contractForm.details);
-				db.setContractField(newContractId, "url", contractIdToUrl(newContractId));//??
-				json.url = contractIdToUrl(newContractId);
+				var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
+				db.setJobField(newJobId, "descriptionTags", tags);
+				db.setJobField(newJobId, "details", jobForm.details);
+				db.setJobField(newJobId, "url", jobIdToUrl(newJobId));//??
+				json.url = jobIdToUrl(newJobId);
 				json.success = "true";
 				// send broadcast to all followers of the project
-				var broadcast = "A new contract is added for " + db.getProjectField(projectId, "name") + " .";
-				broadcastFollowers(projectId, contractIdToUrl(newContractId), broadcast);
+				var broadcast = "A new job is added for " + db.getProjectField(projectId, "name") + " .";
+				broadcastFollowers(projectId, jobIdToUrl(newJobId), broadcast);
 			}
 			else {
 				json.success = "false";
@@ -232,30 +229,30 @@ router.post('/contracts/new', function (req, res) {
 	res.send(JSON.stringify(json));
 });
 
-// details of contract with contract_id
-router.get('/contracts/:contract_id', function (req, res) {
+// details of job with job_id
+router.get('/jobs/:job_id', function (req, res) {
 	/*
-	Contract page:
+	Job page:
 
 	{
-		id: contract id,
-		title: contract title,
+		id: job id,
+		title: job title,
 		employer_id: employer id,
 		employer_name: employer name,
 		project_id: project id,
 		project_name: project name,
-		status: contract status,
+		status: job status,
 		latest_update: date of the latest update,
 		tags: [tag names],
 		budget: budget level estimation between 1 to 5,
-		deadline: contract deadline,
-		intro: introduction to the contract details
+		deadline: job deadline,
+		intro: introduction to the job details
 	}*/
 	try {
 		var json = new Object();
-		var contract_id = req.params.contract_id;
-		var contract = db.Contract.findOne({"_id": ObjectId(contract_id)});
-		if (!contract) {
+		var job_id = req.params.job_id;
+		var job = db.Job.findOne({"_id": ObjectId(job_id)});
+		if (!job) {
 			res.status(404);
 			// page not found
 			if (req.accepts('html')) {
@@ -263,23 +260,23 @@ router.get('/contracts/:contract_id', function (req, res) {
 			}
 			return;
 		}
-		json.id = contract_id;
-		json.title = contract.name;
-		json.employer_id = contract.owner;
-		json.employer_name = db.User.findOne({"_id": ObjectId(contract.owner)},{name: 1}).name;
-		json.project_id = contract.project;
-		json.project_name = db.Project.findOne({"_id": ObjectId(contract.project)},{name: 1}).name;
-		if (contract.taker) {
+		json.id = job_id;
+		json.title = job.name;
+		json.employer_id = job.owner;
+		json.employer_name = db.User.findOne({"_id": ObjectId(job.owner)},{name: 1}).name;
+		json.project_id = job.project;
+		json.project_name = db.Project.findOne({"_id": ObjectId(job.project)},{name: 1}).name;
+		if (job.taker) {
 			json.status = "signed";
 		}
 		else {
 			json.status = "open";
 		}
-		json.latest_update = contract.updatedAt;
-		json.tags = contract.skillTags;
-		json.budget = contract.budget;
-		json.deadline = contract.deadline;
-		json.intro = contract.details;
+		json.latest_update = job.updatedAt;
+		json.tags = job.skillTags;
+		json.budget = job.budget;
+		json.deadline = job.deadline;
+		json.intro = job.details;
 		res.send(JSON.stringify(json));
 	}
 	catch (e) {
@@ -292,8 +289,8 @@ router.get('/contracts/:contract_id', function (req, res) {
 	}
 });
 
-// prompt to sign a contract with contract_id
-router.get('/contracts/:contract_id/sign', function (req, res) {
+// prompt to sign a job with job_id
+router.get('/jobs/:job_id/sign', function (req, res) {
 	/**/
 }
 
@@ -352,14 +349,14 @@ router.get('/people/:username', function (req, res) {
 				project_name: project name
 			}
 		],
-		contracts:
+		jobs:
 		[
 			{
-				contract_id: contract id,
-				contract_name: contract name,
+				job_id: job id,
+				job_name: job name,
 				completion_date: completion date,
-				contract_rating: contract_rating,
-				contract_comment: comment on the work
+				job_rating: job_rating,
+				job_comment: comment on the work
 			}
 		]
 	}*/
@@ -400,17 +397,17 @@ router.get('/people/:username', function (req, res) {
 			newProject.project_name = current.name;
 			json.projects.push(newProject);
 		}
-		json.contracts = [];
-		var contracts = db.Contract.find({"taker": ObjectId(user_id)});
-		while (contracts.hasNext()) {
-			var newContract = new Object();
-			var current = contracts.next();
-			newContract.contract_id = current._id;
-			newContract.contract_name = current.name;
-			newContract.completion_date = current.completion;
-			newContract.contract_rating = current.rating;
-			newContract.contract_comment = current.comment;
-			json.projects.push(newContract);
+		json.jobs = [];
+		var jobs = db.Job.find({"taker": ObjectId(user_id)});
+		while (jobs.hasNext()) {
+			var newJob = new Object();
+			var current = jobs.next();
+			newJob.job_id = current._id;
+			newJob.job_name = current.name;
+			newJob.completion_date = current.completion;
+			newJob.job_rating = current.rating;
+			newJob.job_comment = current.comment;
+			json.projects.push(newJob);
 		}
 
 		res.send(JSON.stringify(json));
@@ -470,16 +467,16 @@ router.post('/projects/new', function (req, res, next) {
 	try {
 		var userId = req.session.userId;
 		var projectForm = qs.parse(req.data);
-		// may createContract return contract _id or something...
+		// may createJob return job _id or something...
 		var newProjectId = db.createProject(projectForm.name, userId);
 		// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
 		// into an array of strings
-		var tags = contractForm.descriptionTags.replace(/\s+/g, '');split(",");
+		var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
 		db.setProjectField(newProjectId, "tags", tags);
 		db.setProjectField(newProjectId, "members", projectForm.members);
 		db.setProjectField(newProjectId, "details", projectForm.details);
 		db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));//??
-		json.url = contractIdToUrl(newProjectId);
+		json.url = jobIdToUrl(newProjectId);
 		json.success = "true";
 	}
 	catch (e) {
@@ -521,14 +518,14 @@ router.get('/projects/:project_id', function (req, res, next) {
 			latest_update: date of the latest update, in seconds,
 			status: project status,
 			tags: [list of tags],
-			open_contracts:
+			open_jobs:
 			[
 				{
-					contract_id: contract id,
-					contract_title: contract title,
-					contract_tags: [list of skill names with ratings],
-					contract_budget: budget level estimation between 1 to 5,
-					contract_deadline: contract deadline
+					job_id: job id,
+					job_title: job title,
+					job_tags: [list of skill names with ratings],
+					job_budget: budget level estimation between 1 to 5,
+					job_deadline: job deadline
 				}
 			],
 		}
@@ -584,16 +581,16 @@ router.get('/projects/:project_id', function (req, res, next) {
 		json.latest_update = project.updatedAt;
 		json.status = project.status;
 		json.tags = project.tags;
-		var contracts = db.Contract.find({"project": ObjectId(project_id)});
-		json.open_contracts = [];
-		while (contracts.hasNext()) {
-			var newContract = new Object();
-			var current = contracts.next();
-			newContract.contract_id = current._id;
-			newContract.contract_title = current.name;
-			newContract.contract_tags = current.skillTags;
-			newContract.contract_budget = current.budget;
-			newContract.contract_deadline = current.deadline;
+		var jobs = db.Job.find({"project": ObjectId(project_id)});
+		json.open_jobs = [];
+		while (jobs.hasNext()) {
+			var newJob = new Object();
+			var current = jobs.next();
+			newJob.job_id = current._id;
+			newJob.job_title = current.name;
+			newJob.job_tags = current.skillTags;
+			newJob.job_budget = current.budget;
+			newJob.job_deadline = current.deadline;
 		}
 		res.send(JSON.stringify(json));
 	}
@@ -613,17 +610,18 @@ router.get('/inbox', function (req, res) {
 		send the user's unread messages sorted by creation date
 		{
 			success: true if no error occurred
-			messageBoard: {
+			messageBoard: [{
 				url: link to the page of updated content
 				message: the message
-			}
+			}]
 			of followed projects/people
-			contacts:
+			chats:
 			{
-				contact_id:
+				chat_id:
 				{
-					contact_name: sender's name
-					last_message: most recent message
+					chat_name: sender's name
+					chat_avatar: sender's avatar
+					last_message: last message of the chat
 					num_unread: number of unread messages from the person
 				}
 			}
@@ -637,12 +635,12 @@ router.get('/inbox', function (req, res) {
 	////////////////////////////////////////////////////////
 	var userId = req.session.userId;
 	var json = new Object();
-	json.contacts = new Object();
+	json.chats = new Object();
 	if (userId) {
 		// The user is logged in
 		db.User.findById(userId, function(err, found){
 			if (!err) {
-				// Add all existing contacts to the contact list
+				// Add all existing chats to the chat list
 				// Sort  messages in descending order by date, then
 				// update last_message at first encounter of unread, and
 				// update num_unread at each encounter of unread.
@@ -650,24 +648,26 @@ router.get('/inbox', function (req, res) {
 				json.messageBoard = found.messageBoard;
 				// Clear message board broadcasts
 				db.setUserField(userId, messageBoard, []);
-				var contacts = found.contacts;
-				var numContacts = contacts.length;
-				for (i=0;i<numContacts;i++) {
+				var chats = found.chats;
+				var numChats = chats.length;
+				for (i=0;i<numChats;i++) {
 					var other;
-					var contact = db.Dialogue.findById(contacts[i]);
-					if (userId === contact.personOne) {
-						other = db.User.findOne({_id: ObjectId(contact.personTwo)});
-						json.contacts[contact._id] = new Object();
-						json.contacts[contact._id].contact_name = other.name;
+					var chat = db.Chat.findById(chats[i]);
+					if (userId === chat.personOne) {
+						other = db.User.findOne({_id: ObjectId(chat.personTwo)});
+						json.chats[chat._id] = new Object();
+						json.chats[chat._id].chat_name = other.name;
 						// messages should be in ascending order by time
-						json.contacts[contact._id].last_message = messages[-1];
+						json.chats[chat._id].last_message = messages[-1];
+						// get the source of avatar
+						json.chats[chat._id].chat_avatar = other.avatar;
 						// count number of messages sent after the first read message
 						var numUnread = 0;
 						// while the current message is unread and it is a received message, keep counting
 						while (messages[numUnread].unread && messages[numUnread].sender === other._id) {
 							numUnread += 1;
 						}
-						json.contacts[contact._id].num_unread = numUnread;
+						json.chats[chat._id].num_unread = numUnread;
 					}
 				}
 				json.success = "true";
@@ -685,38 +685,69 @@ router.get('/inbox', function (req, res) {
 
 });
 
-// contact message detail
-router.get('/inbox/:contact_id', function (req, res) {
+// chat message detail
+router.get('/inbox/:chat_id', function (req, res) {
 	/*
-	Retrieve the contact by the id.
+	Retrieve the chat by the id.
 	{
 		success: "true" if retrieved ok,
 		result:
 		{
-			personOne: person one,
-			personTwo: person two,
-			messages: latest ten messages
+			other_id: other person's id,
+			messages: [{
+				sender: user/other,
+				text: text
+			}]
 		}
 	}
 	*/
 
 	// Check if the person is logged in as personOne or personTwo
 	var userId = req.session.userId;
-	var contact_id = req.params.contact_id;
-	var contact = db.Dialogue.findOne({"_id": ObjectId(contact_id)});
+	var chat_id = req.params.chat_id;
+	var chat = db.Chat.findOne({"_id": ObjectId(chat_id)});
 	var json = new Object();
-	if (userId === contact.personOne || userId === contact.personTwo) {
+	if (userId === chat.personOne || userId === chat.personTwo) {
 		json.success = "true";
 		json.result = new Object();
-		json.result.personOne = contact.personOne;
-		json.result.personTwo = contact.personTwo;
-		json.messages = contact.messages.slice(-20); // Get the last 20 messages
+		var other;
+		if (userId === chat.personOne) {
+			// the other person is person two
+			other = db.User.findById(chat.personTwo);
+		}
+		else {
+			// the other person is person two
+			other = db.User.findById(chat.personOne);
+		}
+		// other user is not found
+		if (!other) {
+			json.success = "false";
+			res.send(JSON.stringify(json));
+			return;
+		}
+		json.result.other_id = other._id;
+		json.result.other_name = other.name;
+		json.messages = [];
+		var messages = chat.messages.slice(-10); // Get the last 10 messages
+		
 		var i;
-		var numMessages = json.messages.length;
+		var numMessages = messages.length;
 		for (i=0;i<numMessages;i++) {
 			// Mark all the messages shown as read
-			db.Message.findByIdAndUpdate(contact_id, {$set: { 'unread': false }});
+			readMessage(messages[i]);
+			// check sender of the message and append to list
+			new message = new Object();
+			if (messages[i].sender === userId) {
+				message.sender = "user";
+			}
+			else {
+				message.sender = "other";
+			}
+			message.text = messages[i].text;
+			json.messages.push(message);
 		}
+		
+		
 	}
 	else {
 		json.success = "false";
@@ -725,21 +756,24 @@ router.get('/inbox/:contact_id', function (req, res) {
 	res.send(JSON.stringify(json));
 });
 
-// send message to contact_id
-router.post('/inbox/:contact_id/new', function (req, res) {
+// send message to person_id
+router.post('/inbox/:person_id/new', function (req, res) {
 	var userId = req.session.userId;
-	var contactId = req.params.contact_id;
-	if (canSendMessage(userId, contactId)) {
-		var messageBox = qs.parse(req.data);
-		var message = messageBox.message;
-		sendMessageTo(userId, contactId, message);
+	var personId = req.params.person_id;
+	if (canSendMessage(userId, personId)) {
+		var message = req.body['new-message-box'];
+		sendMessageTo(userId, chatId, message);
+		res.send("OK");
+	}
+	else {
+		res.send("Denied");
 	}
 }
 
-// load all messages from a contact history
-router.get('/inbox/:contact_id/all', function (req, res) {
+// load all messages from a chat history
+router.get('/inbox/:chat_id/all', function (req, res) {
 	/*
-	Retrieve the contact by the id.
+	Retrieve the chat by the id.
 	{
 		success: "true" if retrieved ok,
 		result:
@@ -753,18 +787,18 @@ router.get('/inbox/:contact_id/all', function (req, res) {
 
 	// Check if the person is logged in as personOne or personTwo
 	var userId = req.session.userId;
-	var contact_id = req.params.contact_id;
-	var contact = db.Dialogue.findOne({"_id": ObjectId(contact_id)});
+	var chat_id = req.params.chat_id;
+	var chat = db.Chat.findOne({"_id": ObjectId(chat_id)});
 	var json = new Object();
-	if (userId === contact.personOne || userId === contact.personTwo) {
+	if (userId === chat.personOne || userId === chat.personTwo) {
 		json.success = "true";
 		json.result = new Object();
-		json.result.messages = contact.messages;
+		json.result.messages = chat.messages;
 		var i;
 		var numMessages = json.messages.length;
 		for (i=0;i<numMessages;i++) {
 			// Mark all the messages shown as read
-			db.Message.findByIdAndUpdate(contact_id, {$set: { 'unread': false }});
+			db.Message.findByIdAndUpdate(chat_id, {$set: { 'unread': false }});
 		}
 	}
 	else {
@@ -786,7 +820,7 @@ router.get('/search', function (req, res) {
 	  - all (default)
 		- projects
 		- people
-		- contracts: open contracts only
+		- jobs: open jobs only
 	- keywords
 		- the key word(s) for the search (e.g. hello,world,python)
 
@@ -811,17 +845,17 @@ router.get('/search', function (req, res) {
 		priority: accumulating as encountering the object
 	}
 
-	If it were a contract, get from OPEN contracts:
+	If it were a job, get from OPEN jobs:
 	_id: {
-		type: contract,
-		name: contract name,
-		intro: contract intro,
+		type: job,
+		name: job name,
+		intro: job intro,
 		skills: skillTags,
 		project_id: project id,
 		project_name: project name,
 		project_tags: tags for the project,
-		deadline: contract deadline
-		budget: contract budget
+		deadline: job deadline
+		budget: job budget
 	}
 	priorities adjusted based on user's skills
 	*/
@@ -838,11 +872,11 @@ router.get('/search', function (req, res) {
 	var userTags = userInfo.userTags;
 	var userSkills = userInfo.userSkills;
 	var userProjectTags = userInfo.userProjectTags;
-	var userContractSkills = userInfo.userContractSkills;
+	var userJobSkills = userInfo.userJobSkills;
 
 	var projects_results = new Object(); //Store object_id: {...,priority_level:number}
 	var people_results = new Object();
-	var contracts_results = new Object();
+	var jobs_results = new Object();
 	var queries = url.parse(req.url, true).query;
 
 	// Parse the queries
@@ -929,44 +963,44 @@ router.get('/search', function (req, res) {
 		people_results[person._id].tags = person.tags;
 		// base priority
 		people_results[person._id].priority = basePriority;
-		// match priority by contracts' required skills posted by user
+		// match priority by jobs' required skills posted by user
 		var personSkills = [];
 		var n;
 		var num = person.skillTags.length;
 		for (n=0;n<num;n++) {
 			personSkills.push(person.skillTags[n].name);
 		}
-		updatePersonPriority(person, matchPriority(userContractSkills, personSkills));
+		updatePersonPriority(person, matchPriority(userJobSkills, personSkills));
 		// match priority by user's projects' tags and the person's tags
 		updatePersonPriority(person, matchPriority(userProjectTags, person.tags));
 	}
 
-	function updateContractPriority(contract, value) {
-		contracts_results[contract._id].priority += value;
+	function updateJobPriority(job, value) {
+		jobs_results[job._id].priority += value;
 	}
 
-	function addNewContract(contract, basePriority) {
-		contracts_results[contract._id] = new Object();
-		contracts_results[contract._id].id = current._id;
-		contracts_results[contract._id].type = "contract";
-		contracts_results[contract._id].name = contract.name;
-		contracts_results[contract._id].intro = contract.intro;
-		contracts_results[contract._id].skills = contract.skillTags;
-		contracts_results[contract._id].project_id = contract.project;
-		contracts_results[contract._id].project_name = db.Project.findOne({"_id": ObjectId(contract.project)}).name;
-		contracts_results[contract._id].project_tags = contract.descriptionTags;
-		contracts_results[contract._id].deadline = contract.deadline;
-		contracts_results[contract._id].budget = contract.budget;
+	function addNewJob(job, basePriority) {
+		jobs_results[job._id] = new Object();
+		jobs_results[job._id].id = current._id;
+		jobs_results[job._id].type = "job";
+		jobs_results[job._id].name = job.name;
+		jobs_results[job._id].intro = job.intro;
+		jobs_results[job._id].skills = job.skillTags;
+		jobs_results[job._id].project_id = job.project;
+		jobs_results[job._id].project_name = db.Project.findOne({"_id": ObjectId(job.project)}).name;
+		jobs_results[job._id].project_tags = job.descriptionTags;
+		jobs_results[job._id].deadline = job.deadline;
+		jobs_results[job._id].budget = job.budget;
 		// base priority
-		contracts_results[contract._id].priority = basePriority;
-		// match priority by user's skills and the contract's required skills
-		var contractSkills = [];
+		jobs_results[job._id].priority = basePriority;
+		// match priority by user's skills and the job's required skills
+		var jobSkills = [];
 		var n;
-		var num = contract.skillTags.length;
+		var num = job.skillTags.length;
 		for (n=0;n<num;n++) {
-			contractSkills.push(contract.skillTags[n].name);
+			jobSkills.push(job.skillTags[n].name);
 		}
-		updateContractPriority(contract, matchPriority(userSkills, contractSkills));
+		updateJobPriority(job, matchPriority(userSkills, jobSkills));
 	}
 
 	var i;
@@ -1117,66 +1151,66 @@ router.get('/search', function (req, res) {
 			}
 		}
 
-		// Get contracts
-		if (category === "all" || category === "contracts") {
-			var contractsByName = db.Contract.find({"name": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
-			var contractsByTags = db.Contract.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"});
-			var contractsByIntro = db.Contract.find({"info": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
-			var contractsByDetail = db.Contract.find({"details": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
+		// Get jobs
+		if (category === "all" || category === "jobs") {
+			var jobsByName = db.Job.find({"name": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
+			var jobsByTags = db.Job.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"});
+			var jobsByIntro = db.Job.find({"info": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
+			var jobsByDetail = db.Job.find({"details": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
 
-			// match contracts by name
-			while (contractsByName.hasNext()) {
-				var newContract = new Object();
-				var current = contractsByName.next();
-				if (current._id in contracts_results) {
+			// match jobs by name
+			while (jobsByName.hasNext()) {
+				var newJob = new Object();
+				var current = jobsByName.next();
+				if (current._id in jobs_results) {
 					// The object is found before
-					updateContractPriority(current, MATCH_NAME);
+					updateJobPriority(current, MATCH_NAME);
 				}
 				else {
 					// The object is found in current iteration
-					addNewContract(current, MATCH_NAME);
+					addNewJob(current, MATCH_NAME);
 				}
 			}
 
-			// match contracts by tags
-			while (contractsByTags.hasNext()) {
-				var newContract = new Object();
-				var current = contractsByTags.next();
-				if (current._id in contracts_results) {
+			// match jobs by tags
+			while (jobsByTags.hasNext()) {
+				var newJob = new Object();
+				var current = jobsByTags.next();
+				if (current._id in jobs_results) {
 					// The object is found before
-					updateContractPriority(current, MATCH_TAGS);
+					updateJobPriority(current, MATCH_TAGS);
 				}
 				else {
 					// The object is found in current iteration
-					addNewContract(current, MATCH_TAGS);
+					addNewJob(current, MATCH_TAGS);
 				}
 			}
 
-			// match contracts by intro
-			while (contractsByIntro.hasNext()) {
-				var newContract = new Object();
-				var current = contractsByIntro.next();
-				if (current._id in contracts_results) {
+			// match jobs by intro
+			while (jobsByIntro.hasNext()) {
+				var newJob = new Object();
+				var current = jobsByIntro.next();
+				if (current._id in jobs_results) {
 					// The object is found before
-					updateContractPriority(current, MATCH_REST);
+					updateJobPriority(current, MATCH_REST);
 				}
 				else {
 					// The object is found in current iteration
-					addNewContract(current, MATCH_REST);
+					addNewJob(current, MATCH_REST);
 				}
 			}
 
-			// match contracts by detail
-			while (contractsByDetail.hasNext()) {
-				var newContract = new Object();
-				var current = contractsByDetail.next();
-				if (current._id in contracts_results) {
+			// match jobs by detail
+			while (jobsByDetail.hasNext()) {
+				var newJob = new Object();
+				var current = jobsByDetail.next();
+				if (current._id in jobs_results) {
 					// The object is found before
-					updateContractPriority(current, MATCH_REST);
+					updateJobPriority(current, MATCH_REST);
 				}
 				else {
 					// The object is found in current iteration
-					addNewContract(current, MATCH_REST);
+					addNewJob(current, MATCH_REST);
 				}
 			}
 		}
@@ -1196,10 +1230,10 @@ router.get('/search', function (req, res) {
 			}
 		}
 
-		var contractsArray = [];
-		for (var id in contracts_results) {
-			if (contracts_results.hasOwnProperty(id)) {
-				contractsArray.push(contracts_results[id]);
+		var jobsArray = [];
+		for (var id in jobs_results) {
+			if (jobs_results.hasOwnProperty(id)) {
+				jobsArray.push(jobs_results[id]);
 			}
 		}
 
@@ -1215,12 +1249,12 @@ router.get('/search', function (req, res) {
 		}
 		projectsArray.sort(prioritySort);
 		peopleArray.sort(prioritySort);
-		contractsArray.sort(prioritySort);
+		jobsArray.sort(prioritySort);
 
 		var json = new Object();
 		json.projects = projectsArray.slice((page-1)*perpage, page*perpage);
 		json.people = peopleArray.slice((page-1)*perpage, page*perpage);
-		json.contracts = contractsArray.slice((page-1)*perpage, page*perpage);
+		json.jobs = jobsArray.slice((page-1)*perpage, page*perpage);
 		res.send(JSON.stringify(json));
 	}
 

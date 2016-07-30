@@ -31,7 +31,7 @@ var generateURL = function() {
   while (!isUniqueId) {
     var noUserURL = false,
         noProjectURL = false,
-        noContractURL = false;
+        noJobURL = false;
     randURL = Math.Random() * 100000;
   }
   return randURL;
@@ -56,7 +56,7 @@ module.exports.initSampleDb = function() {
     models.DetailedInfo,
     models.Showcase,
     models.Project,
-    models.Contract,
+    models.Job,
     models.Report]) {
       modelToRemove.remove({});
   }
@@ -144,25 +144,25 @@ module.exports.initSampleDb = function() {
         much much much much much much much much much much much much much much much \
         much much much much much much much much much longer information section');
     }, function(err, project) {
-      createContract(
-        'Website Designer', project._id, creator._id, Date.now(), 1500, function(err, contract) {
-          setContractField(contract._id, 'intro',
-            'This is the introduction to the contract!');
-          pushContractField(contract._id, 'descriptionTags', 'Webdev');
-          pushContractField(contract._id, 'descriptionTags', 'Campaigning');
-          setContractField(contract._id, 'details',
-            'These are the details for the contract!');
-          setContractField(contract._id, 'url', 'http://www.trump.com/connect-with-us/');
+      createJob(
+        'Website Designer', project._id, creator._id, Date.now(), 1500, function(err, job) {
+          setJobField(job._id, 'intro',
+            'This is the introduction to the job!');
+          pushJobField(job._id, 'descriptionTags', 'Webdev');
+          pushJobField(job._id, 'descriptionTags', 'Campaigning');
+          setJobField(job._id, 'details',
+            'These are the details for the job!');
+          setJobField(job._id, 'url', 'http://www.trump.com/connect-with-us/');
       });
-      createContract(
-        'Campaign Stumper', project._id, creator._id, Date.now(), 5000, function(err, contract) {
-          setContractField(contract._id, 'intro',
-            'This is the introduction to the contract!');
-          pushContractField(contract._id, 'descriptionTags', 'Webdev');
-          pushContractField(contract._id, 'descriptionTags', 'Campaigning');
-          setContractField(contract._id, 'details',
-            'These are the details for the contract!');
-          setContractField(contract._id, 'url', 'http://www.trump.com/connect-with-us/');
+      createJob(
+        'Campaign Stumper', project._id, creator._id, Date.now(), 5000, function(err, job) {
+          setJobField(job._id, 'intro',
+            'This is the introduction to the job!');
+          pushJobField(job._id, 'descriptionTags', 'Webdev');
+          pushJobField(job._id, 'descriptionTags', 'Campaigning');
+          setJobField(job._id, 'details',
+            'These are the details for the job!');
+          setJobField(job._id, 'url', 'http://www.trump.com/connect-with-us/');
       });
     });
   })
@@ -201,17 +201,17 @@ module.exports.createProject = function(name, owner, callback) {
   project.save(callback);
 }
 
-// Create a new contract given the required fields
-module.exports.createContract = function(name, project, owner, deadline, budget, callback) {
-  var contract = new Contract();
-  contract.name = name;
-  contract.project = project;
-  contract.owner = owner;
-  contract.deadline = deadline;
-  contract.budget = budget;
-  pushUserField(owner, 'contracts', contract);
-  pushProjectField(project, 'contracts', contract);
-  contract.save(callback);
+// Create a new job given the required fields
+module.exports.createJob = function(name, project, owner, deadline, budget, callback) {
+  var job = new Job();
+  job.name = name;
+  job.project = project;
+  job.owner = owner;
+  job.deadline = deadline;
+  job.budget = budget;
+  pushUserField(owner, 'jobs', job);
+  pushProjectField(project, 'jobs', job);
+  job.save(callback);
 }
 
 // Create a new message
@@ -272,8 +272,8 @@ module.exports.addUserSkill = function(user, skillToAdd, callback) {
   return;
 }
 
-// Adds a skill by ID to a contract by ID
-module.exports.addContractSkill = function(contract, skillToAdd, callback) {
+// Adds a skill by ID to a job by ID
+module.exports.addJobSkill = function(job, skillToAdd, callback) {
   return;
 }
 
@@ -332,34 +332,34 @@ module.exports.getProjectsByTag = function(tagString, callback) {
   return models.Project.find({tags: tagString}, callback);
 }
 
-// Get individual contract by searching for ID
-module.exports.getContract = function(id, callback) {
-  return models.Contract.findById(id, callback);
+// Get individual job by searching for ID
+module.exports.getJob = function(id, callback) {
+  return models.Job.findById(id, callback);
 }
 
-// Get individual contract by searching for a field value
-module.exports.getContractByField = function(field, value, callback) {
+// Get individual job by searching for a field value
+module.exports.getJobByField = function(field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.Contract.find(query, callback);
+  return models.Job.find(query, callback);
 }
 
-// Get a field of a contract document, searching user by ID
-module.exports.getContractField = function(id, field, callback) {
-  return models.Contract.findById(id, field, callback);
+// Get a field of a job document, searching user by ID
+module.exports.getJobField = function(id, field, callback) {
+  return models.Job.findById(id, field, callback);
 }
 
-// Get contracts by price range
-module.exports.getContractsByPrice = function(lowlimit, highlimit, callback) {
-  return models.Contract.
+// Get jobs by price range
+module.exports.getJobsByPrice = function(lowlimit, highlimit, callback) {
+  return models.Job.
     find().
     where('budget').gt(lowlimit).lt(highlimit).
     exec();
 }
 
-// Get contracts by skill tag
-module.exports.getContractsByTag = function(skill, callback) {
-  return models.Contract.find({skillTags: skill});
+// Get jobs by skill tag
+module.exports.getJobsByTag = function(skill, callback) {
+  return models.Job.find({skillTags: skill});
 }
 
 // Set a user document field, searching user by ID
@@ -377,10 +377,10 @@ module.exports.setProjectField = function(id, field, value, callback) {
 }
 
 // Set a user document field, searching user by ID
-module.exports.setContractField = function(id, field, value, callback) {
+module.exports.setJobField = function(id, field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.Contract.findByIdAndUpdate(id, {$set: query}, callback);
+  return models.Job.findByIdAndUpdate(id, {$set: query}, callback);
 }
 
 <<<<<<< HEAD
@@ -398,11 +398,11 @@ module.exports.pushProjectField = function(id, field, value, callback) {
   return models.Project.findByIdAndUpdate(id, {$push: query}, callback);
 }
 
-// Push a value to a field in the contract schema
-module.exports.pushContractField = function(id, field, value, callback) {
+// Push a value to a field in the job schema
+module.exports.pushJobField = function(id, field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.Contract.findByIdAndUpdate(id, {$push: query}, callback);
+  return models.Job.findByIdAndUpdate(id, {$push: query}, callback);
 }
 
 module.exports.comparePassword = function(candidatePassword, hash, callback){
