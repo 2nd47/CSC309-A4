@@ -30,21 +30,22 @@ module.exports.initSampleDb = function() {
     sample_data_init = true;
   }
   // Clear database
-  for (var modelToRemove in [
-    models.Skill,
-    models.Message,
-    models.Contact,
-    models.User,
-    models.ProjectMember,
-    models.DetailedInfo,
-    models.Showcase,
-    models.Project,
-    models.Job,
-    models.Report]) {
-      modelToRemove.remove({});
+  collectionsToDrop = [
+    'skills',
+    'messages',
+    'broadcasts',
+    'chats',
+    'users',
+    'detailedinfos',
+    'showcases',
+    'projects',
+    'jobs',
+    'reports']
+  for (var i; i<collectionsToDrop.length; i++) {
+      mongoose.connection.collections[collectionsToDrop[i]].drop();
   }
   // Create users
-  createUser('dtrump', 'passwordhashtrump', 'dtrump@gmail.com', function(err, user) {
+  this.createUser('dtrump', 'passwordhashtrump', 'dtrump@gmail.com', function(err, user) {
     setUserField(user._id, 'name', 'Donald Trump');
     setUserField(user._id, 'title', 'Republican Presidential Nominee');
     setUserField(user._id, 'bio', 'I am the greatest candidate for this position!');

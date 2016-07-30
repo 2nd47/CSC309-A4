@@ -22,7 +22,7 @@ var skillSchema = new Schema({
     min: [0, 'Skill must be at least 0'],
     max: [5, 'Skill must be no greater than 5']
   }
-});
+}, { collection: 'skills' });
 
 var Skill = mongoose.model('Skill', skillSchema);
 
@@ -48,7 +48,7 @@ var messageSchema = new Schema({
 		type: Boolean,
 		default: true
 	}
-}, { timestamps: true });
+}, { collection: 'messages', timestamps: true });
 
 var Message = mongoose.model('Message', messageSchema);
 
@@ -67,7 +67,7 @@ var broadcastSchema = new Schema({
     type: String,
     required: true
   }
-}, { timestamps: true });
+}, { collection: 'broadcasts', timestamps: true });
 
 var Broadcast = mongoose.model('Broadcast', broadcastSchema);
 
@@ -220,7 +220,7 @@ var detailedProjectInfoSchema = new Schema({
     type: String,
     required: true
   }
-});
+}, { collection: 'detailedInfos', timestamps: true });
 
 var DetailedInfo = mongoose.model('DetailedInfo', detailedProjectInfoSchema);
 
@@ -369,7 +369,7 @@ var jobSchema = new Schema({
     type: String,
     default: ""
   }
-}, { timestamps: true });
+}, { collection: 'jobs', timestamps: true });
 
 var Job = mongoose.model('Job', jobSchema);
 
