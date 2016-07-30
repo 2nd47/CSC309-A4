@@ -24,7 +24,6 @@
     "passport": "*",
     "passport-http": "*",
     "passport-local": "*"
-
   },
   "devDependencies": {
     "mocha": "^2.5.3"
