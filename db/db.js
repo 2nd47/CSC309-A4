@@ -43,6 +43,8 @@ var sample_data_init = false;
 module.exports.initSampleDb = function() {
   if (sample_data_init) {
     return;
+  } else {
+    sample_data_init = true;
   }
   // Clear database
   for (var modelToRemove in [
@@ -116,48 +118,45 @@ module.exports.initSampleDb = function() {
 }
 
 // Create a new user given the required fields
-module.exports.createUser = function(username, passwordHash, email) {
+module.exports.createUser = function(username, passwordHash, email, callback) {
   var user = new User();
   user.username = username;
   user.passwordHash = passwordHash;
   user.email = email;
-  user.save();
-  return user;
+  user.save(callback);
 }
 
 // Create a new project given the required fields
-module.exports.createProject = function(name, owner) {
+module.exports.createProject = function(name, owner, callback) {
   var project = new Project();
   project.name = name;
   project.owner = owner;
-  project.save();
-	return project;
+  project.save(callback);
 }
 
 // Create a new contract given the required fields
-module.exports.createContract = function(name, project, owner, deadline, budget) {
+module.exports.createContract = function(name, project, owner, deadline, budget, callback) {
   var contract = new Contract();
   contract.name = name;
   contract.project = project;
   contract.owner = owner;
   contract.deadline = deadline;
   contract.budget = budget;
-  contract.save();
   pushUserField(owner, 'contracts', contract);
   pushProjectField(project, 'contracts', contract);
-  return contract;
+  contract.save(callback);
 }
 
 // Create a new message
-module.exports.createMessage = function(sender, receiver, text) {
+module.exports.createMessage = function(sender, receiver, text, callback) {
   var message = new Message();
   message.sender = sender;
   message.text = text;
-  message.save();
-  getContact(sender, receiver, function(err, contact) {
-    models.Contact.findByIdAndUpdate(contact._id, {$push: {'messages':message}});
+  message.save(function(err, message) {
+    getContact(sender, receiver, function(err, contact) {
+      models.Contact.findByIdAndUpdate(contact._id, {$push: {'messages':message}});
+    }, callback;
   });
-  return message;
 }
 
 // Get a contact doc associated with this user and the other user
@@ -166,125 +165,117 @@ module.exports.getContact = function(userOne, userTwo, callback) {
     $or:[
       {'personOne': userOne, 'personTwo': userTwo},
       {'personOne': userTwo, 'personOne': userOne}
-    ]}, function(err, contact) {
-      if (err) {
-        console.log(err);
-      }
-      callback(err, contact);
-  });
+    ]}, callback);
 }
 
 // Create a new dialogue
-module.exports.createDialogue = function(personOne, personTwo) {
+module.exports.createDialogue = function(personOne, personTwo, callback) {
   var contact = new Dialogue();
   contact.personOne = personOne;
   contact.personTwo = personTwo;
-  contact.save();
-  return contact;
+  contact.save(callback);
 }
 
 // Create a new skill
-module.exports.createSkill = function(name, rating) {
+module.exports.createSkill = function(name, rating, callback) {
   var skill = new Skill();
   skill.name = name;
   skill.rating = rating;
-  skill.save();
-  return skill;
+  skill.save(callback);
 }
 
 // Create a new broadcasr
-module.exports.createBroadcast = function(url, message) {
+module.exports.createBroadcast = function(url, message, callback) {
   var broadcast = new Broadcast();
   broadcast.url = url;
 	broadcast.message = message;
-  broadcast.save();
-	return broadcast;
+  broadcast.save(callback);
 }
 
 // Adds a skill by ID to a user by ID
-module.exports.addUserSkill = function(user, skillToAdd) {
+module.exports.addUserSkill = function(user, skillToAdd, callback) {
   return;
 }
 
 // Adds a skill by ID to a contract by ID
-module.exports.addContractSkill = function(contract, skillToAdd) {
+module.exports.addContractSkill = function(contract, skillToAdd, callback) {
   return;
 }
 
 // Adds a showcase item to a project showcase
-module.exports.addShowcaseItem = function(project, itemPath) {
+module.exports.addShowcaseItem = function(project, itemPath, callback) {
   return;
 }
 
 // Get individual user by searching for ID
-module.exports.getUser = function(id) {
-  return models.User.findById(id);
+module.exports.getUser = function(id, callback) {
+  return models.User.findById(id, callback);
 }
 
 // Get a field of a user document, searching user by ID
-module.exports.getUserField = function(id, field) {
-  return models.User.findById(id, field, function(err, user) {});
+module.exports.getUserField = function(id, field, callback) {
+  return models.User.findById(id, field, callback);
 }
 
 // Get individual user by searching for a field value
-module.exports.getUserByField = function(field, value) {
+module.exports.getUserByField = function(field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.User.find(query, function(err, user) {});
+  return models.User.find(query, callback);
 }
 
 // Get individual project by searching for ID
-module.exports.getProject = function(id) {
-  return models.Project.findById(id);
+module.exports.getProject = function(id, callback) {
+  return models.Project.findById(id, callback);
 }
 
 // Get a field of a project document, searching user by ID
-module.exports.getProjectField = function(id, field) {
-  return models.Project.findById(id, field, function(err, project) {});
+module.exports.getProjectField = function(id, field, callback) {
+  return models.Project.findById(id, field, callback);
 }
 
 // Get individual project by searching for a field value
-module.exports.getProjectByField = function(field, value) {
+module.exports.getProjectByField = function(field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.Project.find(query, function(err, project) {});
+  return models.Project.find(query, callback);
 }
 
 // Get all projects associated with a user
-module.exports.getProjectsByUsername = function(user) {
+module.exports.getProjectsByUsername = function(user, callback) {
   var userId = user._id;
   var query = { $or: [
       {'owner': userId},
       {'members.user': userId}
     ]
   };
-  return Project.find(query).exec();
+  return Project.find(query, callback);
 }
 
 // Get projects by tag
-module.exports.getProjectsByTag = function(tagString) {
-  return models.Project.find({tags: tagString});
+module.exports.getProjectsByTag = function(tagString, callback) {
+  return models.Project.find({tags: tagString}, callback);
 }
 
 // Get individual contract by searching for ID
-module.exports.getContract = function(id) {
-  return models.Contract.findById(id);
+module.exports.getContract = function(id, callback) {
+  return models.Contract.findById(id, callback);
 }
 
 // Get individual contract by searching for a field value
-module.exports.getContractByField = function(field, value) {
+module.exports.getContractByField = function(field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.Contract.find(query, function(err, contract) {});
+  return models.Contract.find(query, callback);
 }
 
 // Get a field of a contract document, searching user by ID
-module.exports.getContractField = function(id, field) {
-  return models.Contract.findById(id, field, function(err, contract) {});
+module.exports.getContractField = function(id, field, callback) {
+  return models.Contract.findById(id, field, callback);
 }
 
 // Get contracts by price range
-module.exports.getContractsByPrice = function(lowlimit, highlimit) {
+module.exports.getContractsByPrice = function(lowlimit, highlimit, callback) {
   return models.Contract.
     find().
     where('budget').gt(lowlimit).lt(highlimit).
@@ -292,51 +283,59 @@ module.exports.getContractsByPrice = function(lowlimit, highlimit) {
 }
 
 // Get contracts by skill tag
-module.exports.getContractsByTag = function(skill) {
+module.exports.getContractsByTag = function(skill, callback) {
   return models.Contract.find({skillTags: skill});
 }
 
 // Set a user document field, searching user by ID
-module.exports.setUserField = function(id, field, value) {
+module.exports.setUserField = function(id, field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.User.findByIdAndUpdate(id, {$set: query}, function(err, user) {});
+  return models.User.findByIdAndUpdate(id, {$set: query}, callback);
 }
 
 // Set a user document field, searching user by ID
-module.exports.setProjectField = function(id, field, value) {
+module.exports.setProjectField = function(id, field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.Project.findByIdAndUpdate(id, {$set: query});
+  return models.Project.findByIdAndUpdate(id, {$set: query}, callback);
 }
 
 // Set a user document field, searching user by ID
-module.exports.setContractField = function(id, field, value) {
+module.exports.setContractField = function(id, field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.Contract.findByIdAndUpdate(id, {$set: query});
+  return models.Contract.findByIdAndUpdate(id, {$set: query}, callback);
 }
 
+<<<<<<< HEAD
 // Push a value to a field in the user schema
-module.exports.pushUserField = function(id, field, value) {
+module.exports.pushUserField = function(id, field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.User.findByIdAndUpdate(id, {$push: query});
+  return models.User.findByIdAndUpdate(id, {$push: query}, callback);
 }
 
 // Push a value to a field in the project schema
-module.exports.pushProjectField = function(id, field, value) {
+module.exports.pushProjectField = function(id, field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.Project.findByIdAndUpdate(id, {$push: query});
+  return models.Project.findByIdAndUpdate(id, {$push: query}, callback);
 }
 
 // Push a value to a field in the contract schema
-module.exports.pushContractField = function(id, field, value) {
+module.exports.pushContractField = function(id, field, value, callback) {
   var query = [];
   query[field] = value;
-  return models.Contract.findByIdAndUpdate(id, {$push: query});
+  return models.Contract.findByIdAndUpdate(id, {$push: query}, callback);
 }
+
+module.exports.comparePassword = function(candidatePassword, hash, callback){
+  bcrypt.compare(candidatePassword, hash, function(err, isMatch) {
+    if(err) throw err;
+    callback(null, isMatch);
+  });
+};
 
 module.exports.models = models;
 module.exports.connect = connect;
