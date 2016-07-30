@@ -19,7 +19,7 @@ router.use(function timeLog(req, res, next) {
 });
 
 //use static
-router.use(express.static("../"));
+router.use(express.static("./"));
 
 //use flash
 router.use(flash());
