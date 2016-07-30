@@ -1,5 +1,5 @@
-# CSC309-A4
-CSC309 Summer 2016 Assignment 4 - Sharing Economy Web App
+# CSC309 Sharing Economy Web App
+Greetings! This is the CSC309 Assignment 4 (Sharing Economy Web App) submission for the AIDA web app. Group members include:
 
 ## Installation
 For Windows:
