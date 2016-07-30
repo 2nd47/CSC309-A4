@@ -59,8 +59,8 @@ var broadcastSchema = new Schema({
 var Broadcast = mongoose.model('Broadcast', broadcastSchema);
 
 
-//DIALOGUES
-var dialogueSchema = new Schema({
+//CHATS
+var chatSchema = new Schema({
 	personOne: {
 		type: ObjectId,
     required: true,
@@ -75,9 +75,9 @@ var dialogueSchema = new Schema({
     type: messageSchema,
     ref: 'Message'
   }]
-},{ collection : 'dialogues', timestamps: true });
+},{ collection : 'chats', timestamps: true });
 
-var Dialogue = mongoose.model('Dialogue', dialogueSchema);
+var Chat = mongoose.model('Chat', chatSchema);
 
 //USERS
 var userSchema = new Schema({
@@ -95,6 +95,10 @@ var userSchema = new Schema({
   name: {
     type: String
   },
+	avatar: {
+		// path to the image
+		type: String
+	}
   title: {
     type: String
   },
@@ -139,9 +143,9 @@ var userSchema = new Schema({
 		default: 0
 	},
   //messages: [messageSchema],
-  contacts: [{
+  chats: [{
     type: ObjectId,
-    ref: 'Dialogue'
+    ref: 'Chat'
   }],
 	messageBoard: [{
 		type: broadcastSchema
@@ -150,9 +154,9 @@ var userSchema = new Schema({
     type: ObjectId,
     ref: 'User'
   }],
-  contracts: [{
+  jobs: [{
     type: ObjectId,
-    ref: 'Contract'
+    ref: 'Job'
   }],
 	frozen: [{
 		type: Boolean,
@@ -212,9 +216,9 @@ var projectSchema = new Schema({
   members: [{
     type: projectMemberSchema
   }],
-  contracts: [{
+  jobs: [{
     type: ObjectId,
-    ref: 'Contract'
+    ref: 'Job'
   }],
   showcase: {
     type: showcaseSchema
@@ -243,7 +247,7 @@ var projectSchema = new Schema({
 
 var Project = mongoose.model('Project', projectSchema);
 
-var contractSchema = new Schema({
+var jobSchema = new Schema({
   name: {
     type: String,
     required: true
@@ -261,7 +265,7 @@ var contractSchema = new Schema({
   descriptionTags: [{
     type: String
   }],
-  // ID of project member who created the contract
+  // ID of project member who created the job
   project: {
     type: ObjectId,
     required: true,
@@ -295,7 +299,7 @@ var contractSchema = new Schema({
   }
 }, { timestamps: true });
 
-var Contract = mongoose.model('Contract', contractSchema);
+var Job = mongoose.model('Job', jobSchema);
 
 var reportSchema = new Schema({
   reporter: {
@@ -322,7 +326,7 @@ var reportSchema = new Schema({
   }
 }, { collection: 'reports', timestamps: true });
 
-var Report = mongoose.model('Report', contractSchema);
+var Report = mongoose.model('Report', jobSchema);
 
 module.exports.Skill = Skill;
 module.exports.Message = Message;
@@ -331,5 +335,5 @@ module.exports.DetailedInfo = DetailedInfo;
 module.exports.ProjectMember = ProjectMember;
 module.exports.Showcase = Showcase;
 module.exports.Project = Project;
-module.exports.Contract = Contract;
+module.exports.Job = Job;
 module.exports.Report = Report;
