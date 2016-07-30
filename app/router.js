@@ -185,31 +185,36 @@ router.post('/jobs/new', function (req, res) {
 			var projectId = jobForm.project;
 			if (canAddJobToProject(userId, projectId)) {
 				// may createJob return job _id or something...
-				var newJobId = db.createJob(jobForm.name, jobForm.project,
-				userId, jobForm.deadline, jobForm.budget)._id;
-				db.setJobField(newJobId, "intro", jobForm.intro);
-				// Create new skill objects
-				var skills = jobForm.skillTags;
-				var numSkills = skills.length;
-				var i;
-				var skillTags = [];
-				for (i=0;i<numSkills;i++) {
-					var curSkill = skills[i];
-					var newSkill = db.createSkill(curSkill.name, curSkill.rating);
-					skillTags.push(newSkill);
-				}
-				db.setJobField(newJobId, "skillTags", skillTags);
-				// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
-				// into an array of strings
-				var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
-				db.setJobField(newJobId, "descriptionTags", tags);
-				db.setJobField(newJobId, "details", jobForm.details);
-				db.setJobField(newJobId, "url", jobIdToUrl(newJobId));//??
-				json.url = jobIdToUrl(newJobId);
-				json.success = "true";
-				// send broadcast to all followers of the project
-				var broadcast = "A new job is added for " + db.getProjectField(projectId, "name") + " .";
-				broadcastFollowers(projectId, jobIdToUrl(newJobId), broadcast);
+				
+				db.createJob(jobForm.name, jobForm.project,
+				userId, jobForm.deadline, jobForm.budget, function(err, job) {
+					var newJobId = job._id
+					db.setJobField(newJobId, "intro", jobForm.intro);
+					// Create new skill objects
+					var skills = jobForm.skillTags;
+					var numSkills = skills.length;
+					var i;
+					var skillTags = [];
+					for (i=0;i<numSkills;i++) {
+						var curSkill = skills[i];
+						db.createSkill(curSkill.name, curSkill.rating, function(err, skill){
+							skillTags.push(skill);
+						});
+						
+					}
+					db.setJobField(newJobId, "skillTags", skillTags);
+					// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
+					// into an array of strings
+					var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
+					db.setJobField(newJobId, "descriptionTags", tags);
+					db.setJobField(newJobId, "details", jobForm.details);
+					db.setJobField(newJobId, "url", jobIdToUrl(newJobId));//??
+					json.url = jobIdToUrl(newJobId);
+					json.success = "true";
+					// send broadcast to all followers of the project
+					var broadcast = "A new job is added for " + db.getProjectField(projectId, "name") + " .";
+					broadcastFollowers(projectId, jobIdToUrl(newJobId), broadcast);
+				});
 			}
 			else {
 				json.success = "false";
@@ -468,16 +473,20 @@ router.post('/projects/new', function (req, res, next) {
 		var userId = req.session.userId;
 		var projectForm = qs.parse(req.data);
 		// may createJob return job _id or something...
-		var newProjectId = db.createProject(projectForm.name, userId);
-		// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
-		// into an array of strings
-		var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
-		db.setProjectField(newProjectId, "tags", tags);
-		db.setProjectField(newProjectId, "members", projectForm.members);
-		db.setProjectField(newProjectId, "details", projectForm.details);
-		db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));//??
-		json.url = jobIdToUrl(newProjectId);
-		json.success = "true";
+		
+		db.createProject(projectForm.name, userId, function(err, project) {
+			// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
+			// into an array of strings
+			var newProjectId = project._id;
+			var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
+			db.setProjectField(newProjectId, "tags", tags);
+			db.setProjectField(newProjectId, "members", projectForm.members);
+			db.setProjectField(newProjectId, "details", projectForm.details);
+			db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));//??
+			json.url = jobIdToUrl(newProjectId);
+			json.success = "true";
+		});
+		
 	}
 	catch (e) {
 		json.success = "false";

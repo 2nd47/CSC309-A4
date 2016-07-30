@@ -18,8 +18,12 @@ exports.broadcastFollowers = function (id, url, message) {
 		var follower = db.User.findById(followers[i]);
 		if (follower) {
 			var messageboard = db.getUserField()
-			messageboard.push(db.createBroadcast(url, message));
-			db.setUserField(followers[i], "messageBoard", messageboard);
+			db.createBroadcast(url, message, function(err, broadcast){
+				messageboard.push(broadcast);
+				db.setUserField(followers[i], "messageBoard", messageboard);
+			})
+			
+			
 		}
 	}
 	return;
@@ -27,8 +31,9 @@ exports.broadcastFollowers = function (id, url, message) {
 
 // push a message to a chat history
 exports.pushMessage = function (sender, message, chatId) {
-	var newMessage = db.createMessage(sender, message);
-	db.Chat.findByIdAndUpdate(id, {$push: {"messages": newMessage}});
+	db.createMessage(sender, message, function(err, message){
+		db.Chat.findByIdAndUpdate(id, {$push: {"messages": message}});
+	});
 }
 
 // send a message from the sender to the receiver
@@ -56,11 +61,13 @@ exports.sendMessageTo = function (sender, receiver, message) {
 		else {
 			// if there is no existing chat, create a new one, add it
 			// to the chat list of both users.
-			var newChat = db.createChat(sender, receiver);
-			var chatId = newChat._id;
-			pushMessage(sender, message, chatId);
-			db.User.findByIdAndUpdate(sender, {$push: {"chats": newChat}});
-			db.User.findByIdAndUpdate(receiver, {$push: {"chats": newChat}});
+			var newChat = 
+			db.createChat(sender, receiver, function(err, chat){
+				pushMessage(sender, message, chat._id);
+				db.User.findByIdAndUpdate(sender, {$push: {"chats": newChat}});
+				db.User.findByIdAndUpdate(receiver, {$push: {"chats": newChat}});
+			});
+			
 		}
 	}
 	else {
