@@ -169,7 +169,7 @@ module.exports.initSampleDb = function() {
 
 // Create a new user given the required fields
 module.exports.createUser = function(username, passwordHash, email, callback) {
-  var user = new User();
+  var user = new models.User();
   user.username = username;
   user.passwordHash = passwordHash;
   user.email = email;
@@ -178,7 +178,7 @@ module.exports.createUser = function(username, passwordHash, email, callback) {
 
 // Create a new project given the required fields
 module.exports.createProject = function(name, owner, callback) {
-  var project = new Project();
+  var project = new models.Project();
   project.name = name;
   project.owner = owner;
   project.members = [owner];
@@ -187,7 +187,7 @@ module.exports.createProject = function(name, owner, callback) {
 
 // Create a new job given the required fields
 module.exports.createJob = function(name, project, owner, deadline, budget, callback) {
-  var job = new Job();
+  var job = new models.Job();
   job.name = name;
   job.project = project;
   job.owner = owner;
@@ -200,7 +200,7 @@ module.exports.createJob = function(name, project, owner, deadline, budget, call
 
 // Create a new message
 module.exports.createMessage = function(sender, receiver, text, callback) {
-  var message = new Message();
+  var message = new models.Message();
   message.sender = sender;
   message.text = text;
   message.save(function(err, message) {
@@ -229,7 +229,7 @@ module.exports.getContact = function(userOne, userTwo, callback) {
 
 // Create a new dialogue
 module.exports.createDialogue = function(personOne, personTwo, callback) {
-  var contact = new Dialogue();
+  var contact = new models.Dialogue();
   contact.personOne = personOne;
   contact.personTwo = personTwo;
   contact.save(callback);
@@ -237,7 +237,7 @@ module.exports.createDialogue = function(personOne, personTwo, callback) {
 
 // Create a new skill
 module.exports.createSkill = function(name, rating, callback) {
-  var skill = new Skill();
+  var skill = new models.Skill();
   skill.name = name;
   skill.rating = rating;
   skill.save(callback);
@@ -245,7 +245,7 @@ module.exports.createSkill = function(name, rating, callback) {
 
 // Create a new broadcasr
 module.exports.createBroadcast = function(url, message, callback) {
-  var broadcast = new Broadcast();
+  var broadcast = new models.Broadcast();
   broadcast.url = url;
 	broadcast.message = message;
   broadcast.save(callback);
