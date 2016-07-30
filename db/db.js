@@ -205,7 +205,7 @@ module.exports.createMessage = function(sender, receiver, text, callback) {
   message.save(function(err, message) {
     getContact(sender, receiver, function(err, contact) {
       models.Contact.findByIdAndUpdate(contact._id, {$push: {'messages':message}});
-    }, callback;
+    }, callback);
   });
 }
 

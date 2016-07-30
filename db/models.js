@@ -123,7 +123,7 @@ var userSchema = new Schema({
 		// path to the image
 		type: String,
     default: "/assets/img/users/placeholder.png"
-	}
+	},
   title: {
     type: String,
     default: ""
@@ -269,7 +269,7 @@ var projectSchema = new Schema({
     ref: 'User'
   },
   members: [{
-    type: projectMemberSchema,
+    type: ObjectId,
     default: []
   }],
   jobs: [{
@@ -300,7 +300,7 @@ var projectSchema = new Schema({
 	numFollowers: {
 		type: Number,
 		default: 0
-	}
+	},
   url: {
     type: String,
     default: ""

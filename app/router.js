@@ -8,8 +8,9 @@ var router = express.Router();
 var User = require('../db/db');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var bcrypt = require('bcrypt');
-
+var bcrypt = require('bcryptjs');
+var flash = require('connect-flash');
+var session = require('express-session');
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -17,12 +18,55 @@ router.use(function timeLog(req, res, next) {
   next();
 });
 
+//use static
+router.use(express.static("../"));
+
+//use flash
+router.use(flash());
+
+//use session
+router.use(session(
+  { cookie: { maxAge: 60000 },
+    secret: 'garble',
+    resave: false,
+    saveUninitialized: false}));
+
+// Passport Local Strategy
+passport.use(new LocalStrategy({
+  passReqToCallback : true
+  }, function(username, password, done) {
+    User.getUserByUsername(username, function(err, user){
+      if(err) throw err;
+      if(!user){
+        return done(null, false, {message: 'Unknown User'});
+      }
+      User.comparePassword(password, user.passwordHash, function(err, isMatch){
+        if(err) throw err;
+        if(isMatch){
+          return done(null, user);
+        } else {
+          return done(null, false, {message: 'Invalid password'});
+        }
+      });
+    });
+}));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.getUserById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
 // change the request methods as required
 // refer to express documentation for more details
 
 // if logged in: feed; else: landing page
 router.get('/', ensureAuthenticated, function (req, res, next) {
-  res.send('AIDA Home Page!');
+  res.sendFile('landing.html', { root: "../" });
 });
 
 // Ensure authenticated so the user cannot access the home page if not logged in
@@ -44,12 +88,12 @@ router.post('/signup', function (req, res, next) {
   var email2 = req.body.email2;
 
   // Validation
-  req.checkBody(‘username’, 'Username is required').notEmpty();
-  req.checkBody(‘password’, 'Password is required').notEmpty();
-  req.checkBody(‘password2’, 'Passwords do not match').equals(req.body.password);
-  req.checkBody(‘email’, 'Email is required').notEmpty();
+  req.checkBody('username', 'Username is required').notEmpty();
+  req.checkBody('password', 'Password is required').notEmpty();
+  req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
+  req.checkBody('email', 'Email is required').notEmpty();
   req.checkBody('email', 'Email is not valid').isEmail();
-  req.checkBody(‘email2’, 'Emails do not match').equals(req.body.email);
+  req.checkBody('email2', 'Emails do not match').equals(req.body.email);
 
   var errors = req.validationErrors();
 
@@ -68,19 +112,19 @@ router.post('/signup', function (req, res, next) {
     */
   } else {
     console.log('Signup No Error');
-    
+
     // Hash the password. Store the hash in var password
     bcrypt.genSalt(10, function(err, salt) {
     	bcrypt.hash(password, salt, function(err, hash) {
-    		password = hash;	
-    	});	
+    		password = hash;
+    	});
     });
-    
+
     // Create the user
     var newUser = new User({
       username: username,
-      password: password;
-      email: email;
+      password: password,
+      email: email
     });
 
     User.createUser(newUser, function(err, user){
@@ -111,40 +155,11 @@ router.post('/signup', function (req, res, next) {
   }
 });
 
-// Passport Local Strategy
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.getUserByUsername(username, function(err, user){
-      if(err) throw err;
-      if(!user){
-        return done(null, false, {message: 'Unknown User'});
-      }
-      User.comparePassword(password, user.passwordHash, function(err, isMatch){
-        if(err) throw err;
-        if(isMatch){
-          return done(null, user);
-        } else {
-          return done(null, false, {message: 'Invalid password'});
-        }
-      });
-    });
-}));
-
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  User.getUserById(id, function(err, user) {
-    done(err, user);
-  });
-});
-
 // Login
 router.post('/login',
-            passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login', failureFlash: true}),
-            function (req, res, next) {
-              res.redirect('/');
+  passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login', failureFlash: true}),
+    function (req, res, next) {
+      res.redirect('/');
 });
 
 // Logout
@@ -162,7 +177,7 @@ router.get('/contracts', function (req, res) {
 	get id, name, status, skillTags, tags*/
 	var cursor = db.Contract.find({},{"name": 1, "status": 1, "skillTags": 1, "tags": 1}).sort({"updatedAt": -1});
 	res.send(JSON.stringify(cursor.toArray()));
-	
+
 });
 
 // create a new job
@@ -185,47 +200,52 @@ router.post('/jobs/new', function (req, res) {
 			var projectId = jobForm.project;
 			if (canAddJobToProject(userId, projectId)) {
 				// may createJob return job _id or something...
-				var newJobId = db.createJob(jobForm.name, jobForm.project,
-				userId, jobForm.deadline, jobForm.budget)._id;
-				db.setJobField(newJobId, "intro", jobForm.intro);
-				// Create new skill objects
-				var skills = jobForm.skillTags;
-				var numSkills = skills.length;
-				var i;
-				var skillTags = [];
-				for (i=0;i<numSkills;i++) {
-					var curSkill = skills[i];
-					var newSkill = db.createSkill(curSkill.name, curSkill.rating);
-					skillTags.push(newSkill);
-				}
-				db.setJobField(newJobId, "skillTags", skillTags);
-				// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
-				// into an array of strings
-				var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
-				db.setJobField(newJobId, "descriptionTags", tags);
-				db.setJobField(newJobId, "details", jobForm.details);
-				db.setJobField(newJobId, "url", jobIdToUrl(newJobId));//??
-				json.url = jobIdToUrl(newJobId);
-				json.success = "true";
-				// send broadcast to all followers of the project
-				var broadcast = "A new job is added for " + db.getProjectField(projectId, "name") + " .";
-				broadcastFollowers(projectId, jobIdToUrl(newJobId), broadcast);
+
+				db.createJob(jobForm.name, jobForm.project,
+				userId, jobForm.deadline, jobForm.budget, function(err, job) {
+					var newJobId = job._id
+					db.setJobField(newJobId, "intro", jobForm.intro);
+					// Create new skill objects
+					var skills = jobForm.skillTags;
+					var numSkills = skills.length;
+					var i;
+					var skillTags = [];
+					for (i=0;i<numSkills;i++) {
+						var curSkill = skills[i];
+						db.createSkill(curSkill.name, curSkill.rating, function(err, skill){
+							skillTags.push(skill);
+						});
+
+					}
+					db.setJobField(newJobId, "skillTags", skillTags);
+					// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
+					// into an array of strings
+					var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
+					db.setJobField(newJobId, "descriptionTags", tags);
+					db.setJobField(newJobId, "details", jobForm.details);
+					db.setJobField(newJobId, "url", jobIdToUrl(newJobId));//??
+					json.url = jobIdToUrl(newJobId);
+					json.success = "true";
+					// send broadcast to all followers of the project
+					var broadcast = "A new job is added for " + db.getProjectField(projectId, "name") + " .";
+					broadcastFollowers(projectId, jobIdToUrl(newJobId), broadcast);
+				});
 			}
 			else {
 				json.success = "false";
 			}
-			
+
 		}
 		else {
 			json.success = "false";
 		}
-		
+
 	}
 	catch (e) {
 		json.success = "false";
 		console.log(e.message);
 	}
-	
+
 	res.send(JSON.stringify(json));
 });
 
@@ -292,7 +312,7 @@ router.get('/jobs/:job_id', function (req, res) {
 // prompt to sign a job with job_id
 router.get('/jobs/:job_id/sign', function (req, res) {
 	/**/
-}
+});
 
 
 // list of profiles of top ten followed users
@@ -468,22 +488,26 @@ router.post('/projects/new', function (req, res, next) {
 		var userId = req.session.userId;
 		var projectForm = qs.parse(req.data);
 		// may createJob return job _id or something...
-		var newProjectId = db.createProject(projectForm.name, userId);
-		// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
-		// into an array of strings
-		var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
-		db.setProjectField(newProjectId, "tags", tags);
-		db.setProjectField(newProjectId, "members", projectForm.members);
-		db.setProjectField(newProjectId, "details", projectForm.details);
-		db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));//??
-		json.url = jobIdToUrl(newProjectId);
-		json.success = "true";
+
+		db.createProject(projectForm.name, userId, function(err, project) {
+			// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
+			// into an array of strings
+			var newProjectId = project._id;
+			var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
+			db.setProjectField(newProjectId, "tags", tags);
+			db.setProjectField(newProjectId, "members", projectForm.members);
+			db.setProjectField(newProjectId, "details", projectForm.details);
+			db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));//??
+			json.url = jobIdToUrl(newProjectId);
+			json.success = "true";
+		});
+
 	}
 	catch (e) {
 		json.success = "false";
 		console.log(e.message);
 	}
-	
+
 	res.send(JSON.stringify(json));
   //res.send('AIDA Home Page!');
 });
@@ -729,14 +753,14 @@ router.get('/inbox/:chat_id', function (req, res) {
 		json.result.other_name = other.name;
 		json.messages = [];
 		var messages = chat.messages.slice(-10); // Get the last 10 messages
-		
+
 		var i;
 		var numMessages = messages.length;
 		for (i=0;i<numMessages;i++) {
 			// Mark all the messages shown as read
 			readMessage(messages[i]);
 			// check sender of the message and append to list
-			new message = new Object();
+			var message = new Object();
 			if (messages[i].sender === userId) {
 				message.sender = "user";
 			}
@@ -746,8 +770,8 @@ router.get('/inbox/:chat_id', function (req, res) {
 			message.text = messages[i].text;
 			json.messages.push(message);
 		}
-		
-		
+
+
 	}
 	else {
 		json.success = "false";
@@ -768,7 +792,7 @@ router.post('/inbox/:person_id/new', function (req, res) {
 	else {
 		res.send("Denied");
 	}
-}
+});
 
 // load all messages from a chat history
 router.get('/inbox/:chat_id/all', function (req, res) {
@@ -865,7 +889,7 @@ router.get('/search', function (req, res) {
 	// TODO: are ObjectIds hashable                   //
 	//                                                //
 	////////////////////////////////////////////////////
-	
+
 	// Get the logged in user's id to adjust search priority
 	var userId = req.session.userId;
 	var userInfo = collectUserInfo(userId);
