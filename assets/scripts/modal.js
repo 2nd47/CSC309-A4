@@ -72,12 +72,30 @@ function loginMode() {
 }
 
 loginButton.onclick = function(event) {
-  document.getElementById("login_signup_content").style.display = "none";
-  document.getElementById("verify_content").style.display = "block";
-  var $proceedButton = $('<div>')
-    .attr("id", "proceed_button")
-    .text("Login");
-  $('#verify_content').append($proceedButton);
+  var data = {};
+  data.username = $('#username').val();
+  data.password = $('#password').val();
+  data.password2 = $('#password2').val();
+  data.email = $('#email').val();
+  data.email2 = $('#email2').val();
+
+  $.ajax(
+    {
+      type: "post",
+      url: "/login",
+      data: data
+    })
+    .done(function(data) {
+      document.getElementById("login_signup_content").style.display = "none";
+      document.getElementById("verify_content").style.display = "block";
+      var $proceedButton = $('<div>')
+        .attr("id", "proceed_button")
+        .text("Login");
+      $('#verify_content').append($proceedButton);
+    })
+    .fail(function(jqXHR, textStatus) {
+      alert("Failed to log in yo" + textStatus);
+    });
 }
 
 signupButton.onclick = function(event) {
