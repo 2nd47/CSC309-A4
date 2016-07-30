@@ -65,7 +65,7 @@ module.exports = function(app) {
   passport.use(new LocalStrategy(
     // YOU MUST HASH THE PASSWORD HERE
     function(username, password, done) {
-      User.getUserByUsername(username, function(err, user){
+      User.getUserByField('username', username, function(err, user){
         if(err) throw err;
         if(!user){
           return done(null, false, {message: 'Unknown User'});
