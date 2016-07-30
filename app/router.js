@@ -5,7 +5,7 @@
 
 var express = require('express');
 var router = express.Router();
-var User = require('../db/db');
+var db = require('../db/db');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
@@ -286,6 +286,7 @@ router.get('/jobs/:job_id', function (req, res) {
 		json.budget = job.budget;
 		json.deadline = job.deadline;
 		json.intro = job.details;
+
 		res.send(JSON.stringify(json));
 	}
 	catch (e) {
