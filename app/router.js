@@ -5,7 +5,7 @@
 
 var express = require('express');
 var router = express.Router();
-var User = require('../db/db');
+var db = require('../db/db');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
