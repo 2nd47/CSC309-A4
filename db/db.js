@@ -38,6 +38,33 @@ var generateURL = function() {
 }
 */
 
+// Init sample database info
+var sample_data_init = false;
+module.exports.initSampleDb = function() {
+  if (sample_data_init) {
+    return;
+  }
+  // Create users
+  for (var modelToRemove in [
+    models.Skill,
+    models.Message,
+    models.Contact,
+    models.User,
+    models.ProjectMember,
+    models.DetailedInfo,
+    models.Showcase,
+    models.Project,
+    models.Contract,
+    models.Report]) {
+      modelToRemove.remove({});
+  }
+  var user1 = createUser('dtrump', 'passwordhashtrump', 'dtrump@gmail.com');
+  var user2 = createUser('bsanders', 'passwordhashsanders', 'bsanders@gmail.com');
+  var user3 = createUser('vputin', 'passwordhashputin', 'vputin@gmail.com');
+  // Create projects
+  var project1 = createProject();
+}
+
 // Create a new user given the required fields
 module.exports.createUser = function(username, passwordHash, email) {
   var user = new User();
@@ -45,14 +72,16 @@ module.exports.createUser = function(username, passwordHash, email) {
   user.passwordHash = passwordHash;
   user.email = email;
   user.save();
+  return user;
 }
 
 // Create a new project given the required fields
-module.exports.createProject = function(name, ownerUsername) {
+module.exports.createProject = function(name, owner) {
   var project = new Project();
   project.name = name;
-  project.ownerUsername = ownerUsername;
+  project.owner = owner;
   project.save();
+  return project;
 }
 
 // Create a new contract given the required fields
@@ -64,14 +93,27 @@ module.exports.createContract = function(name, project, owner, deadline, budget)
   contract.deadline = deadline;
   contract.budget = budget;
   contract.save();
+  pushUserField(owner, 'contracts', contract);
+  pushProjectField(project, 'contracts', contract);
+  return contract;
 }
 
 // Create a new message
-module.exports.createMessage = function(sender, text) {
+module.exports.createMessage = function(sender, receiver, text) {
   var message = new Message();
   message.sender = sender;
   message.text = text;
   message.save();
+  var contact = getContact(sender, receiver);
+  return message;
+}
+
+// Get a contact doc associated with this user and the other user
+module.exports.getContact = function(userOne, userTwo) {
+  var contact;
+  var query1 = [];
+  var query2 = [];
+  if (contact = )
 }
 
 // Create a new contact
@@ -80,6 +122,7 @@ module.exports.createContact = function(contacter, contactee) {
   contact.contacter = contacter;
   contact.contactee = contactee;
   contact.save();
+  return contact;
 }
 
 // Create a new skill
@@ -88,6 +131,7 @@ module.exports.createSkill = function(name, rating) {
   skill.name = name;
   skill.rating = rating;
   skill.save();
+  return skill;
 }
 
 // Adds a skill by ID to a user by ID
@@ -209,6 +253,28 @@ module.exports.setContractField = function(id, field, value) {
   var query = [];
   query[field] = value;
   return models.Contract.findByIdAndUpdate(id, {$set: query});
+}
+
+
+// Push a value to a field in the project schema
+module.exports.pushProjectField = function(id, field, value) {
+  var query = [];
+  query[field] = value;
+  return models.Project.findByIdAndUpdate(id, {$push: query});
+}
+
+// Push a value to a field in the contract schema
+module.exports.pushContractField = function(id, field, value) {
+  var query = [];
+  query[field] = value;
+  return models.Contract.findByIdAndUpdate(id, {$push: query});
+}
+
+// Push a value to a field in the user schema
+module.exports.pushUserField = function(id, field, value) {
+  var query = [];
+  query[field] = value;
+  return models.User.findByIdAndUpdate(id, {$push: query});
 }
 
 module.exports.models = models;
