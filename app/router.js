@@ -276,7 +276,7 @@ router.get('/jobs/:job_id', function (req, res) {
 				json.employer_name = owner.name;
 			});
 			json.project_id = job.project;
-			db.Project.findById(job.project function(err, project){
+			db.Project.findById(job.project, function(err, project){
 				json.project_name = project.name;
 			});
 			if (job.taker) {
