@@ -383,7 +383,6 @@ module.exports.setJobField = function(id, field, value, callback) {
   return models.Job.findByIdAndUpdate(id, {$set: query}, callback);
 }
 
-<<<<<<< HEAD
 // Push a value to a field in the user schema
 module.exports.pushUserField = function(id, field, value, callback) {
   var query = [];
