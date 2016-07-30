@@ -105,6 +105,14 @@ module.exports.initSampleDb = function() {
   // Create contracts
   var contract1 = createContract(
     'Website Designer', project1._id, user1._id, Date.now(), 1500);
+  setContractField(contract1._id, 'intro',
+    'This is the introduction to the contract!');
+  pushContractField(contract1._id, 'descriptionTags', 'Webdev');
+  pushContractField(contract1._id, 'descriptionTags', 'Campaigning');
+  setContractField(contract1._id, 'details',
+    'These are the details for the contract!');
+  setContractField(contract1._id, 'url', 'http://www.trump.com/connect-with-us/');
+  // Create reports
 }
 
 // Create a new user given the required fields
@@ -146,20 +154,24 @@ module.exports.createMessage = function(sender, receiver, text) {
   message.sender = sender;
   message.text = text;
   message.save();
-  var contact = getContact(sender, receiver);
-  models.Contact.findByIdAndUpdate(contact._id, {$push: {'messages':message}});
+  getContact(sender, receiver, function(err, contact) {
+    models.Contact.findByIdAndUpdate(contact._id, {$push: {'messages':message}});
+  });
   return message;
 }
 
 // Get a contact doc associated with this user and the other user
-module.exports.getContact = function(userOne, userTwo) {
-  var contact = models.Contact.findOne({personOne: userOne},
-    function(err, contact) {
-
+module.exports.getContact = function(userOne, userTwo, callback) {
+  models.Contact.findOne({
+    $or:[
+      {'personOne': userOne, 'personTwo': userTwo},
+      {'personOne': userTwo, 'personOne': userOne}
+    ]}, function(err, contact) {
+      if (err) {
+        console.log(err);
+      }
+      callback(err, contact);
   });
-  var query1 = [];
-  var query2 = [];
-	return contact;
 }
 
 // Create a new contact
