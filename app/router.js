@@ -579,7 +579,7 @@ router.get('/projects/:project_id', function (req, res, next) {
 			for (i=0;i<numMembers;i++) {
 				var newMember = new Object();
 				newMember.member_id = project.members[i].user;
-				db.User.findById(project.members[i].user), function(err, memberName){
+				db.User.findById(project.members[i].user, function(err, memberName){
 					newMember.member_name = memberName.name;
 					json.members.push(newMember);
 				});
