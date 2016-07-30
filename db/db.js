@@ -156,10 +156,10 @@ module.exports.initSampleDb = function() {
       pushProjectField(project._id, 'tags', 'DNC');
       setProjectField(project._id, 'basicInfo',
         'This is basic information about the project!');
-      setProjectField(project._id, 'detailedInfo', 'This is a much much much much much\
-        much much much much much much much much much much much much much much much \
-        much much much much much much much much much much much much much much much \
-        much much much much much much much much much much much much much much much \
+      setProjectField(project._id, 'detailedInfo', 'This is a much much much \
+        much much much much much much much much much much much much much much \
+        much much much much much much much much much much much much much much \
+        much much much much much much much much much much much much much much \
         much much much much much much much much much longer information section');
     });
   });
@@ -192,9 +192,9 @@ module.exports.createJob = function(name, project, owner, deadline, budget, call
   job.owner = owner;
   job.deadline = deadline;
   job.budget = budget;
-  pushUserField(owner, 'jobs', job);
-  pushProjectField(project, 'jobs', job);
   job.save(callback);
+  pushUserField('owner', 'jobs', job._id);
+  pushProjectField('project', 'jobs', job._id);
 }
 
 // Create a new message

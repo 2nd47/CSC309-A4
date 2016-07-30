@@ -90,7 +90,8 @@ var chatSchema = new Schema({
 	},
 	messages: [{
     type: messageSchema,
-    ref: 'Message'
+    ref: 'Message',
+    default: []
   }]
 },{ collection : 'chats', timestamps: true });
 
