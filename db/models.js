@@ -166,7 +166,6 @@ var userSchema = new Schema({
 
 var User = mongoose.model('User', userSchema);
 
-<<<<<<< HEAD
 //PROJECT INFO
 var detailedProjectInfoSchema = new Schema({
   title: {
@@ -180,18 +179,6 @@ var detailedProjectInfoSchema = new Schema({
 });
 
 var DetailedInfo = mongoose.model('DetailedInfo', detailedProjectInfoSchema);
-=======
-//PROJECT MEMBERS
-var projectMemberSchema = new Schema({
-  user: {
-    type: ObjectId,
-    required: true,
-    ref: 'User'
-  }
-}, { timestamps: true });
-
-var ProjectMember = mongoose.model('ProjectMember', projectMemberSchema);
->>>>>>> refs/remotes/origin/master
 
 //SHOWCASE
 var showcaseSchema = new Schema({

@@ -122,11 +122,7 @@ module.exports.createUser = function(username, passwordHash, email) {
   user.passwordHash = passwordHash;
   user.email = email;
   user.save();
-<<<<<<< HEAD
   return user;
-=======
-	return user;
->>>>>>> refs/remotes/origin/master
 }
 
 // Create a new project given the required fields
@@ -184,11 +180,7 @@ module.exports.createDialogue = function(personOne, personTwo) {
   contact.personOne = personOne;
   contact.personTwo = personTwo;
   contact.save();
-<<<<<<< HEAD
   return contact;
-=======
-	return contact;
->>>>>>> refs/remotes/origin/master
 }
 
 // Create a new skill
