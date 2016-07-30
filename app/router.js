@@ -10,6 +10,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
 var flash = require('connect-flash');
+var session = require('express-session');
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -20,11 +21,51 @@ router.use(function timeLog(req, res, next) {
 //use static
 router.use(express.static("../"));
 
+//use flash
+router.use(flash());
+
+//use session
+router.use(session(
+  { cookie: { maxAge: 60000 },
+    secret: 'garble',
+    resave: false,
+    saveUninitialized: false}));
+
+// Passport Local Strategy
+passport.use(new LocalStrategy({
+  passReqToCallback : true
+  }, function(username, password, done) {
+    User.getUserByUsername(username, function(err, user){
+      if(err) throw err;
+      if(!user){
+        return done(null, false, {message: 'Unknown User'});
+      }
+      User.comparePassword(password, user.passwordHash, function(err, isMatch){
+        if(err) throw err;
+        if(isMatch){
+          return done(null, user);
+        } else {
+          return done(null, false, {message: 'Invalid password'});
+        }
+      });
+    });
+}));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.getUserById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
 // change the request methods as required
 // refer to express documentation for more details
 
 // if logged in: feed; else: landing page
-router.get('/', function (req, res, next) {
+router.get('/', ensureAuthenticated, function (req, res, next) {
   res.sendFile('landing.html', { root: "../" });
 });
 
@@ -114,40 +155,11 @@ router.post('/signup', function (req, res, next) {
   }
 });
 
-// Passport Local Strategy
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.getUserByUsername(username, function(err, user){
-      if(err) throw err;
-      if(!user){
-        return done(null, false, {message: 'Unknown User'});
-      }
-      User.comparePassword(password, user.passwordHash, function(err, isMatch){
-        if(err) throw err;
-        if(isMatch){
-          return done(null, user);
-        } else {
-          return done(null, false, {message: 'Invalid password'});
-        }
-      });
-    });
-}));
-
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  User.getUserById(id, function(err, user) {
-    done(err, user);
-  });
-});
-
 // Login
 router.post('/login',
-            passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login', failureFlash: true}),
-            function (req, res, next) {
-              res.redirect('/');
+  passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login', failureFlash: true}),
+    function (req, res, next) {
+      res.redirect('/');
 });
 
 // Logout
