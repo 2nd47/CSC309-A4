@@ -43,14 +43,30 @@ var messageSchema = new Schema({
 
 var Message = mongoose.model('Message', messageSchema);
 
-//CONTACTS
-var contactSchema = new Schema({
-	contacter: {
+//BROADCASTS
+var broadcastSchema = new Schema({
+	// broadcast about the object with given url
+	url: {
+    type: String,
+		required: true
+  },
+  message: {
+    type: String,
+    required: true
+  }
+}, { timestamps: true });
+
+var Broadcast = mongoose.model('Broadcast', broadcastSchema);
+
+
+//DIALOGUES
+var dialogueSchema = new Schema({
+	personOne: {
 		type: ObjectId,
     required: true,
     ref: 'User'
 	},
-	contactee: {
+	personTwo: {
 		type: ObjectId,
 		required: true,
     ref: 'User'
@@ -59,9 +75,9 @@ var contactSchema = new Schema({
     type: messageSchema,
     ref: 'Message'
   }]
-},{ collection : 'contacts', timestamps: true });
+},{ collection : 'dialogues', timestamps: true });
 
-var Contact = mongoose.model('Contact', contactSchema);
+var Dialogue = mongoose.model('Dialogue', dialogueSchema);
 
 //USERS
 var userSchema = new Schema({
@@ -114,11 +130,22 @@ var userSchema = new Schema({
   followings: [{
     type: ObjectId
   }],
+	followers: [{
+		type: ObjectId,
+		ref: 'User'
+	}],
+	numFollowers: {
+		type: Number,
+		default: 0
+	},
   //messages: [messageSchema],
   contacts: [{
     type: ObjectId,
-    ref: 'Contact'
+    ref: 'Dialogue'
   }],
+	messageBoard: [{
+		type: broadcastSchema
+	}],
   blocked: [{
     type: ObjectId,
     ref: 'User'
@@ -149,20 +176,6 @@ var projectMemberSchema = new Schema({
 }, { timestamps: true });
 
 var ProjectMember = mongoose.model('ProjectMember', projectMemberSchema);
-
-//PROJECT INFO
-var detailedProjectInfoSchema = new Schema({
-  title: {
-    type: String,
-    required: true
-  },
-  content: {
-    type: String,
-    required: true
-  }
-});
-
-var DetailedInfo = mongoose.model('DetailedInfo', detailedProjectInfoSchema);
 
 //SHOWCASE
 var showcaseSchema = new Schema({
@@ -215,6 +228,14 @@ var projectSchema = new Schema({
   status: {
     type: String
   },
+	followers: [{
+		type: ObjectId,
+		ref: 'User'
+	}],
+	numFollowers: {
+		type: Number,
+		default: 0
+	}
   url: {
     type: String
   }

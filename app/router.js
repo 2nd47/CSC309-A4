@@ -140,6 +140,7 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
+<<<<<<< HEAD
 // Login
 router.post('/login',
             passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login', failureFlash: true}),
@@ -165,6 +166,8 @@ router.get('/contracts', function (req, res) {
 	
 });
 
+=======
+>>>>>>> master
 // create a new contract
 router.post('/contracts/new', function (req, res) {
 	/*
@@ -180,30 +183,46 @@ router.post('/contracts/new', function (req, res) {
 	var json = new Object();
 	try {
 		var userId = req.session.userId;
-		var contractForm = qs.parse(req.data);
-		// may createContract return contract _id or something...
-		var newContractId = db.createContract(contractForm.name, contractForm.project,
-		userId, contractForm.deadline, contractForm.budget)._id;
-		db.setContractField(newContractId, "intro", contractForm.intro);
-		// Create new skill objects
-		var skills = contractForm.skillTags;
-		var numSkills = skills.length;
-		var i;
-		var skillTags = [];
-		for (i=0;i<numSkills;i++) {
-			var curSkill = skills[i];
-			var newSkill = db.createSkill(curSkill.name, curSkill.rating);
-			skillTags.push(newSkill);
+		if (userId) {
+			var contractForm = qs.parse(req.data);
+			var projectId = contractForm.project;
+			if (canAddContractToProject(userId, projectId)) {
+				// may createContract return contract _id or something...
+				var newContractId = db.createContract(contractForm.name, contractForm.project,
+				userId, contractForm.deadline, contractForm.budget)._id;
+				db.setContractField(newContractId, "intro", contractForm.intro);
+				// Create new skill objects
+				var skills = contractForm.skillTags;
+				var numSkills = skills.length;
+				var i;
+				var skillTags = [];
+				for (i=0;i<numSkills;i++) {
+					var curSkill = skills[i];
+					var newSkill = db.createSkill(curSkill.name, curSkill.rating);
+					skillTags.push(newSkill);
+				}
+				db.setContractField(newContractId, "skillTags", skillTags);
+				// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
+				// into an array of strings
+				var tags = contractForm.descriptionTags.replace(/\s+/g, '');split(",");
+				db.setContractField(newContractId, "descriptionTags", tags);
+				db.setContractField(newContractId, "details", contractForm.details);
+				db.setContractField(newContractId, "url", contractIdToUrl(newContractId));//??
+				json.url = contractIdToUrl(newContractId);
+				json.success = "true";
+				// send broadcast to all followers of the project
+				var broadcast = "A new contract is added for " + db.getProjectField(projectId, "name") + " .";
+				broadcastFollowers(projectId, contractIdToUrl(newContractId), broadcast);
+			}
+			else {
+				json.success = "false";
+			}
+			
 		}
-		db.setContractField(newContractId, "skillTags", skillTags);
-		// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
-		// into an array of strings
-		var tags = contractForm.descriptionTags.replace(/\s+/g, '');split(",");
-		db.setContractField(newContractId, "descriptionTags", tags);
-		db.setContractField(newContractId, "details", contractForm.details);
-		db.setContractField(newContractId, "url", contractIdToUrl(newContractId));//??
-		json.url = contractIdToUrl(newContractId);
-		json.success = "true";
+		else {
+			json.success = "false";
+		}
+		
 	}
 	catch (e) {
 		json.success = "false";
@@ -232,36 +251,88 @@ router.get('/contracts/:contract_id', function (req, res) {
 		deadline: contract deadline,
 		intro: introduction to the contract details
 	}*/
-	var json = new Object();
-	var contract_id = req.params.contract_id;
-	var contract = db.Contract.findOne({"_id": ObjectId(contract_id)});
-	json.id = contract_id;
-	json.title = contract.name;
-	json.employer_id = contract.owner;
-	json.employer_name = db.User.findOne({"_id": ObjectId(contract.owner)},{name: 1}).name;
-	json.project_id = contract.project;
-	json.project_name = db.Project.findOne({"_id": ObjectId(contract.project)},{name: 1}).name;
-	if (contract.taker) {
-		json.status = "signed";
+	try {
+		var json = new Object();
+		var contract_id = req.params.contract_id;
+		var contract = db.Contract.findOne({"_id": ObjectId(contract_id)});
+		if (!contract) {
+			res.status(404);
+			// page not found
+			if (req.accepts('html')) {
+				res.render('404', { url: req.url });
+			}
+			return;
+		}
+		json.id = contract_id;
+		json.title = contract.name;
+		json.employer_id = contract.owner;
+		json.employer_name = db.User.findOne({"_id": ObjectId(contract.owner)},{name: 1}).name;
+		json.project_id = contract.project;
+		json.project_name = db.Project.findOne({"_id": ObjectId(contract.project)},{name: 1}).name;
+		if (contract.taker) {
+			json.status = "signed";
+		}
+		else {
+			json.status = "open";
+		}
+		json.latest_update = contract.updatedAt;
+		json.tags = contract.skillTags;
+		json.budget = contract.budget;
+		json.deadline = contract.deadline;
+		json.intro = contract.details;
+		res.send(JSON.stringify(json));
 	}
-	else {
-		json.status = "open";
+	catch (e) {
+		res.status(404);
+		// page not found
+		if (req.accepts('html')) {
+			res.render('404', { url: req.url });
+		}
+		return;
 	}
-	json.latest_update = contract.updatedAt;
-	json.tags = contract.skillTags;
-	json.budget = contract.budget;
-	json.deadline = contract.deadline;
-	json.intro = contract.details;
-	res.send(JSON.stringify(json));
 });
 
+// prompt to sign a contract with contract_id
+router.get('/contracts/:contract_id/sign', function (req, res) {
+	/**/
+}
 
-// list of profiles
+
+// list of profiles of top ten followed users
+// if user is logged in, show their following users at the bottom
 router.get('/people', function (req, res) {
 	/*
-	get id, name, title, skillTags, tags*/
-	var cursor = db.People.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}).sort({"updatedAt": -1});
-	res.send(JSON.stringify(cursor.toArray()));
+	get _id, name, title, skillTags, tags
+	{
+		topTen: [list of info];
+		following: [list of info, empty if user is not following anyone or is not logged in];
+	}
+	*/
+	var json = new Object();
+	var cursor = db.User.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}).sort({"numFollowers": -1}).limit(10);
+	json.topTen = cursor.toArray();
+	json.following = [];
+	var userId = req.session.userId;
+	if (userId) {
+		var user = db.User.findById(userId);
+		var followings = user.followings;
+		var numFollowings = followings.length;
+		var i;
+		for (i=0;i<numFollowings;i++) {
+			var person = db.User.findById(followings[i]);
+			// the object being followed is an existing user
+			if (person) {
+				var newPerson = new Object();
+				newPerson._id = person._id;
+				newPerson.name = person.name;
+				newPerson.title = person.title;
+				newPerson.skillTags = person.skillTags;
+				newPerson.tags = person.tags;
+				json.following.push(newPerson);
+			}
+		}
+	}
+	res.send(JSON.stringify(json));
 });
 
 // details of people with username
@@ -292,60 +363,99 @@ router.get('/people/:username', function (req, res) {
 			}
 		]
 	}*/
-	var json = new Object();
-	var user_name = req.params.username;
-	var user = db.User.findOne({"username" : user_name});
-	json.id = user._id;
-	json.name = user.name;
-	json.title = user.title;
-	json.skills = user.skillTags;
-	json.tags = user.tags;
-	json.biography = user.bio;
-	json.projects = [];
-	// Where the user is the owner
-	var projects = db.Project.find({"owner": user._id},{name: 1});
-	while (projects.hasNext()) {
-		var newProject = new Object();
-		var current = projects.next();
-		newProject.project_id = current._id;
-		newProject.project_name = current.name;
-		json.projects.push(newProject);
-	}
-	// Where the user is a member
-	var member_projects = db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}});
-	while (member_projects.hasNext()) {
-		var newProject = new Object();
-		var current = member_projects.next();
-		newProject.project_id = current._id;
-		newProject.project_name = current.name;
-		json.projects.push(newProject);
-	}
-	json.contracts = [];
-	var contracts = db.Contract.find({"taker": ObjectId(user_id)});
-	while (contracts.hasNext()) {
-		var newContract = new Object();
-		var current = contracts.next();
-		newContract.contract_id = current._id;
-		newContract.contract_name = current.name;
-		newContract.completion_date = current.completion;
-		newContract.contract_rating = current.rating;
-		newContract.contract_comment = current.comment;
-		json.projects.push(newContract);
-	}
+	try {
+		var json = new Object();
+		var user_name = req.params.username;
+		var user = db.User.findOne({"username" : user_name});
+		if (!user) {
+			res.status(404);
+			// page not found
+			if (req.accepts('html')) {
+				res.render('404', { url: req.url });
+			}
+			return;
+		}
+		json.id = user._id;
+		json.name = user.name;
+		json.title = user.title;
+		json.skills = user.skillTags;
+		json.tags = user.tags;
+		json.biography = user.bio;
+		json.projects = [];
+		// Where the user is the owner
+		var projects = db.Project.find({"owner": user._id},{name: 1});
+		while (projects.hasNext()) {
+			var newProject = new Object();
+			var current = projects.next();
+			newProject.project_id = current._id;
+			newProject.project_name = current.name;
+			json.projects.push(newProject);
+		}
+		// Where the user is a member
+		var member_projects = db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}});
+		while (member_projects.hasNext()) {
+			var newProject = new Object();
+			var current = member_projects.next();
+			newProject.project_id = current._id;
+			newProject.project_name = current.name;
+			json.projects.push(newProject);
+		}
+		json.contracts = [];
+		var contracts = db.Contract.find({"taker": ObjectId(user_id)});
+		while (contracts.hasNext()) {
+			var newContract = new Object();
+			var current = contracts.next();
+			newContract.contract_id = current._id;
+			newContract.contract_name = current.name;
+			newContract.completion_date = current.completion;
+			newContract.contract_rating = current.rating;
+			newContract.contract_comment = current.comment;
+			json.projects.push(newContract);
+		}
 
-	res.send(JSON.stringify(json));
+		res.send(JSON.stringify(json));
+	}
+	catch (e) {
+		res.status(404);
+		// page not found
+		if (req.accepts('html')) {
+			res.render('404', { url: req.url });
+		}
+	}
 });
 
-// list of projects
+// list of top ten projects
+// if user has followed projects, list them, too
 router.get('/projects', function (req, res, next) {
-	// get name, title, tags, showcase
-	var cursor = db.Projects.find({},{"name": 1, "title": 1, "tags": 1, "showcase": 1}).sort({"updatedAt": -1});
-	res.send(JSON.stringify(cursor.toArray()));
+	// get name, tags, showcase
+	var json = new Object();
+	var cursor = db.Project.find({},{"name": 1, "tags": 1, "showcase": 1}).sort({"numFollowers": -1}).limit(10);
+	json.topTen = cursor.toArray();
+	json.following = [];
+	var userId = req.session.userId;
+	if (userId) {
+		var user = db.User.findById(userId);
+		var followings = user.followings;
+		var numFollowings = followings.length;
+		var i;
+		for (i=0;i<numFollowings;i++) {
+			var project = db.Project.findById(followings[i]);
+			// the object being followed is an existing project
+			if (project) {
+				var newProject = new Object();
+				newProject._id = project._id;
+				newProject.name = project.name;
+				newProject.tags = project.tags;
+				json.following.push(newProject);
+			}
+		}
+	}
+	res.send(JSON.stringify(json));
   //res.send('AIDA Home Page!');
 });
 
 // create a new project
-router.get('/projects/new', function (req, res, next) {
+router.post('/projects/new', function (req, res, next) {
 	/*
 		TODO:
 		after the posting, send to the front end the link
@@ -367,7 +477,7 @@ router.get('/projects/new', function (req, res, next) {
 		var tags = contractForm.descriptionTags.replace(/\s+/g, '');split(",");
 		db.setProjectField(newProjectId, "tags", tags);
 		db.setProjectField(newProjectId, "members", projectForm.members);
-		db.setProjectField(newProjectId, "details", contractForm.details);
+		db.setProjectField(newProjectId, "details", projectForm.details);
 		db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));//??
 		json.url = contractIdToUrl(newProjectId);
 		json.success = "true";
@@ -384,98 +494,116 @@ router.get('/projects/new', function (req, res, next) {
 // details of project with project_id
 router.get('/projects/:project_id', function (req, res, next) {
 	/*
-	{
-		id: project id,
-		title: project title,
-		publisher:
 		{
-			publisher_id: id of owner,
-			publisher_name: name of project owner
-		},
-		members:
-		[
+			id: project id,
+			title: project title,
+			publisher:
 			{
-				member_id: id of owner,
-				member_name: name of project owner
+				publisher_id: id of owner,
+				publisher_name: name of project owner
+			},
+			members:
+			[
+				{
+					member_id: id of owner,
+					member_name: name of project owner
+				}
+			],
+			short_intro: short description, 300 characters max,
+			long_intro: longer intro with no character limit,
+			showcase:
+			[
+				{
+					path: path to the file,
+					type: type of the file
+				}
+			]
+			latest_update: date of the latest update, in seconds,
+			status: project status,
+			tags: [list of tags],
+			open_contracts:
+			[
+				{
+					contract_id: contract id,
+					contract_title: contract title,
+					contract_tags: [list of skill names with ratings],
+					contract_budget: budget level estimation between 1 to 5,
+					contract_deadline: contract deadline
+				}
+			],
+		}
+	*/
+	try {
+		var json = new Object();
+		var project_id = req.params.project_id;
+		var project = db.Project.findOne({"_id" : ObjectId(project_id)});
+		if (!project) {
+			res.status(404);
+			// project page not found
+			if (req.accepts('html')) {
+				res.render('404', { url: req.url });
 			}
-		],
-		short_intro: short description, 300 characters max,
-		long_intro: longer intro with no character limit,
-		showcase:
-		[
-			{
-				path: path to the file,
-				type: type of the file
-			}
-		]
-		latest_update: date of the latest update, in seconds,
-		status: project status,
-		tags: [list of tags],
-		open_contracts:
-		[
-			{
-				contract_id: contract id,
-				contract_title: contract title,
-				contract_tags: [list of skill names with ratings],
-				contract_budget: budget level estimation between 1 to 5,
-				contract_deadline: contract deadline
-			}
-		],
-	}*/
-	var json = new Object();
-	var project_id = req.params.project_id;
-	var project = db.Project.findOne({"_id" : ObjectId(project_id)});
-	// Build the file
-	json.id = project_id;
-	json.title = project.name;
-	json.publisher = new Object();
-	json.publisher.publisher_id = project.owner;
-	var publisher_info = db.User.findOne({"_id": ObjectId(project.owner)}, {name: 1});
-	json.publisher.publisher_name = publisher_info.name;
-	json.members = [];
-	var i;
-	var numMembers = project.members.length;
-	for (i=0;i<numMembers;i++) {
-		var newMember = new Object();
-		newMember.member_id = project.members[i].user;
-		var memberName = db.User.findOne({"_id": ObjectId(project.members[i].user)}, {name: 1});
-		newMember.member_name = memberName.name;
-		json.members.push(newMember);
+			return;
+		}
+		// Build the file
+		json.id = project_id;
+		json.title = project.name;
+		json.publisher = new Object();
+		json.publisher.publisher_id = project.owner;
+		var publisher_info = db.User.findOne({"_id": ObjectId(project.owner)}, {name: 1});
+		json.publisher.publisher_name = publisher_info.name;
+		json.members = [];
+		var i;
+		var numMembers = project.members.length;
+		for (i=0;i<numMembers;i++) {
+			var newMember = new Object();
+			newMember.member_id = project.members[i].user;
+			var memberName = db.User.findOne({"_id": ObjectId(project.members[i].user)}, {name: 1});
+			newMember.member_name = memberName.name;
+			json.members.push(newMember);
+		}
+		json.short_intro = project.basicInfo;
+		json.long_intro = project.detailedInfo;
+		/*json.long_intro = [];
+		var numParagraph = project.detailedInfo.length;
+		for (i=0;i<numParagraph;i++) {
+			var newParagraph = new Object();
+			newParagraph.paragraph_title = project.detailedInfo[i].title;
+			newParagraph.paragraph_content = project.detailedInfo[i].content;
+			json.long_intro.push(newParagraph);
+		}*/
+		json.showcase = [];
+		var numShowcase = project.showcase.assetPaths.length;
+		for (i=0;i<numShowcase;i++) {
+			var current_path = project.showcase.assetPaths[i];
+			var current_type = project.showcase.mediaTypes[i];
+			var newShowcase = new Object();
+			newShowcase.path = current_path;
+			newShowcase.type = currentcurrent_type;
+		}
+		json.latest_update = project.updatedAt;
+		json.status = project.status;
+		json.tags = project.tags;
+		var contracts = db.Contract.find({"project": ObjectId(project_id)});
+		json.open_contracts = [];
+		while (contracts.hasNext()) {
+			var newContract = new Object();
+			var current = contracts.next();
+			newContract.contract_id = current._id;
+			newContract.contract_title = current.name;
+			newContract.contract_tags = current.skillTags;
+			newContract.contract_budget = current.budget;
+			newContract.contract_deadline = current.deadline;
+		}
+		res.send(JSON.stringify(json));
 	}
-	json.short_intro = project.basicInfo;
-	json.long_intro = project.detailedInfo;
-	/*json.long_intro = [];
-	var numParagraph = project.detailedInfo.length;
-	for (i=0;i<numParagraph;i++) {
-		var newParagraph = new Object();
-		newParagraph.paragraph_title = project.detailedInfo[i].title;
-		newParagraph.paragraph_content = project.detailedInfo[i].content;
-		json.long_intro.push(newParagraph);
-	}*/
-	json.showcase = [];
-	var numShowcase = project.showcase.assetPaths.length;
-	for (i=0;i<numShowcase;i++) {
-		var current_path = project.showcase.assetPaths[i];
-		var current_type = project.showcase.mediaTypes[i];
-		var newShowcase = new Object();
-		newShowcase.path = current_path;
-		newShowcase.type = currentcurrent_type;
+	catch (e) {
+		res.status(404);
+		// page not found
+		if (req.accepts('html')) {
+			res.render('404', { url: req.url });
+		}
 	}
-	json.latest_update = project.updatedAt;
-	json.status = project.status;
-	json.tags = project.tags;
-	var contracts = db.Contract.find({"project": ObjectId(project_id)});
-	json.open_contracts = [];
-	while (contracts.hasNext()) {
-		var newContract = new Object();
-		var current = contracts.next();
-		newContract.contract_id = current._id;
-		newContract.contract_title = current.name;
-		newContract.contract_tags = current.skillTags;
-		newContract.contract_budget = current.budget;
-		newContract.contract_deadline = current.deadline;
-	}
-	res.send(JSON.stringify(json));
   //res.send('AIDA Home Page!');
 });
 
@@ -485,6 +613,11 @@ router.get('/inbox', function (req, res) {
 		send the user's unread messages sorted by creation date
 		{
 			success: true if no error occurred
+			messageBoard: {
+				url: link to the page of updated content
+				message: the message
+			}
+			of followed projects/people
 			contacts:
 			{
 				contact_id:
@@ -514,11 +647,14 @@ router.get('/inbox', function (req, res) {
 				// update last_message at first encounter of unread, and
 				// update num_unread at each encounter of unread.
 				var i;
+				json.messageBoard = found.messageBoard;
+				// Clear message board broadcasts
+				db.setUserField(userId, messageBoard, []);
 				var contacts = found.contacts;
 				var numContacts = contacts.length;
 				for (i=0;i<numContacts;i++) {
 					var other;
-					var contact = contacts[i];
+					var contact = db.Dialogue.findById(contacts[i]);
 					if (userId === contact.personOne) {
 						other = db.User.findOne({_id: ObjectId(contact.personTwo)});
 						json.contacts[contact._id] = new Object();
@@ -567,7 +703,7 @@ router.get('/inbox/:contact_id', function (req, res) {
 	// Check if the person is logged in as personOne or personTwo
 	var userId = req.session.userId;
 	var contact_id = req.params.contact_id;
-	var contact = db.Contact.findOne({"_id": ObjectId(contact_id)});
+	var contact = db.Dialogue.findOne({"_id": ObjectId(contact_id)});
 	var json = new Object();
 	if (userId === contact.personOne || userId === contact.personTwo) {
 		json.success = "true";
@@ -589,6 +725,17 @@ router.get('/inbox/:contact_id', function (req, res) {
 	res.send(JSON.stringify(json));
 });
 
+// send message to contact_id
+router.post('/inbox/:contact_id/new', function (req, res) {
+	var userId = req.session.userId;
+	var contactId = req.params.contact_id;
+	if (canSendMessage(userId, contactId)) {
+		var messageBox = qs.parse(req.data);
+		var message = messageBox.message;
+		sendMessageTo(userId, contactId, message);
+	}
+}
+
 // load all messages from a contact history
 router.get('/inbox/:contact_id/all', function (req, res) {
 	/*
@@ -607,12 +754,12 @@ router.get('/inbox/:contact_id/all', function (req, res) {
 	// Check if the person is logged in as personOne or personTwo
 	var userId = req.session.userId;
 	var contact_id = req.params.contact_id;
-	var contact = db.Contact.findOne({"_id": ObjectId(contact_id)});
+	var contact = db.Dialogue.findOne({"_id": ObjectId(contact_id)});
 	var json = new Object();
 	if (userId === contact.personOne || userId === contact.personTwo) {
 		json.success = "true";
 		json.result = new Object();
-		json.messages = contact.messages;
+		json.result.messages = contact.messages;
 		var i;
 		var numMessages = json.messages.length;
 		for (i=0;i<numMessages;i++) {
@@ -684,40 +831,14 @@ router.get('/search', function (req, res) {
 	// TODO: are ObjectIds hashable                   //
 	//                                                //
 	////////////////////////////////////////////////////
+	
+	// Get the logged in user's id to adjust search priority
 	var userId = req.session.userId;
-	var userTags = [];
-	var userSkills = [];
-	var userProjectTags = [];
-	var userContractSkills = [];
-	if (userName) {
-		var user = db.User.findOne({"_id": ObjectId(userId)});
-		var userProjects = db.Project.find({"owner": user._id, "status": "ongoing"});
-		var userContracts = db.Contract.find({"owner": ObjectId(userId), "status": "open"});
-		// User's tags on themselves
-		userTags = user.tags;
-		// User's skills
-		var i;
-		var numSkills = user.skillTags.length;
-		for (i=0;i<numSkills;i++) {
-			userSkills.push(user.skillTags[i].name);
-		}
-		// User's tags on ongoing projects
-		while (userProjects.hasNext()) {
-			var current = userProjects.next();
-			var tags = current.tags;
-			for (i=0;i<tags.length;i++) {
-				userProjectTags.push(tags[i]);
-			}
-		}
-		// User's contracts' required skills
-		while (userContracts.hasNext()) {
-			var current = userContracts.next();
-			var skillTags = current.skillTags;
-			for (i=0;i<skillTags.length;i++) {
-				userContractSkills.push(skillTags[i].name);
-			}
-		}
-	}
+	var userInfo = collectUserInfo(userId);
+	var userTags = userInfo.userTags;
+	var userSkills = userInfo.userSkills;
+	var userProjectTags = userInfo.userProjectTags;
+	var userContractSkills = userInfo.userContractSkills;
 
 	var projects_results = new Object(); //Store object_id: {...,priority_level:number}
 	var people_results = new Object();
