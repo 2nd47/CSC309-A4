@@ -7,24 +7,24 @@
     "test": "test"
   },
   "dependencies": {
+    "async": "^2.0.1",
     "bcryptjs": "^2.3.0",
+    "body-parser": "*",
     "chai": "^3.5.0",
+    "connect-flash": "*",
     "express": "^4.14.0",
+    "express-handlebars": "*",
+    "express-messages": "*",
     "express-session": "^1.14.0",
+    "express-validator": "*",
     "mocha": "^2.5.3",
     "mongoose": "^4.5.5",
     "nodemon": "^1.9.2",
-    "passport": "^0.3.2",
-    "validator": "^5.4.0",
-    "body-parser": "*",
-    "connect-flash": "*",
-    "express-handlebars": "*",
-    "express-messages": "*",
-    "express-validator": "*",
     "passport": "*",
     "passport-http": "*",
-    "passport-local": "*"
-
+    "passport-local": "*",
+    "shortid": "^2.2.6",
+    "validator": "^5.4.0"
   },
   "devDependencies": {
     "mocha": "^2.5.3"

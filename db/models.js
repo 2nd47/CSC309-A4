@@ -2,12 +2,17 @@
 // Separate into different files before integrating to master
 
 var mongoose = require('mongoose');
+var shortid = require('shortid');
 var model = mongoose.model;
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
 //SKILLS
 var skillSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   name: {
     type: String,
     required: true},
@@ -26,6 +31,10 @@ var messageSchema = new Schema({
   // This should be the ID of the sending user
   // If it isn't the user this message list was retrieved
   // from then it was sent to them from someone else
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   sender: {
     type: ObjectId,
     required: true,
@@ -46,7 +55,11 @@ var Message = mongoose.model('Message', messageSchema);
 //BROADCASTS
 var broadcastSchema = new Schema({
 	// broadcast about the object with given url
-	url: {
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
+  url: {
     type: String,
 		required: true
   },
@@ -61,7 +74,11 @@ var Broadcast = mongoose.model('Broadcast', broadcastSchema);
 
 //CHATS
 var chatSchema = new Schema({
-	personOne: {
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
+  personOne: {
 		type: ObjectId,
     required: true,
     ref: 'User'
@@ -81,6 +98,10 @@ var Chat = mongoose.model('Chat', chatSchema);
 
 //USERS
 var userSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   username: {
     type: String,
     required: true
@@ -172,6 +193,10 @@ var User = mongoose.model('User', userSchema);
 
 //PROJECT INFO
 var detailedProjectInfoSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   title: {
     type: String,
     required: true
@@ -186,6 +211,10 @@ var DetailedInfo = mongoose.model('DetailedInfo', detailedProjectInfoSchema);
 
 //SHOWCASE
 var showcaseSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   project: {
     type: ObjectId,
     ref: 'Project'
@@ -204,6 +233,10 @@ var Showcase = mongoose.model('Showcase', showcaseSchema);
 
 //PROJECT
 var projectSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   name: {
     type: String,
     required: true
@@ -251,6 +284,10 @@ var projectSchema = new Schema({
 var Project = mongoose.model('Project', projectSchema);
 
 var jobSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   name: {
     type: String,
     required: true
@@ -305,6 +342,10 @@ var jobSchema = new Schema({
 var Job = mongoose.model('Job', jobSchema);
 
 var reportSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   reporter: {
     type: ObjectId,
     required: true,

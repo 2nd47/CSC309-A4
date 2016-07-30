@@ -2,16 +2,14 @@ var mongoose = require('mongoose');
 
 var models = require("./models.js");
 
-/*
 var dbUser = 'aida-master';
 var dbPassword = 'dbpassword';
 var url = 'mongodb://' +
   dbUser + ':' +
   dbPassword +
   '@ds029735.mlab.com:29735/heroku_qdmfvghp'
-*/
 
-var url = 'mongodb://localhost/appdb';
+//var url = 'mongodb://localhost/appdb';
 
 var connect = function(callback) {
   mongoose.connect(url);
@@ -22,21 +20,6 @@ var connect = function(callback) {
     callback();
   });
 }
-
-// Generate a custom URL to be used when displaying pages
-/*
-var generateURL = function() {
-  var randURL;
-  var isUniqueId = false;
-  while (!isUniqueId) {
-    var noUserURL = false,
-        noProjectURL = false,
-        noJobURL = false;
-    randURL = Math.Random() * 100000;
-  }
-  return randURL;
-}
-*/
 
 // Init sample database info
 var sample_data_init = false;
@@ -383,7 +366,6 @@ module.exports.setJobField = function(id, field, value, callback) {
   return models.Job.findByIdAndUpdate(id, {$set: query}, callback);
 }
 
-<<<<<<< HEAD
 // Push a value to a field in the user schema
 module.exports.pushUserField = function(id, field, value, callback) {
   var query = [];
