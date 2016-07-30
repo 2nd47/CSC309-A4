@@ -81,7 +81,7 @@ module.exports.createProject = function(name, owner) {
   project.name = name;
   project.owner = owner;
   project.save();
-  return project;
+	return project;
 }
 
 // Create a new contract given the required fields
@@ -114,6 +114,7 @@ module.exports.getContact = function(userOne, userTwo) {
   var query1 = [];
   var query2 = [];
   if (contact = )
+	return contact;
 }
 
 // Create a new contact
