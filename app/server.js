@@ -22,7 +22,6 @@ var app = express();
 // router import keeps main file clean
 var router = require('./router');
 var db = require('../db/db.js');
-db.initSampleDb();
 
 // app init
 const APP_PORT = process.env.PORT || 3000;
