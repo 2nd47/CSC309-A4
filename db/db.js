@@ -9,7 +9,7 @@ module.exports.connect = function(dbUrl, createSamples, callback) {
     console.log('MongoDB connection opened to ' + dbUrl);
   });
   if (createSamples) {
-    initSampleDb();
+    this.initSampleDb();
   }
 }
 
