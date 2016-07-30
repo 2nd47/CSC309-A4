@@ -218,5 +218,22 @@ module.exports.setContractField = function(id, field, value) {
   return models.Contract.findByIdAndUpdate(id, {$set: query});
 }
 
+// Login User Methods
+module.exports.getUserByUsername = function(username, callback) {
+  User.findOne(query, callback);
+}
+
+module.exports.getUserById = function(id, callback) {
+  var query = {username: username};
+  User.findById(id, callback);
+}
+
+module.exports.comparePassword = function(candidatePassword, hash, callback){
+  bcrypt.compare(candidatePassword, hash, function(err, isMatch) {
+    if(err) throw err;
+    callback(null, isMatch);
+  });
+};
+
 module.exports.models = models;
 module.exports.connect = connect;
