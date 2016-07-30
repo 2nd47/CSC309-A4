@@ -45,6 +45,7 @@ module.exports.createUser = function(username, passwordHash, email) {
   user.passwordHash = passwordHash;
   user.email = email;
   user.save();
+	return user;
 }
 
 // Create a new project given the required fields
@@ -77,12 +78,13 @@ module.exports.createMessage = function(sender, text) {
 	return message;
 }
 
-// Create a new contact
-module.exports.createContact = function(contacter, contactee) {
-  var contact = new Contact();
-  contact.contacter = contacter;
-  contact.contactee = contactee;
+// Create a new dialogue
+module.exports.createDialogue = function(personOne, personTwo) {
+  var contact = new Dialogue();
+  contact.personOne = personOne;
+  contact.personTwo = personTwo;
   contact.save();
+	return contact;
 }
 
 // Create a new skill
@@ -92,6 +94,15 @@ module.exports.createSkill = function(name, rating) {
   skill.rating = rating;
   skill.save();
 	return skill;
+}
+
+// Create a new broadcasr
+module.exports.createBroadcast = function(url, message) {
+  var broadcast = new Broadcast();
+  broadcast.url = url;
+	broadcast.message = message;
+  broadcast.save();
+	return broadcast;
 }
 
 // Adds a skill by ID to a user by ID
