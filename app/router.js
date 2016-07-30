@@ -260,33 +260,38 @@ router.get('/jobs/:job_id', function (req, res) {
 	try {
 		var json = new Object();
 		var job_id = req.params.job_id;
-		var job = db.Job.findOne({"_id": ObjectId(job_id)});
-		if (!job) {
-			res.status(404);
-			// page not found
-			if (req.accepts('html')) {
-				res.render('404', { url: req.url });
+		db.Job.findById(job_id, function(err, job){
+			if (!job) {
+				res.status(404);
+				// page not found
+				if (req.accepts('html')) {
+					res.render('404', { url: req.url });
+				}
+				return;
 			}
-			return;
-		}
-		json.id = job_id;
-		json.title = job.name;
-		json.employer_id = job.owner;
-		json.employer_name = db.User.findOne({"_id": ObjectId(job.owner)},{name: 1}).name;
-		json.project_id = job.project;
-		json.project_name = db.Project.findOne({"_id": ObjectId(job.project)},{name: 1}).name;
-		if (job.taker) {
-			json.status = "signed";
-		}
-		else {
-			json.status = "open";
-		}
-		json.latest_update = job.updatedAt;
-		json.tags = job.skillTags;
-		json.budget = job.budget;
-		json.deadline = job.deadline;
-		json.intro = job.details;
-		res.send(JSON.stringify(json));
+			json.id = job_id;
+			json.title = job.name;
+			json.employer_id = job.owner;
+			db.User.findById(job.owner, function(err, owner){
+				json.employer_name = owner.name;
+			});
+			json.project_id = job.project;
+			db.Project.findById(job.project function(err, project){
+				json.project_name = project.name;
+			});
+			if (job.taker) {
+				json.status = "signed";
+			}
+			else {
+				json.status = "open";
+			}
+			json.latest_update = job.updatedAt;
+			json.tags = job.skillTags;
+			json.budget = job.budget;
+			json.deadline = job.deadline;
+			json.intro = job.details;
+			res.send(JSON.stringify(json));
+		});
 	}
 	catch (e) {
 		res.status(404);
@@ -320,23 +325,25 @@ router.get('/people', function (req, res) {
 	json.following = [];
 	var userId = req.session.userId;
 	if (userId) {
-		var user = db.User.findById(userId);
-		var followings = user.followings;
-		var numFollowings = followings.length;
-		var i;
-		for (i=0;i<numFollowings;i++) {
-			var person = db.User.findById(followings[i]);
-			// the object being followed is an existing user
-			if (person) {
-				var newPerson = new Object();
-				newPerson._id = person._id;
-				newPerson.name = person.name;
-				newPerson.title = person.title;
-				newPerson.skillTags = person.skillTags;
-				newPerson.tags = person.tags;
-				json.following.push(newPerson);
+		db.User.findById(userId, function(err, user){
+			var followings = user.followings;
+			var numFollowings = followings.length;
+			var i;
+			for (i=0;i<numFollowings;i++) {
+				db.User.findById(followings[i], function(err, person){
+					// the object being followed is an existing user
+					if (person) {
+						var newPerson = new Object();
+						newPerson._id = person._id;
+						newPerson.name = person.name;
+						newPerson.title = person.title;
+						newPerson.skillTags = person.skillTags;
+						newPerson.tags = person.tags;
+						json.following.push(newPerson);
+					}
+				});
 			}
-		}
+		});
 	}
 	res.send(JSON.stringify(json));
 });
@@ -372,54 +379,55 @@ router.get('/people/:username', function (req, res) {
 	try {
 		var json = new Object();
 		var user_name = req.params.username;
-		var user = db.User.findOne({"username" : user_name});
-		if (!user) {
-			res.status(404);
-			// page not found
-			if (req.accepts('html')) {
-				res.render('404', { url: req.url });
+		db.getUserByField(user_name, function(err, user){
+			if (!user.length) {
+				res.status(404);
+				// page not found
+				if (req.accepts('html')) {
+					res.render('404', { url: req.url });
+				}
+				return;
 			}
-			return;
-		}
-		json.id = user._id;
-		json.name = user.name;
-		json.title = user.title;
-		json.skills = user.skillTags;
-		json.tags = user.tags;
-		json.biography = user.bio;
-		json.projects = [];
-		// Where the user is the owner
-		var projects = db.Project.find({"owner": user._id},{name: 1});
-		while (projects.hasNext()) {
-			var newProject = new Object();
-			var current = projects.next();
-			newProject.project_id = current._id;
-			newProject.project_name = current.name;
-			json.projects.push(newProject);
-		}
-		// Where the user is a member
-		var member_projects = db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}});
-		while (member_projects.hasNext()) {
-			var newProject = new Object();
-			var current = member_projects.next();
-			newProject.project_id = current._id;
-			newProject.project_name = current.name;
-			json.projects.push(newProject);
-		}
-		json.jobs = [];
-		var jobs = db.Job.find({"taker": ObjectId(user_id)});
-		while (jobs.hasNext()) {
-			var newJob = new Object();
-			var current = jobs.next();
-			newJob.job_id = current._id;
-			newJob.job_name = current.name;
-			newJob.completion_date = current.completion;
-			newJob.job_rating = current.rating;
-			newJob.job_comment = current.comment;
-			json.projects.push(newJob);
-		}
+			json.id = user._id;
+			json.name = user.name;
+			json.title = user.title;
+			json.skills = user.skillTags;
+			json.tags = user.tags;
+			json.biography = user.bio;
+			json.projects = [];
+			// Where the user is the owner
+			var projects = db.Project.find({"owner": user._id},{name: 1});
+			while (projects.hasNext()) {
+				var newProject = new Object();
+				var current = projects.next();
+				newProject.project_id = current._id;
+				newProject.project_name = current.name;
+				json.projects.push(newProject);
+			}
+			// Where the user is a member
+			var member_projects = db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}});
+			while (member_projects.hasNext()) {
+				var newProject = new Object();
+				var current = member_projects.next();
+				newProject.project_id = current._id;
+				newProject.project_name = current.name;
+				json.projects.push(newProject);
+			}
+			json.jobs = [];
+			var jobs = db.Job.find({"taker": ObjectId(user_id)});
+			while (jobs.hasNext()) {
+				var newJob = new Object();
+				var current = jobs.next();
+				newJob.job_id = current._id;
+				newJob.job_name = current.name;
+				newJob.completion_date = current.completion;
+				newJob.job_rating = current.rating;
+				newJob.job_comment = current.comment;
+				json.projects.push(newJob);
+			}
 
-		res.send(JSON.stringify(json));
+			res.send(JSON.stringify(json));
+		});
 	}
 	catch (e) {
 		res.status(404);
@@ -440,21 +448,23 @@ router.get('/projects', function (req, res, next) {
 	json.following = [];
 	var userId = req.session.userId;
 	if (userId) {
-		var user = db.User.findById(userId);
-		var followings = user.followings;
-		var numFollowings = followings.length;
-		var i;
-		for (i=0;i<numFollowings;i++) {
-			var project = db.Project.findById(followings[i]);
-			// the object being followed is an existing project
-			if (project) {
-				var newProject = new Object();
-				newProject._id = project._id;
-				newProject.name = project.name;
-				newProject.tags = project.tags;
-				json.following.push(newProject);
+		db.User.findById(userId, function(err, user){
+			var followings = user.followings;
+			var numFollowings = followings.length;
+			var i;
+			for (i=0;i<numFollowings;i++) {
+				db.Project.findById(followings[i], function(){
+					// the object being followed is an existing project
+					if (project.length) {
+						var newProject = new Object();
+						newProject._id = project._id;
+						newProject.name = project.name;
+						newProject.tags = project.tags;
+						json.following.push(newProject);
+					}
+				});
 			}
-		}
+		});
 	}
 	res.send(JSON.stringify(json));
   //res.send('AIDA Home Page!');
@@ -546,66 +556,70 @@ router.get('/projects/:project_id', function (req, res, next) {
 	try {
 		var json = new Object();
 		var project_id = req.params.project_id;
-		var project = db.Project.findOne({"_id" : ObjectId(project_id)});
-		if (!project) {
-			res.status(404);
-			// project page not found
-			if (req.accepts('html')) {
-				res.render('404', { url: req.url });
+		var project = db.Project.findById(project_id, function(err, project){
+			if (!project.length) {
+				res.status(404);
+				// project page not found
+				if (req.accepts('html')) {
+					res.render('404', { url: req.url });
+				}
+				return;
 			}
-			return;
-		}
-		// Build the file
-		json.id = project_id;
-		json.title = project.name;
-		json.publisher = new Object();
-		json.publisher.publisher_id = project.owner;
-		var publisher_info = db.User.findOne({"_id": ObjectId(project.owner)}, {name: 1});
-		json.publisher.publisher_name = publisher_info.name;
-		json.members = [];
-		var i;
-		var numMembers = project.members.length;
-		for (i=0;i<numMembers;i++) {
-			var newMember = new Object();
-			newMember.member_id = project.members[i].user;
-			var memberName = db.User.findOne({"_id": ObjectId(project.members[i].user)}, {name: 1});
-			newMember.member_name = memberName.name;
-			json.members.push(newMember);
-		}
-		json.short_intro = project.basicInfo;
-		json.long_intro = project.detailedInfo;
-		/*json.long_intro = [];
-		var numParagraph = project.detailedInfo.length;
-		for (i=0;i<numParagraph;i++) {
-			var newParagraph = new Object();
-			newParagraph.paragraph_title = project.detailedInfo[i].title;
-			newParagraph.paragraph_content = project.detailedInfo[i].content;
-			json.long_intro.push(newParagraph);
-		}*/
-		json.showcase = [];
-		var numShowcase = project.showcase.assetPaths.length;
-		for (i=0;i<numShowcase;i++) {
-			var current_path = project.showcase.assetPaths[i];
-			var current_type = project.showcase.mediaTypes[i];
-			var newShowcase = new Object();
-			newShowcase.path = current_path;
-			newShowcase.type = currentcurrent_type;
-		}
-		json.latest_update = project.updatedAt;
-		json.status = project.status;
-		json.tags = project.tags;
-		var jobs = db.Job.find({"project": ObjectId(project_id)});
-		json.open_jobs = [];
-		while (jobs.hasNext()) {
-			var newJob = new Object();
-			var current = jobs.next();
-			newJob.job_id = current._id;
-			newJob.job_title = current.name;
-			newJob.job_tags = current.skillTags;
-			newJob.job_budget = current.budget;
-			newJob.job_deadline = current.deadline;
-		}
-		res.send(JSON.stringify(json));
+			// Build the file
+			json.id = project_id;
+			json.title = project.name;
+			json.publisher = new Object();
+			json.publisher.publisher_id = project.owner;
+			db.User.findById(project.owner, function(err, publisher_info){
+				json.publisher.publisher_name = publisher_info.name;
+				json.members = [];
+			});
+			var i;
+			var numMembers = project.members.length;
+			for (i=0;i<numMembers;i++) {
+				var newMember = new Object();
+				newMember.member_id = project.members[i].user;
+				db.User.findById(project.members[i].user), function(err, memberName){
+					newMember.member_name = memberName.name;
+					json.members.push(newMember);
+				});
+			}
+			json.short_intro = project.basicInfo;
+			json.long_intro = project.detailedInfo;
+			/*json.long_intro = [];
+			var numParagraph = project.detailedInfo.length;
+			for (i=0;i<numParagraph;i++) {
+				var newParagraph = new Object();
+				newParagraph.paragraph_title = project.detailedInfo[i].title;
+				newParagraph.paragraph_content = project.detailedInfo[i].content;
+				json.long_intro.push(newParagraph);
+			}*/
+			json.showcase = [];
+			var numShowcase = project.showcase.assetPaths.length;
+			for (i=0;i<numShowcase;i++) {
+				var current_path = project.showcase.assetPaths[i];
+				var current_type = project.showcase.mediaTypes[i];
+				var newShowcase = new Object();
+				newShowcase.path = current_path;
+				newShowcase.type = currentcurrent_type;
+			}
+			json.latest_update = project.updatedAt;
+			json.status = project.status;
+			json.tags = project.tags;
+			var jobs = db.Job.find({"project": ObjectId(project_id)});
+			json.open_jobs = [];
+			while (jobs.hasNext()) {
+				var newJob = new Object();
+				var current = jobs.next();
+				newJob.job_id = current._id;
+				newJob.job_title = current.name;
+				newJob.job_tags = current.skillTags;
+				newJob.job_budget = current.budget;
+				newJob.job_deadline = current.deadline;
+			}
+			res.send(JSON.stringify(json));
+		});
+		
 	}
 	catch (e) {
 		res.status(404);
@@ -665,23 +679,31 @@ router.get('/inbox', function (req, res) {
 				var numChats = chats.length;
 				for (i=0;i<numChats;i++) {
 					var other;
-					var chat = db.Chat.findById(chats[i]);
-					if (userId === chat.personOne) {
-						other = db.User.findOne({_id: ObjectId(chat.personTwo)});
-						json.chats[chat._id] = new Object();
-						json.chats[chat._id].chat_name = other.name;
-						// messages should be in ascending order by time
-						json.chats[chat._id].last_message = messages[-1];
-						// get the source of avatar
-						json.chats[chat._id].chat_avatar = other.avatar;
-						// count number of messages sent after the first read message
-						var numUnread = 0;
-						// while the current message is unread and it is a received message, keep counting
-						while (messages[numUnread].unread && messages[numUnread].sender === other._id) {
-							numUnread += 1;
+					db.Chat.findById(chats[i], function(err, chat){
+						if (userId === chat.personOne) {
+							db.User.findById(chat.personTwo, function(err, user){
+								other = user;
+							});
 						}
-						json.chats[chat._id].num_unread = numUnread;
+						else {
+							db.User.findById(chat.personOne, function(err, user){
+								other = user;
+							});
+						}
+					});
+					json.chats[chat._id] = new Object();
+					json.chats[chat._id].chat_name = other.name;
+					// messages should be in ascending order by time
+					json.chats[chat._id].last_message = messages[-1];
+					// get the source of avatar
+					json.chats[chat._id].chat_avatar = other.avatar;
+					// count number of messages sent after the first read message
+					var numUnread = 0;
+					// while the current message is unread and it is a received message, keep counting
+					while (messages[numUnread].unread && messages[numUnread].sender === other._id) {
+						numUnread += 1;
 					}
+					json.chats[chat._id].num_unread = numUnread;
 				}
 				json.success = "true";
 			}
@@ -718,55 +740,60 @@ router.get('/inbox/:chat_id', function (req, res) {
 	// Check if the person is logged in as personOne or personTwo
 	var userId = req.session.userId;
 	var chat_id = req.params.chat_id;
-	var chat = db.Chat.findOne({"_id": ObjectId(chat_id)});
-	var json = new Object();
-	if (userId === chat.personOne || userId === chat.personTwo) {
-		json.success = "true";
-		json.result = new Object();
-		var other;
-		if (userId === chat.personOne) {
-			// the other person is person two
-			other = db.User.findById(chat.personTwo);
-		}
-		else {
-			// the other person is person two
-			other = db.User.findById(chat.personOne);
-		}
-		// other user is not found
-		if (!other) {
-			json.success = "false";
-			res.send(JSON.stringify(json));
-			return;
-		}
-		json.result.other_id = other._id;
-		json.result.other_name = other.name;
-		json.messages = [];
-		var messages = chat.messages.slice(-10); // Get the last 10 messages
-
-		var i;
-		var numMessages = messages.length;
-		for (i=0;i<numMessages;i++) {
-			// Mark all the messages shown as read
-			readMessage(messages[i]);
-			// check sender of the message and append to list
-			var message = new Object();
-			if (messages[i].sender === userId) {
-				message.sender = "user";
+	db.Chat.findById(chat_id, function(err, chat){
+		var json = new Object();
+		if (userId === chat.personOne || userId === chat.personTwo) {
+			json.success = "true";
+			json.result = new Object();
+			var other;
+			if (userId === chat.personOne) {
+				// the other person is person two
+				db.User.findById(chat.personTwo, function(err, user){
+					other = user;
+				});
 			}
 			else {
-				message.sender = "other";
+				// the other person is person one
+				db.User.findById(chat.personOne, function(err, user){
+					other = user;
+				});
 			}
-			message.text = messages[i].text;
-			json.messages.push(message);
+			// other user is not found
+			if (!other) {
+				json.success = "false";
+				res.send(JSON.stringify(json));
+				return;
+			}
+			json.result.other_id = other._id;
+			json.result.other_name = other.name;
+			json.messages = [];
+			var messages = chat.messages.slice(-10); // Get the last 10 messages
+
+			var i;
+			var numMessages = messages.length;
+			for (i=0;i<numMessages;i++) {
+				// Mark all the messages shown as read
+				readMessage(messages[i]);
+				// check sender of the message and append to list
+				var message = new Object();
+				if (messages[i].sender === userId) {
+					message.sender = "user";
+				}
+				else {
+					message.sender = "other";
+				}
+				message.text = messages[i].text;
+				json.messages.push(message);
+			}
+
+
 		}
-
-
-	}
-	else {
-		json.success = "false";
-		json.result = null;
-	}
-	res.send(JSON.stringify(json));
+		else {
+			json.success = "false";
+			json.result = null;
+		}
+		res.send(JSON.stringify(json));
+	});
 });
 
 // send message to person_id
@@ -801,24 +828,25 @@ router.get('/inbox/:chat_id/all', function (req, res) {
 	// Check if the person is logged in as personOne or personTwo
 	var userId = req.session.userId;
 	var chat_id = req.params.chat_id;
-	var chat = db.Chat.findOne({"_id": ObjectId(chat_id)});
-	var json = new Object();
-	if (userId === chat.personOne || userId === chat.personTwo) {
-		json.success = "true";
-		json.result = new Object();
-		json.result.messages = chat.messages;
-		var i;
-		var numMessages = json.messages.length;
-		for (i=0;i<numMessages;i++) {
-			// Mark all the messages shown as read
-			db.Message.findByIdAndUpdate(chat_id, {$set: { 'unread': false }});
+	db.Chat.findById(chat_id, function(err, chat){
+		var json = new Object();
+		if (userId === chat.personOne || userId === chat.personTwo) {
+			json.success = "true";
+			json.result = new Object();
+			json.result.messages = chat.messages;
+			var i;
+			var numMessages = json.messages.length;
+			for (i=0;i<numMessages;i++) {
+				// Mark all the messages shown as read
+				db.Message.findByIdAndUpdate(chat_id, {$set: { 'unread': false }});
+			}
 		}
-	}
-	else {
-		json.success = "false";
-		json.result = null;
-	}
-	res.send(JSON.stringify(json));
+		else {
+			json.success = "false";
+			json.result = null;
+		}
+		res.send(JSON.stringify(json));
+	});
 });
 
 // search page
@@ -1000,7 +1028,9 @@ router.get('/search', function (req, res) {
 		jobs_results[job._id].intro = job.intro;
 		jobs_results[job._id].skills = job.skillTags;
 		jobs_results[job._id].project_id = job.project;
-		jobs_results[job._id].project_name = db.Project.findOne({"_id": ObjectId(job.project)}).name;
+		db.Project.findById(job.project, function(err, project){
+			jobs_results[job._id].project_name = project.name;
+		});
 		jobs_results[job._id].project_tags = job.descriptionTags;
 		jobs_results[job._id].deadline = job.deadline;
 		jobs_results[job._id].budget = job.budget;
