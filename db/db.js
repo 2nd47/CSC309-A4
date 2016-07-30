@@ -38,6 +38,9 @@ var generateURL = function() {
 }
 */
 
+var User = module.exports = mongoose.model('User', UserSchema);
+
+
 // Create a new user given the required fields
 module.exports.createUser = function(username, passwordHash, email) {
   var user = new User();
