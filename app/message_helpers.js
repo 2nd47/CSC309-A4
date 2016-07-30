@@ -25,42 +25,42 @@ exports.broadcastFollowers = function (id, url, message) {
 	return;
 }
 
-// push a message to a dialogue history
-exports.pushMessage = function (sender, message, dialogueId) {
+// push a message to a chat history
+exports.pushMessage = function (sender, message, chatId) {
 	var newMessage = db.createMessage(sender, message);
-	db.Dialogue.findByIdAndUpdate(id, {$push: {"messages": newMessage}});
+	db.Chat.findByIdAndUpdate(id, {$push: {"messages": newMessage}});
 }
 
 // send a message from the sender to the receiver
 exports.sendMessageTo = function (sender, receiver, message) {
-	// if there is existing dialogue, push message into the dialogue
+	// if there is existing chat, push message into the chat
 	var senderUser = db.User.findById(sender);
 	var receiverUser = db.User.findById(sender);
 	if (senderUser && receiverUser) {
-		var contacts = senderUser.contacts;
-		var numContacts = contacts.length;
+		var chats = senderUser.chats;
+		var numChats = chats.length;
 		var i;
-		var contact;
+		var chat;
 		var found = false;
 		for (i=0;i<numContracts;i++) {
-			contact = db.Dialogue.findById(contacts[i]);
-			if (contact.personOne === receiver || contact.personTwo === receiver) {
+			chat = db.Chat.findById(chats[i]);
+			if (chat.personOne === receiver || chat.personTwo === receiver) {
 				found = true;
 				break;
 			}
 		}
 		if (found) {
-			// the contact exists
-			pushMessage(sender, message, contact._id);
+			// the chat exists
+			pushMessage(sender, message, chat._id);
 		}
 		else {
-			// if there is no existing dialogue, create a new one, add it
-			// to the contact list of both users.
-			var newContact = db.createDialogue(sender, receiver);
-			var contactId = newContact._id;
-			pushMessage(sender, message, contactId);
-			db.User.findByIdAndUpdate(sender, {$push: {"contacts": newContact}});
-			db.User.findByIdAndUpdate(receiver, {$push: {"contacts": newContact}});
+			// if there is no existing chat, create a new one, add it
+			// to the chat list of both users.
+			var newChat = db.createChat(sender, receiver);
+			var chatId = newChat._id;
+			pushMessage(sender, message, chatId);
+			db.User.findByIdAndUpdate(sender, {$push: {"chats": newChat}});
+			db.User.findByIdAndUpdate(receiver, {$push: {"chats": newChat}});
 		}
 	}
 	else {
