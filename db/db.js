@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var models = require("./models.js");
 var url = process.env.MONGODB_URI || 'mongodb://localhost/appdb';
-var sampleInit = proces.env.INIT_SAMPLE_DB || false;
+var sampleInit = process.env.INIT_SAMPLE_DB || false;
 
 var connect = function(callback) {
   mongoose.connect(url);
