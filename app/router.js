@@ -66,7 +66,7 @@ passport.deserializeUser(function(id, done) {
 
 // if logged in: feed; else: landing page
 router.get('/', ensureAuthenticated, function (req, res, next) {
-  res.sendFile('landing.html', { root: "../" });
+  res.sendFile('landing.html', { root: "./" });
 });
 
 // Ensure authenticated so the user cannot access the home page if not logged in
@@ -619,7 +619,7 @@ router.get('/projects/:project_id', function (req, res, next) {
 			}
 			res.send(JSON.stringify(json));
 		});
-		
+
 	}
 	catch (e) {
 		res.status(404);
