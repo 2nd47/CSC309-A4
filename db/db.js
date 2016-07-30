@@ -226,6 +226,14 @@ module.exports.createMessage = function(sender, receiver, text, callback) {
   });
 }
 
+module.exports.readMessage = function(message, callback) {
+  models.Message.findByIdAndUpdate(message._id, {
+    $set: {
+      'unread' : true
+    }
+  }, callback);
+}
+
 // Get a contact doc associated with this user and the other user
 module.exports.getContact = function(userOne, userTwo, callback) {
   models.Contact.findOne({
