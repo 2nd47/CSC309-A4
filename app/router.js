@@ -473,17 +473,18 @@ router.get('/inbox', function (req, res) {
 		send the user's unread messages sorted by creation date
 		{
 			success: true if no error occurred
-			messageBoard: {
+			messageBoard: [{
 				url: link to the page of updated content
 				message: the message
-			}
+			}]
 			of followed projects/people
 			chats:
 			{
 				chat_id:
 				{
 					chat_name: sender's name
-					last_message: most recent message
+					chat_avatar: sender's avatar
+					last_message: last message of the chat
 					num_unread: number of unread messages from the person
 				}
 			}
@@ -521,6 +522,8 @@ router.get('/inbox', function (req, res) {
 						json.chats[chat._id].chat_name = other.name;
 						// messages should be in ascending order by time
 						json.chats[chat._id].last_message = messages[-1];
+						// get the source of avatar
+						json.chats[chat._id].chat_avatar = other.avatar;
 						// count number of messages sent after the first read message
 						var numUnread = 0;
 						// while the current message is unread and it is a received message, keep counting
