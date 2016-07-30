@@ -112,26 +112,33 @@ var userSchema = new Schema({
     required: true
   },
   twoFactorMethod: {
-    type: String
+    type: String,
+    default: ""
   },
   name: {
-    type: String
+    type: String,
+    default: ""
   },
 	avatar: {
 		// path to the image
-		type: String
+		type: String,
+    default: "/assets/img/users/placeholder.png"
 	}
   title: {
-    type: String
+    type: String,
+    default: ""
   },
   skillTags: [{
-    type: skillSchema
+    type: skillSchema,
+    default: []
   }],
   bio: {
-    type: String
+    type: String,
+    default: ""
   },
   tags: [{
-    type: String
+    type: String,
+    default: []
   }],
   email: {
     type: String ,
@@ -149,16 +156,19 @@ var userSchema = new Schema({
     default: 0
   },
   url: {
-    type: String
+    type: String,
+    default: ""
   },
   // Refer to http://stackoverflow.com/questions/4677237
   // for further explanation of why this is the case
   followings: [{
-    type: ObjectId
+    type: ObjectId,
+    default: []
   }],
 	followers: [{
 		type: ObjectId,
-		ref: 'User'
+		ref: 'User',
+    default: []
 	}],
 	numFollowers: {
 		type: Number,
@@ -167,18 +177,22 @@ var userSchema = new Schema({
   //messages: [messageSchema],
   chats: [{
     type: ObjectId,
-    ref: 'Chat'
+    ref: 'Chat',
+    default: []
   }],
 	messageBoard: [{
-		type: broadcastSchema
+		type: broadcastSchema,
+    default: []
 	}],
   blocked: [{
     type: ObjectId,
-    ref: 'User'
+    ref: 'User',
+    default: []
   }],
   jobs: [{
     type: ObjectId,
-    ref: 'Job'
+    ref: 'Job',
+    default: []
   }],
 	frozen: [{
 		type: Boolean,
@@ -218,15 +232,18 @@ var showcaseSchema = new Schema({
   },
   project: {
     type: ObjectId,
-    ref: 'Project'
+    ref: 'Project',
+    required: true
   },
   // Display order inferred from indices
   assetPaths: [{
-    type: String
+    type: String,
+    default: []
   }],
   // Can extract mediatype from full path
   mediaTypes: [{
-    type: String
+    type: String,
+    default: []
   }]
 }, { collection: 'showcases', timestamps: true });
 
@@ -243,7 +260,8 @@ var projectSchema = new Schema({
     required: true
   },
   tags: [{
-    type: String
+    type: String,
+    default: []
   }],
   owner: {
     type: ObjectId,
@@ -251,34 +269,41 @@ var projectSchema = new Schema({
     ref: 'User'
   },
   members: [{
-    type: projectMemberSchema
+    type: projectMemberSchema,
+    default: []
   }],
   jobs: [{
     type: ObjectId,
-    ref: 'Job'
+    ref: 'Job',
+    default: []
   }],
   showcase: {
     type: showcaseSchema
   },
   basicInfo: {
-    type: String
+    type: String,
+    default: ""
   },
   detailedInfo: {
-    type: String
+    type: String,
+    default: ""
   },
   status: {
-    type: String
+    type: String,
+    default: ""
   },
 	followers: [{
 		type: ObjectId,
-		ref: 'User'
+		ref: 'User',
+    default: []
 	}],
 	numFollowers: {
 		type: Number,
 		default: 0
 	}
   url: {
-    type: String
+    type: String,
+    default: ""
   }
 }, { collection : 'projects', timestamps: true });
 
@@ -294,17 +319,20 @@ var jobSchema = new Schema({
     required: true
   },
   intro: {
-    type: String
+    type: String,
+    default: ""
   },
   status: {
     type: String,
 		default: "open"
   },
   skillTags: [{
-    type: skillSchema
+    type: skillSchema,
+    default: []
   }],
   descriptionTags: [{
-    type: String
+    type: String,
+    default: []
   }],
   // ID of project member who created the job
   project: {
@@ -318,14 +346,16 @@ var jobSchema = new Schema({
     ref: 'User'
   },
 	taker: {
-		type: ObjectId
+		type: ObjectId,
+    ref: 'User'
 	},
   applicants: [{
     type: ObjectId,
     ref: 'User'
   }],
   details: {
-    type: String
+    type: String,
+    default: ""
   },
   deadline: {
     type: Date,
@@ -336,7 +366,8 @@ var jobSchema = new Schema({
     required: true
   },
   url: {
-    type: String
+    type: String,
+    default: ""
   }
 }, { timestamps: true });
 
