@@ -72,10 +72,10 @@ router.get('/', ensureAuthenticated, function (req, res, next) {
 // Ensure authenticated so the user cannot access the home page if not logged in
 function ensureAuthenticated(req, res, next) {
   if(req.isAuthenticated()) {
-    return next();
+    res.redirect('/profile'); //TODO: change to feed or some shit
   } else {
     req.flash('error_msg', 'You are not logged in');
-    res.redirect('/login');
+    next();
   }
 }
 
@@ -167,17 +167,6 @@ router.get('/logout', function(req, res, next) {
   req.logout();
   req.flash('success_msg', 'You are logged out');
   res.redirect('/login');
-});
-
-
-
-// list of contracts
-router.get('/contracts', function (req, res) {
-	/*
-	get id, name, status, skillTags, tags*/
-	var cursor = db.Contract.find({},{"name": 1, "status": 1, "skillTags": 1, "tags": 1}).sort({"updatedAt": -1});
-	res.send(JSON.stringify(cursor.toArray()));
-
 });
 
 // create a new job
