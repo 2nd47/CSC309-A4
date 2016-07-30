@@ -98,7 +98,7 @@ var userSchema = new Schema({
 	avatar: {
 		// path to the image
 		type: String
-	}
+	},
   title: {
     type: String
   },
@@ -217,7 +217,7 @@ var projectSchema = new Schema({
     ref: 'User'
   },
   members: [{
-    type: projectMemberSchema
+    type: ObjectId
   }],
   jobs: [{
     type: ObjectId,
@@ -242,7 +242,7 @@ var projectSchema = new Schema({
 	numFollowers: {
 		type: Number,
 		default: 0
-	}
+	},
   url: {
     type: String
   }
