@@ -44,7 +44,7 @@ module.exports.initSampleDb = function() {
   if (sample_data_init) {
     return;
   }
-  // Create users
+  // Clear database
   for (var modelToRemove in [
     models.Skill,
     models.Message,
@@ -58,11 +58,53 @@ module.exports.initSampleDb = function() {
     models.Report]) {
       modelToRemove.remove({});
   }
+  // Create users
   var user1 = createUser('dtrump', 'passwordhashtrump', 'dtrump@gmail.com');
+  setUserField(user1, 'name', 'Donald Trump');
+  setUserField(user1, 'title', 'Republican Presidential Nominee');
+  setUserField(user1, 'bio', 'I am the greatest candidate for this position!');
+  pushUserField(user1, 'tags', 'Republican Party');
+  pushUserField(user1, 'tags', 'GOP');
+  setUserField(user1, 'isVerified', true);
+  setUserField(user1, 'timeVerified', Date.now());
+  setUserField(user1, 'url', 'http://www.trump.com/');
+  pushUserField(user1, 'following', user3._id);
+  pushUserField(user1, 'contacts', user3._id);
+  pushUserField(user1, 'blocked', user2._id);
   var user2 = createUser('bsanders', 'passwordhashsanders', 'bsanders@gmail.com');
+  setUserField(user1, 'name', 'Bernie Sanders');
+  setUserField(user1, 'title', 'Democratic Presidential Nominee Runner-up');
+  setUserField(user1, 'bio', 'I wish I had gotten that position!');
+  setUserField(user1, 'isVerified', true);
+  setUserField(user1, 'timeVerified', Date.now());
+  setUserField(user1, 'url', 'http://www.sanders.senate.gov/');
   var user3 = createUser('vputin', 'passwordhashputin', 'vputin@gmail.com');
+  setUserField(user1, 'name', 'Vladimir Putin');
+  setUserField(user1, 'title', 'Russian Overlord');
+  setUserField(user1, 'bio', 'I rule Russia, forever.');
+  setUserField(user1, 'isVerified', true);
+  setUserField(user1, 'timeVerified', Date.now());
+  setUserField(user1, 'url', 'http://eng.putin.kremlin.ru/');
+  pushUserField(user1, 'following', user1._id);
+  pushUserField(user1, 'contacts', user1._id);
+  pushUserField(user1, 'blocked', user2._id);
   // Create projects
-  var project1 = createProject();
+  var project1 = createProject('Trump for President!', user1._id);
+  pushProjectField(project1, 'tags', 'USA Presidential Campaign');
+  pushProjectField(project1, 'tags', 'Republican Party');
+  pushProjectField(project1, 'tags', 'GOP');
+  pushProjectField(project1, 'members', user1._id);
+  pushProjectField(project1, 'members', user3._id);
+  setProjectField(project1, 'basicInfo',
+    'This is basic information about the project!');
+  setProjectField(project1, 'detailedInfo', 'This is a much much much much much\
+    much much much much much much much much much much much much much much much \
+    much much much much much much much much much much much much much much much \
+    much much much much much much much much much much much much much much much \
+    much much much much much much much much much longer information section');
+  // Create contracts
+  var contract1 = createContract(
+    'Website Designer', project1._id, user1._id, Date.now(), 1500);
 }
 
 // Create a new user given the required fields
@@ -105,15 +147,18 @@ module.exports.createMessage = function(sender, receiver, text) {
   message.text = text;
   message.save();
   var contact = getContact(sender, receiver);
+  models.Contact.findByIdAndUpdate(contact._id, {$push: {'messages':message}});
   return message;
 }
 
 // Get a contact doc associated with this user and the other user
 module.exports.getContact = function(userOne, userTwo) {
-  var contact;
+  var contact = models.Contact.findOne({personOne: userOne},
+    function(err, contact) {
+
+  });
   var query1 = [];
   var query2 = [];
-  if (contact = )
 	return contact;
 }
 
@@ -142,11 +187,6 @@ module.exports.addUserSkill = function(user, skillToAdd) {
 
 // Adds a skill by ID to a contract by ID
 module.exports.addContractSkill = function(contract, skillToAdd) {
-  return;
-}
-
-// Adds a user by ID to a project by ID
-module.exports.addProjectMember = function(project, userToAdd) {
   return;
 }
 
@@ -256,6 +296,12 @@ module.exports.setContractField = function(id, field, value) {
   return models.Contract.findByIdAndUpdate(id, {$set: query});
 }
 
+// Push a value to a field in the user schema
+module.exports.pushUserField = function(id, field, value) {
+  var query = [];
+  query[field] = value;
+  return models.User.findByIdAndUpdate(id, {$push: query});
+}
 
 // Push a value to a field in the project schema
 module.exports.pushProjectField = function(id, field, value) {
@@ -269,13 +315,6 @@ module.exports.pushContractField = function(id, field, value) {
   var query = [];
   query[field] = value;
   return models.Contract.findByIdAndUpdate(id, {$push: query});
-}
-
-// Push a value to a field in the user schema
-module.exports.pushUserField = function(id, field, value) {
-  var query = [];
-  query[field] = value;
-  return models.User.findByIdAndUpdate(id, {$push: query});
 }
 
 module.exports.models = models;

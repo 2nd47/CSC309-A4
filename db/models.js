@@ -130,7 +130,7 @@ var userSchema = new Schema({
 	frozen: [{
 		type: Boolean,
 		default: false
-	}]
+	}],
 	times_frozen: [{
 		type: Number,
 		default: 0
@@ -138,17 +138,6 @@ var userSchema = new Schema({
 }, { collection : 'users', timestamps: true });
 
 var User = mongoose.model('User', userSchema);
-
-//PROJECT MEMBERS
-var projectMemberSchema = new Schema({
-  user: {
-    type: ObjectId,
-    required: true,
-    ref: 'User'
-  }
-}, { timestamps: true });
-
-var ProjectMember = mongoose.model('ProjectMember', projectMemberSchema);
 
 //PROJECT INFO
 var detailedProjectInfoSchema = new Schema({
@@ -196,9 +185,10 @@ var projectSchema = new Schema({
     required: true,
     ref: 'User'
   },
-  members: [{
-    type: projectMemberSchema
-  }],
+  members: {
+    type: ObjectId,
+    ref: 'User'
+  },
   contracts: [{
     type: ObjectId,
     ref: 'Contract'
@@ -252,8 +242,8 @@ var contractSchema = new Schema({
     ref: 'User'
   },
 	taker: {
-		ObjectId
-	}
+		type: ObjectId
+	},
   applicants: [{
     type: ObjectId,
     ref: 'User'
@@ -307,7 +297,6 @@ module.exports.Skill = Skill;
 module.exports.Message = Message;
 module.exports.User = User;
 module.exports.DetailedInfo = DetailedInfo;
-module.exports.ProjectMember = ProjectMember;
 module.exports.Showcase = Showcase;
 module.exports.Project = Project;
 module.exports.Contract = Contract;
