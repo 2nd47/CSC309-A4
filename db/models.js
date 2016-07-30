@@ -95,6 +95,10 @@ var userSchema = new Schema({
   name: {
     type: String
   },
+	avatar: {
+		// path to the image
+		type: String
+	}
   title: {
     type: String
   },
