@@ -161,7 +161,7 @@ var userSchema = new Schema({
 	frozen: [{
 		type: Boolean,
 		default: false
-	}]
+	}],
 	times_frozen: [{
 		type: Number,
 		default: 0
@@ -170,16 +170,19 @@ var userSchema = new Schema({
 
 var User = mongoose.model('User', userSchema);
 
-//PROJECT MEMBERS
-var projectMemberSchema = new Schema({
-  user: {
-    type: ObjectId,
-    required: true,
-    ref: 'User'
+//PROJECT INFO
+var detailedProjectInfoSchema = new Schema({
+  title: {
+    type: String,
+    required: true
+  },
+  content: {
+    type: String,
+    required: true
   }
-}, { timestamps: true });
+});
 
-var ProjectMember = mongoose.model('ProjectMember', projectMemberSchema);
+var DetailedInfo = mongoose.model('DetailedInfo', detailedProjectInfoSchema);
 
 //SHOWCASE
 var showcaseSchema = new Schema({
@@ -277,8 +280,8 @@ var jobSchema = new Schema({
     ref: 'User'
   },
 	taker: {
-		ObjectId
-	}
+		type: ObjectId
+	},
   applicants: [{
     type: ObjectId,
     ref: 'User'
@@ -332,7 +335,6 @@ module.exports.Skill = Skill;
 module.exports.Message = Message;
 module.exports.User = User;
 module.exports.DetailedInfo = DetailedInfo;
-module.exports.ProjectMember = ProjectMember;
 module.exports.Showcase = Showcase;
 module.exports.Project = Project;
 module.exports.Job = Job;
