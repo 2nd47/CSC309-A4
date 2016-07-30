@@ -5,6 +5,11 @@
 
 var express = require('express');
 var router = express.Router();
+var User = require('../db/db');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var bcrypt = require('bcrypt');
+
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -16,17 +21,140 @@ router.use(function timeLog(req, res, next) {
 // refer to express documentation for more details
 
 // if logged in: feed; else: landing page
-router.get('/', function (req, res, next) {
+router.get('/', ensureAuthenticated, function (req, res, next) {
   res.send('AIDA Home Page!');
 });
 
-router.post('/login', function (req, res, next) {
-  res.send('AIDA Home Page!');
-});
+// Ensure authenticated so the user cannot access the home page if not logged in
+function ensureAuthenticated(req, res, next) {
+  if(req.isAuthenticated()) {
+    return next();
+  } else {
+    req.flash('error_msg', 'You are not logged in');
+    res.redirect('/login');
+  }
+}
 
+// Signup
 router.post('/signup', function (req, res, next) {
-  res.send('AIDA Home Page!');
+  var username = req.body.username;
+  var password = req.body.password;
+  var password2 = req.body.password2;
+  var email = req.body.email;
+  var email2 = req.body.email2;
+
+  // Validation
+  req.checkBody(‘username’, 'Username is required').notEmpty();
+  req.checkBody(‘password’, 'Password is required').notEmpty();
+  req.checkBody(‘password2’, 'Passwords do not match').equals(req.body.password);
+  req.checkBody(‘email’, 'Email is required').notEmpty();
+  req.checkBody('email', 'Email is not valid').isEmail();
+  req.checkBody(‘email2’, 'Emails do not match').equals(req.body.email);
+
+  var errors = req.validationErrors();
+
+  if(errors) {
+    console.log(msg);
+    /*
+    res.render('landingSignup', {
+      errors:errors
+    });
+    On The Frontend add this placeholder:
+    {{#if errors}}
+      {{#each errors}}
+        <div class="notice error">{{msg}}</div>
+      {{/each}}
+    {{/if}}
+    */
+  } else {
+    console.log('Signup No Error');
+    
+    // Hash the password. Store the hash in var password
+    bcrypt.genSalt(10, function(err, salt) {
+    	bcrypt.hash(password, salt, function(err, hash) {
+    		password = hash;	
+    	});	
+    });
+    
+    // Create the user
+    var newUser = new User({
+      username: username,
+      password: password;
+      email: email;
+    });
+
+    User.createUser(newUser, function(err, user){
+      if(err) throw err;
+      console.log(user);
+    });
+
+    req.flash('success_msg', 'You are registered and can now login');
+    /* On Frontend add these placeholders
+    {{#if success_msg}}
+      <div class="notice_success">
+        {{success_msg}}
+      </div>
+    {{/if}}
+    {{#if error_msg}}
+      <div class="notice_success">
+        {{error_msg}}
+      </div>
+    {{/if}}
+    {{#if error}}
+      <div class="notice_success">
+        {{error}}
+      </div>
+    {{/if}}
+    */
+
+    res.redirect('/login');
+  }
 });
+
+// Passport Local Strategy
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.getUserByUsername(username, function(err, user){
+      if(err) throw err;
+      if(!user){
+        return done(null, false, {message: 'Unknown User'});
+      }
+      User.comparePassword(password, user.passwordHash, function(err, isMatch){
+        if(err) throw err;
+        if(isMatch){
+          return done(null, user);
+        } else {
+          return done(null, false, {message: 'Invalid password'});
+        }
+      });
+    });
+}));
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.getUserById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
+// Login
+router.post('/login',
+            passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login', failureFlash: true}),
+            function (req, res, next) {
+              res.redirect('/');
+});
+
+// Logout
+router.get('/logout', function(req, res, next) {
+  req.logout();
+  req.flash('success_msg', 'You are logged out');
+  res.redirect('/login');
+});
+
+
 
 // list of contracts
 router.get('/contracts', function (req, res) {
