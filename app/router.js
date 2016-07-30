@@ -693,9 +693,11 @@ router.get('/inbox/:chat_id', function (req, res) {
 		success: "true" if retrieved ok,
 		result:
 		{
-			personOne: person one,
-			personTwo: person two,
-			messages: latest ten messages
+			other_id: other person's id,
+			messages: [{
+				sender: user/other,
+				text: text
+			}]
 		}
 	}
 	*/
@@ -708,15 +710,44 @@ router.get('/inbox/:chat_id', function (req, res) {
 	if (userId === chat.personOne || userId === chat.personTwo) {
 		json.success = "true";
 		json.result = new Object();
-		json.result.personOne = chat.personOne;
-		json.result.personTwo = chat.personTwo;
-		json.messages = chat.messages.slice(-20); // Get the last 20 messages
+		var other;
+		if (userId === chat.personOne) {
+			// the other person is person two
+			other = db.User.findById(chat.personTwo);
+		}
+		else {
+			// the other person is person two
+			other = db.User.findById(chat.personOne);
+		}
+		// other user is not found
+		if (!other) {
+			json.success = "false";
+			res.send(JSON.stringify(json));
+			return;
+		}
+		json.result.other_id = other._id;
+		json.result.other_name = other.name;
+		json.messages = [];
+		var messages = chat.messages.slice(-10); // Get the last 10 messages
+		
 		var i;
-		var numMessages = json.messages.length;
+		var numMessages = messages.length;
 		for (i=0;i<numMessages;i++) {
 			// Mark all the messages shown as read
-			db.Message.findByIdAndUpdate(chat_id, {$set: { 'unread': false }});
+			readMessage(messages[i]);
+			// check sender of the message and append to list
+			new message = new Object();
+			if (messages[i].sender === userId) {
+				message.sender = "user";
+			}
+			else {
+				message.sender = "other";
+			}
+			message.text = messages[i].text;
+			json.messages.push(message);
 		}
+		
+		
 	}
 	else {
 		json.success = "false";
@@ -725,14 +756,17 @@ router.get('/inbox/:chat_id', function (req, res) {
 	res.send(JSON.stringify(json));
 });
 
-// send message to chat_id
-router.post('/inbox/:chat_id/new', function (req, res) {
+// send message to person_id
+router.post('/inbox/:person_id/new', function (req, res) {
 	var userId = req.session.userId;
-	var chatId = req.params.chat_id;
-	if (canSendMessage(userId, chatId)) {
-		var messageBox = qs.parse(req.data);
-		var message = messageBox.message;
+	var personId = req.params.person_id;
+	if (canSendMessage(userId, personId)) {
+		var message = req.body['new-message-box'];
 		sendMessageTo(userId, chatId, message);
+		res.send("OK");
+	}
+	else {
+		res.send("Denied");
 	}
 }
 
