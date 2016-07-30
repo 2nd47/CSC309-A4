@@ -23,7 +23,7 @@ var app = express();
 var router = require('./router');
 var db = require('../db/db.js');
 
-//  app init
+// app init
 const APP_PORT = process.env.PORT || 3000;
 const saltRounds = 10;
 
