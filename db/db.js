@@ -61,59 +61,125 @@ module.exports.initSampleDb = function() {
       modelToRemove.remove({});
   }
   // Create users
-  var user1 = createUser('dtrump', 'passwordhashtrump', 'dtrump@gmail.com');
-  setUserField(user1, 'name', 'Donald Trump');
-  setUserField(user1, 'title', 'Republican Presidential Nominee');
-  setUserField(user1, 'bio', 'I am the greatest candidate for this position!');
-  pushUserField(user1, 'tags', 'Republican Party');
-  pushUserField(user1, 'tags', 'GOP');
-  setUserField(user1, 'isVerified', true);
-  setUserField(user1, 'timeVerified', Date.now());
-  setUserField(user1, 'url', 'http://www.trump.com/');
-  pushUserField(user1, 'following', user3._id);
-  pushUserField(user1, 'contacts', user3._id);
-  pushUserField(user1, 'blocked', user2._id);
-  var user2 = createUser('bsanders', 'passwordhashsanders', 'bsanders@gmail.com');
-  setUserField(user1, 'name', 'Bernie Sanders');
-  setUserField(user1, 'title', 'Democratic Presidential Nominee Runner-up');
-  setUserField(user1, 'bio', 'I wish I had gotten that position!');
-  setUserField(user1, 'isVerified', true);
-  setUserField(user1, 'timeVerified', Date.now());
-  setUserField(user1, 'url', 'http://www.sanders.senate.gov/');
-  var user3 = createUser('vputin', 'passwordhashputin', 'vputin@gmail.com');
-  setUserField(user1, 'name', 'Vladimir Putin');
-  setUserField(user1, 'title', 'Russian Overlord');
-  setUserField(user1, 'bio', 'I rule Russia, forever.');
-  setUserField(user1, 'isVerified', true);
-  setUserField(user1, 'timeVerified', Date.now());
-  setUserField(user1, 'url', 'http://eng.putin.kremlin.ru/');
-  pushUserField(user1, 'following', user1._id);
-  pushUserField(user1, 'contacts', user1._id);
-  pushUserField(user1, 'blocked', user2._id);
+  createUser('dtrump', 'passwordhashtrump', 'dtrump@gmail.com', function(err, user) {
+    setUserField(user._id, 'name', 'Donald Trump');
+    setUserField(user._id, 'title', 'Republican Presidential Nominee');
+    setUserField(user._id, 'bio', 'I am the greatest candidate for this position!');
+    pushUserField(user._id, 'tags', 'Republican Party');
+    pushUserField(user._id, 'tags', 'GOP');
+    setUserField(user._id, 'isVerified', true);
+    setUserField(user._id, 'timeVerified', Date.now());
+    setUserField(user._id, 'url', 'http://www.trump.com/');
+  });
+  createUser('bsanders', 'passwordhashsanders', 'bsanders@gmail.com', function(err, user) {
+    setUserField(user._id, 'name', 'Bernie Sanders');
+    setUserField(user._id, 'title', 'Democratic Presidential Nominee Runner-up');
+    setUserField(user._id, 'bio', 'I wish I had gotten that position!');
+    setUserField(user._id, 'isVerified', true);
+    setUserField(user._id, 'timeVerified', Date.now());
+    setUserField(user._id, 'url', 'http://www.sanders.senate.gov/');
+  });
+  createUser('vputin', 'passwordhashputin', 'vputin@gmail.com', function(err, user) {
+    setUserField(user._id, 'name', 'Vladimir Putin');
+    setUserField(user._id, 'title', 'Russian Overlord');
+    setUserField(user._id, 'bio', 'I rule Russia, forever.');
+    setUserField(user._id, 'isVerified', true);
+    setUserField(user._id, 'timeVerified', Date.now());
+    setUserField(user._id, 'url', 'http://eng.putin.kremlin.ru/');
+  });
+  createUser('hclinton', 'passwordhashclinton', 'human@robots.gov', function(err, user) {
+    setUserField(user._id, 'name', 'Hillary Clinton');
+    setUserField(user._id, 'title', 'Democratic Presidential Nominee');
+    setUserField(user._id, 'bio', 'VOTE FOR ME, HUMANS!');
+    setUserField(user._id, 'isVerified', true);
+    setUserField(user._id, 'timeVerified', Date.now());
+    setUserField(user._id, 'url', 'https://www.hillaryclinton.com/');
+  });
+  getUserByField('username', 'dtrump', function(err, user) {
+    getUserByField('username', 'vputin', function(err, otherUser) {
+      pushUserField(user._id, 'following', otherUser._id);
+    });
+    getUserByField('username', 'vputin', function(err, otherUser) {
+      pushUserField(user._id, 'contacts', otherUser._id);
+    });
+    getUserByField('username', 'hclinton', function(err, otherUser) {
+      pushUserField(user._id, 'blocked', otherUser._id);
+    });
+  });
+  getUserByField('username', 'bsanders', function(err, user) {
+    getUserByField('username', 'hclinton', function(err, otherUser) {
+      pushUserField(user._id, 'following', otherUser._id);
+    });
+  });
+  getUserByField('username', 'vputin', function(err, user) {
+    getUserByField('username', 'dtrump', function(err, otherUser) {
+      pushUserField(user._id, 'following', otherUser._id);
+    });
+    getUserByField('username', 'dtrump', function(err, otherUser) {
+      pushUserField(user._id, 'contacts', otherUser._id);
+    });
+    getUserByField('username', 'bsanders', function(err, otherUser) {
+      pushUserField(user._id, 'blocked', otherUser._id);
+    });
+  });
+  getUserByField('username', 'hclinton', function(err, otherUser) {
+    getUserByField('username', 'bsanders', function(err, user) {
+      pushUserField(user._id, 'following', otherUser._id);
+    });
+  });
   // Create projects
-  var project1 = createProject('Trump for President!', user1._id);
-  pushProjectField(project1, 'tags', 'USA Presidential Campaign');
-  pushProjectField(project1, 'tags', 'Republican Party');
-  pushProjectField(project1, 'tags', 'GOP');
-  pushProjectField(project1, 'members', user1._id);
-  pushProjectField(project1, 'members', user3._id);
-  setProjectField(project1, 'basicInfo',
-    'This is basic information about the project!');
-  setProjectField(project1, 'detailedInfo', 'This is a much much much much much\
-    much much much much much much much much much much much much much much much \
-    much much much much much much much much much much much much much much much \
-    much much much much much much much much much much much much much much much \
-    much much much much much much much much much longer information section');
-  // Create contracts
-  var contract1 = createContract(
-    'Website Designer', project1._id, user1._id, Date.now(), 1500);
-  setContractField(contract1._id, 'intro',
-    'This is the introduction to the contract!');
-  pushContractField(contract1._id, 'descriptionTags', 'Webdev');
-  pushContractField(contract1._id, 'descriptionTags', 'Campaigning');
-  setContractField(contract1._id, 'details',
-    'These are the details for the contract!');
-  setContractField(contract1._id, 'url', 'http://www.trump.com/connect-with-us/');
+  getUserByField('username', 'dtrump', function(err, creator) {
+    createProject('Trump for President!', creator._id, function(err, project) {
+      pushProjectField(project._id, 'tags', 'USA Presidential Campaign');
+      pushProjectField(project._id, 'tags', 'Republican Party');
+      pushProjectField(project._id, 'tags', 'GOP');
+      getUserByField('username', 'vputin', function(err, user) {
+        pushProjectField(project._id, 'members', user._id);
+      });
+      setProjectField(project._id, 'basicInfo',
+        'This is basic information about the project!');
+      setProjectField(project._id, 'detailedInfo', 'This is a much much much much much\
+        much much much much much much much much much much much much much much much \
+        much much much much much much much much much much much much much much much \
+        much much much much much much much much much much much much much much much \
+        much much much much much much much much much longer information section');
+    }, function(err, project) {
+      createContract(
+        'Website Designer', project._id, creator._id, Date.now(), 1500, function(err, contract) {
+          setContractField(contract._id, 'intro',
+            'This is the introduction to the contract!');
+          pushContractField(contract._id, 'descriptionTags', 'Webdev');
+          pushContractField(contract._id, 'descriptionTags', 'Campaigning');
+          setContractField(contract._id, 'details',
+            'These are the details for the contract!');
+          setContractField(contract._id, 'url', 'http://www.trump.com/connect-with-us/');
+      });
+      createContract(
+        'Campaign Stumper', project._id, creator._id, Date.now(), 5000, function(err, contract) {
+          setContractField(contract._id, 'intro',
+            'This is the introduction to the contract!');
+          pushContractField(contract._id, 'descriptionTags', 'Webdev');
+          pushContractField(contract._id, 'descriptionTags', 'Campaigning');
+          setContractField(contract._id, 'details',
+            'These are the details for the contract!');
+          setContractField(contract._id, 'url', 'http://www.trump.com/connect-with-us/');
+      });
+    });
+  })
+  getUserByField('username', 'bsanders', function(err, creator) {
+    createProject('Sanders for President!', creator._id, function(err, project) {
+      pushProjectField(project._id, 'tags', 'USA Presidential Campaign');
+      pushProjectField(project._id, 'tags', 'Democratic Party');
+      pushProjectField(project._id, 'tags', 'DNC');
+      setProjectField(project._id, 'basicInfo',
+        'This is basic information about the project!');
+      setProjectField(project._id, 'detailedInfo', 'This is a much much much much much\
+        much much much much much much much much much much much much much much much \
+        much much much much much much much much much much much much much much much \
+        much much much much much much much much much much much much much much much \
+        much much much much much much much much much longer information section');
+    });
+  });
   // Create reports
 }
 
@@ -131,6 +197,7 @@ module.exports.createProject = function(name, owner, callback) {
   var project = new Project();
   project.name = name;
   project.owner = owner;
+  project.members = [owner];
   project.save(callback);
 }
 
