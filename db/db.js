@@ -1,20 +1,16 @@
 var mongoose = require('mongoose');
 
 var models = require("./models.js");
-var url = process.env.MONGODB_URI || 'mongodb://localhost/appdb';
-var sampleInit = process.env.INIT_SAMPLE_DB || false;
 
-var connect = function(callback) {
-  mongoose.connect(url);
-
-  var db = mongoose.connection;
-  db.on("error", console.error.bind(console, "connection error:"));
+module.exports.connect = function(dbUrl, createSamples, callback) {
+  var db = mongoose.connect(dbUrl).connection;
+  db.on("error", function(err) { console.log(err.message); });
   db.once("open", function() {
-    if (sampleInit) {
-      initSampleDb();
-    }
-    callback();
+    console.log('MongoDB connection opened to ' + dbUrl);
   });
+  if (createSamples) {
+    initSampleDb();
+  }
 }
 
 // Init sample database info
@@ -392,4 +388,3 @@ module.exports.comparePassword = function(candidatePassword, hash, callback){
 };
 
 module.exports.models = models;
-module.exports.connect = connect;
