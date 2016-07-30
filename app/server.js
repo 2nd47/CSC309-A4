@@ -24,7 +24,7 @@ var router = require('./router');
 var db = require('../db/db.js');
 
 // app init
-const APP_PORT = process.env.port || 3000;
+const APP_PORT = 3000;
 const saltRounds = 10;
 
 function init() {
