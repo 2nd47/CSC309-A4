@@ -22,7 +22,7 @@ router.use(function timeLog(req, res, next) {
 });
 
 //use static
-router.use(express.static("../"));
+router.use(express.static("./"));
 
 //use flash
 router.use(flash());
@@ -69,7 +69,7 @@ passport.deserializeUser(function(id, done) {
 
 // if logged in: feed; else: landing page
 router.get('/', ensureAuthenticated, function (req, res, next) {
-  res.sendFile('landing.html', { root: "../" });
+  res.sendFile('landing.html', { root: "./" });
 });
 
 // Ensure authenticated so the user cannot access the home page if not logged in
@@ -339,7 +339,7 @@ router.get('/jobs/:job_id', function (req, res) {
 				json.employer_name = owner.name;
 			});
 			json.project_id = job.project;
-			db.Project.findById(job.project function(err, project){
+			db.Project.findById(job.project, function(err, project){
 				json.project_name = project.name;
 			});
 			if (job.taker) {
@@ -665,7 +665,7 @@ router.get('/projects/:project_id', function (req, res, next) {
 			for (i=0;i<numMembers;i++) {
 				var newMember = new Object();
 				newMember.member_id = project.members[i].user;
-				db.User.findById(project.members[i].user), function(err, memberName){
+				db.User.findById(project.members[i].user, function(err, memberName){
 					newMember.member_name = memberName.name;
 					json.members.push(newMember);
 				});
@@ -705,7 +705,7 @@ router.get('/projects/:project_id', function (req, res, next) {
 			}
 			res.send(JSON.stringify(json));
 		});
-		
+
 	}
 	catch (e) {
 		res.status(404);

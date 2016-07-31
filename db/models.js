@@ -2,12 +2,17 @@
 // Separate into different files before integrating to master
 
 var mongoose = require('mongoose');
+var shortid = require('shortid');
 var model = mongoose.model;
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
 //SKILLS
 var skillSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   name: {
     type: String,
     required: true},
@@ -17,7 +22,7 @@ var skillSchema = new Schema({
     min: [0, 'Skill must be at least 0'],
     max: [5, 'Skill must be no greater than 5']
   }
-});
+}, { collection: 'skills' });
 
 var Skill = mongoose.model('Skill', skillSchema);
 
@@ -26,6 +31,10 @@ var messageSchema = new Schema({
   // This should be the ID of the sending user
   // If it isn't the user this message list was retrieved
   // from then it was sent to them from someone else
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   sender: {
     type: ObjectId,
     required: true,
@@ -39,14 +48,18 @@ var messageSchema = new Schema({
 		type: Boolean,
 		default: true
 	}
-}, { timestamps: true });
+}, { collection: 'messages', timestamps: true });
 
 var Message = mongoose.model('Message', messageSchema);
 
 //BROADCASTS
 var broadcastSchema = new Schema({
 	// broadcast about the object with given url
-	url: {
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
+  url: {
     type: String,
 		required: true
   },
@@ -54,14 +67,18 @@ var broadcastSchema = new Schema({
     type: String,
     required: true
   }
-}, { timestamps: true });
+}, { collection: 'broadcasts', timestamps: true });
 
 var Broadcast = mongoose.model('Broadcast', broadcastSchema);
 
 
 //CHATS
 var chatSchema = new Schema({
-	personOne: {
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
+  personOne: {
 		type: ObjectId,
     required: true,
     ref: 'User'
@@ -73,7 +90,8 @@ var chatSchema = new Schema({
 	},
 	messages: [{
     type: messageSchema,
-    ref: 'Message'
+    ref: 'Message',
+    default: []
   }]
 },{ collection : 'chats', timestamps: true });
 
@@ -81,6 +99,10 @@ var Chat = mongoose.model('Chat', chatSchema);
 
 //USERS
 var userSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   username: {
     type: String,
     required: true
@@ -90,26 +112,33 @@ var userSchema = new Schema({
     required: true
   },
   twoFactorMethod: {
-    type: String
+    type: String,
+    default: ""
   },
   name: {
-    type: String
+    type: String,
+    default: ""
   },
 	avatar: {
 		// path to the image
-		type: String
+		type: String,
+    default: "/assets/img/users/placeholder.png"
 	},
   title: {
-    type: String
+    type: String,
+    default: ""
   },
   skillTags: [{
-    type: skillSchema
+    type: skillSchema,
+    default: []
   }],
   bio: {
-    type: String
+    type: String,
+    default: ""
   },
   tags: [{
-    type: String
+    type: String,
+    default: []
   }],
   email: {
     type: String ,
@@ -127,16 +156,19 @@ var userSchema = new Schema({
     default: 0
   },
   url: {
-    type: String
+    type: String,
+    default: ""
   },
   // Refer to http://stackoverflow.com/questions/4677237
   // for further explanation of why this is the case
   followings: [{
-    type: ObjectId
+    type: ObjectId,
+    default: []
   }],
 	followers: [{
 		type: ObjectId,
-		ref: 'User'
+		ref: 'User',
+    default: []
 	}],
 	numFollowers: {
 		type: Number,
@@ -145,18 +177,22 @@ var userSchema = new Schema({
   //messages: [messageSchema],
   chats: [{
     type: ObjectId,
-    ref: 'Chat'
+    ref: 'Chat',
+    default: []
   }],
 	messageBoard: [{
-		type: broadcastSchema
+		type: broadcastSchema,
+    default: []
 	}],
   blocked: [{
     type: ObjectId,
-    ref: 'User'
+    ref: 'User',
+    default: []
   }],
   jobs: [{
     type: ObjectId,
-    ref: 'Job'
+    ref: 'Job',
+    default: []
   }],
 	frozen: [{
 		type: Boolean,
@@ -172,6 +208,10 @@ var User = mongoose.model('User', userSchema);
 
 //PROJECT INFO
 var detailedProjectInfoSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   title: {
     type: String,
     required: true
@@ -180,15 +220,20 @@ var detailedProjectInfoSchema = new Schema({
     type: String,
     required: true
   }
-});
+}, { collection: 'detailedInfos', timestamps: true });
 
 var DetailedInfo = mongoose.model('DetailedInfo', detailedProjectInfoSchema);
 
 //SHOWCASE
 var showcaseSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   project: {
     type: ObjectId,
-    ref: 'Project'
+    ref: 'Project',
+    required: true
   },
   // Display order inferred from indices
   assetPath: {
@@ -200,12 +245,17 @@ var Showcase = mongoose.model('Showcase', showcaseSchema);
 
 //PROJECT
 var projectSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   name: {
     type: String,
     required: true
   },
   tags: [{
-    type: String
+    type: String,
+    default: []
   }],
   owner: {
     type: ObjectId,
@@ -213,56 +263,70 @@ var projectSchema = new Schema({
     ref: 'User'
   },
   members: [{
-    type: ObjectId
+    type: ObjectId,
+    default: []
   }],
   jobs: [{
     type: ObjectId,
-    ref: 'Job'
+    ref: 'Job',
+    default: []
   }],
   showcase: {
     type: showcaseSchema
   },
   basicInfo: {
-    type: String
+    type: String,
+    default: ""
   },
   detailedInfo: {
-    type: String
+    type: String,
+    default: ""
   },
   status: {
-    type: String
+    type: String,
+    default: ""
   },
 	followers: [{
 		type: ObjectId,
-		ref: 'User'
+		ref: 'User',
+    default: []
 	}],
 	numFollowers: {
 		type: Number,
 		default: 0
 	},
   url: {
-    type: String
+    type: String,
+    default: ""
   }
 }, { collection : 'projects', timestamps: true });
 
 var Project = mongoose.model('Project', projectSchema);
 
 var jobSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   name: {
     type: String,
     required: true
   },
   intro: {
-    type: String
+    type: String,
+    default: ""
   },
   status: {
     type: String,
 		default: "open"
   },
   skillTags: [{
-    type: skillSchema
+    type: skillSchema,
+    default: []
   }],
   descriptionTags: [{
-    type: String
+    type: String,
+    default: []
   }],
   // ID of project member who created the job
   project: {
@@ -276,14 +340,16 @@ var jobSchema = new Schema({
     ref: 'User'
   },
 	taker: {
-		type: ObjectId
+		type: ObjectId,
+    ref: 'User'
 	},
   applicants: [{
     type: ObjectId,
     ref: 'User'
   }],
   details: {
-    type: String
+    type: String,
+    default: ""
   },
   deadline: {
     type: Date,
@@ -294,13 +360,18 @@ var jobSchema = new Schema({
     required: true
   },
   url: {
-    type: String
+    type: String,
+    default: ""
   }
-}, { timestamps: true });
+}, { collection: 'jobs', timestamps: true });
 
 var Job = mongoose.model('Job', jobSchema);
 
 var reportSchema = new Schema({
+  _id: {
+    type: String,
+    default: shortid.generate
+  },
   reporter: {
     type: ObjectId,
     required: true,

@@ -23,17 +23,15 @@ var router = require('./router');
 var db = require('../db/db.js');
 
 // app init
+var url = process.env.MONGODB_URI || 'mongodb://localhost/appdb';
+var sampleInit = process.env.INIT_SAMPLE_DB || false;
 const APP_PORT = process.env.PORT || 3000;
 const saltRounds = 10;
 
-function init() {
-  return;
-}
-
 function main() {
-  init();
   app.use('/', router);
   app.listen(APP_PORT);
+  db.connect(url, sampleInit);
   console.log('Server listening on port ' + APP_PORT);
 }
 

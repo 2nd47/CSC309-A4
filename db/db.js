@@ -2,41 +2,16 @@ var mongoose = require('mongoose');
 
 var models = require("./models.js");
 
-/*
-var dbUser = 'aida-master';
-var dbPassword = 'dbpassword';
-var url = 'mongodb://' +
-  dbUser + ':' +
-  dbPassword +
-  '@ds029735.mlab.com:29735/heroku_qdmfvghp'
-*/
-
-var url = 'mongodb://localhost/appdb';
-
-var connect = function(callback) {
-  mongoose.connect(url);
-
-  var db = mongoose.connection;
-  db.on("error", console.error.bind(console, "connection error:"));
+module.exports.connect = function(dbUrl, createSamples, callback) {
+  var db = mongoose.connect(dbUrl).connection;
+  db.on("error", function(err) { console.log(err.message); });
   db.once("open", function() {
-    callback();
+    console.log('MongoDB connection opened to ' + dbUrl);
   });
-}
-
-// Generate a custom URL to be used when displaying pages
-/*
-var generateURL = function() {
-  var randURL;
-  var isUniqueId = false;
-  while (!isUniqueId) {
-    var noUserURL = false,
-        noProjectURL = false,
-        noJobURL = false;
-    randURL = Math.Random() * 100000;
+  if (createSamples) {
+    this.initSampleDb();
   }
-  return randURL;
 }
-*/
 
 // Init sample database info
 var sample_data_init = false;
@@ -47,136 +22,137 @@ module.exports.initSampleDb = function() {
     sample_data_init = true;
   }
   // Clear database
-  for (var modelToRemove in [
-    models.Skill,
-    models.Message,
-    models.Contact,
-    models.User,
-    models.ProjectMember,
-    models.DetailedInfo,
-    models.Showcase,
-    models.Project,
-    models.Job,
-    models.Report]) {
-      modelToRemove.remove({});
+  collectionsToDrop = [
+    'skills',
+    'messages',
+    'broadcasts',
+    'chats',
+    'users',
+    'detailedinfos',
+    'showcases',
+    'projects',
+    'jobs',
+    'reports']
+  for (var i; i<collectionsToDrop.length; i++) {
+      mongoose.connection.collections[collectionsToDrop[i]].drop();
   }
   // Create users
-  createUser('dtrump', 'passwordhashtrump', 'dtrump@gmail.com', function(err, user) {
-    setUserField(user._id, 'name', 'Donald Trump');
-    setUserField(user._id, 'title', 'Republican Presidential Nominee');
-    setUserField(user._id, 'bio', 'I am the greatest candidate for this position!');
-    pushUserField(user._id, 'tags', 'Republican Party');
-    pushUserField(user._id, 'tags', 'GOP');
-    setUserField(user._id, 'isVerified', true);
-    setUserField(user._id, 'timeVerified', Date.now());
-    setUserField(user._id, 'url', 'http://www.trump.com/');
+  this.createUser('dtrump', 'passwordhashtrump', 'dtrump@gmail.com', function(err, user) {
+    this.setUserField(user._id, 'name', 'Donald Trump');
+    this.setUserField(user._id, 'title', 'Republican Presidential Nominee');
+    this.setUserField(user._id, 'bio', 'I am the greatest candidate for this position!');
+    this.pushUserField(user._id, 'tags', 'Republican Party');
+    this.pushUserField(user._id, 'tags', 'GOP');
+    this.setUserField(user._id, 'isVerified', true);
+    this.setUserField(user._id, 'timeVerified', Date.now());
+    this.setUserField(user._id, 'url', 'http://www.trump.com/');
   });
-  createUser('bsanders', 'passwordhashsanders', 'bsanders@gmail.com', function(err, user) {
-    setUserField(user._id, 'name', 'Bernie Sanders');
-    setUserField(user._id, 'title', 'Democratic Presidential Nominee Runner-up');
-    setUserField(user._id, 'bio', 'I wish I had gotten that position!');
-    setUserField(user._id, 'isVerified', true);
-    setUserField(user._id, 'timeVerified', Date.now());
-    setUserField(user._id, 'url', 'http://www.sanders.senate.gov/');
+  this.createUser('bsanders', 'passwordhashsanders', 'bsanders@gmail.com', function(err, user) {
+    this.setUserField(user._id, 'name', 'Bernie Sanders');
+    this.setUserField(user._id, 'title', 'Democratic Presidential Nominee Runner-up');
+    this.setUserField(user._id, 'bio', 'I wish I had gotten that position!');
+    this.setUserField(user._id, 'isVerified', true);
+    this.setUserField(user._id, 'timeVerified', Date.now());
+    this.setUserField(user._id, 'url', 'http://www.sanders.senate.gov/');
   });
-  createUser('vputin', 'passwordhashputin', 'vputin@gmail.com', function(err, user) {
-    setUserField(user._id, 'name', 'Vladimir Putin');
-    setUserField(user._id, 'title', 'Russian Overlord');
-    setUserField(user._id, 'bio', 'I rule Russia, forever.');
-    setUserField(user._id, 'isVerified', true);
-    setUserField(user._id, 'timeVerified', Date.now());
-    setUserField(user._id, 'url', 'http://eng.putin.kremlin.ru/');
+  this.createUser('vputin', 'passwordhashputin', 'vputin@gmail.com', function(err, user) {
+    this.setUserField(user._id, 'name', 'Vladimir Putin');
+    this.setUserField(user._id, 'title', 'Russian Overlord');
+    this.setUserField(user._id, 'bio', 'I rule Russia, forever.');
+    this.setUserField(user._id, 'isVerified', true);
+    this.setUserField(user._id, 'timeVerified', Date.now());
+    this.setUserField(user._id, 'url', 'http://eng.putin.kremlin.ru/');
   });
-  createUser('hclinton', 'passwordhashclinton', 'human@robots.gov', function(err, user) {
-    setUserField(user._id, 'name', 'Hillary Clinton');
-    setUserField(user._id, 'title', 'Democratic Presidential Nominee');
-    setUserField(user._id, 'bio', 'VOTE FOR ME, HUMANS!');
-    setUserField(user._id, 'isVerified', true);
-    setUserField(user._id, 'timeVerified', Date.now());
-    setUserField(user._id, 'url', 'https://www.hillaryclinton.com/');
+  this.createUser('hclinton', 'passwordhashclinton', 'human@robots.gov', function(err, user) {
+    this.setUserField(user._id, 'name', 'Hillary Clinton');
+    this.setUserField(user._id, 'title', 'Democratic Presidential Nominee');
+    this.setUserField(user._id, 'bio', 'VOTE FOR ME, HUMANS!');
+    this.setUserField(user._id, 'isVerified', true);
+    this.setUserField(user._id, 'timeVerified', Date.now());
+    this.setUserField(user._id, 'url', 'https://www.hillaryclinton.com/');
   });
-  getUserByField('username', 'dtrump', function(err, user) {
-    getUserByField('username', 'vputin', function(err, otherUser) {
-      pushUserField(user._id, 'following', otherUser._id);
+  this.getUserByField('username', 'dtrump', function(err, user) {
+    this.getUserByField('username', 'vputin', function(err, otherUser) {
+      this.pushUserField(user._id, 'following', otherUser._id);
     });
-    getUserByField('username', 'vputin', function(err, otherUser) {
-      pushUserField(user._id, 'contacts', otherUser._id);
+    this.getUserByField('username', 'vputin', function(err, otherUser) {
+      this.pushUserField(user._id, 'contacts', otherUser._id);
     });
-    getUserByField('username', 'hclinton', function(err, otherUser) {
-      pushUserField(user._id, 'blocked', otherUser._id);
-    });
-  });
-  getUserByField('username', 'bsanders', function(err, user) {
-    getUserByField('username', 'hclinton', function(err, otherUser) {
-      pushUserField(user._id, 'following', otherUser._id);
+    this.getUserByField('username', 'hclinton', function(err, otherUser) {
+      this.pushUserField(user._id, 'blocked', otherUser._id);
     });
   });
-  getUserByField('username', 'vputin', function(err, user) {
-    getUserByField('username', 'dtrump', function(err, otherUser) {
-      pushUserField(user._id, 'following', otherUser._id);
-    });
-    getUserByField('username', 'dtrump', function(err, otherUser) {
-      pushUserField(user._id, 'contacts', otherUser._id);
-    });
-    getUserByField('username', 'bsanders', function(err, otherUser) {
-      pushUserField(user._id, 'blocked', otherUser._id);
+  this.getUserByField('username', 'bsanders', function(err, user) {
+    this.getUserByField('username', 'hclinton', function(err, otherUser) {
+      this.pushUserField(user._id, 'following', otherUser._id);
     });
   });
-  getUserByField('username', 'hclinton', function(err, otherUser) {
-    getUserByField('username', 'bsanders', function(err, user) {
-      pushUserField(user._id, 'following', otherUser._id);
+  this.getUserByField('username', 'vputin', function(err, user) {
+    this.getUserByField('username', 'dtrump', function(err, otherUser) {
+      this.pushUserField(user._id, 'following', otherUser._id);
+    });
+    this.getUserByField('username', 'dtrump', function(err, otherUser) {
+      this.pushUserField(user._id, 'contacts', otherUser._id);
+    });
+    this.getUserByField('username', 'bsanders', function(err, otherUser) {
+      this.pushUserField(user._id, 'blocked', otherUser._id);
+    });
+  });
+  this.getUserByField('username', 'hclinton', function(err, otherUser) {
+    this.getUserByField('username', 'bsanders', function(err, user) {
+      this.pushUserField(user._id, 'following', otherUser._id);
     });
   });
   // Create projects
-  getUserByField('username', 'dtrump', function(err, creator) {
-    createProject('Trump for President!', creator._id, function(err, project) {
-      pushProjectField(project._id, 'tags', 'USA Presidential Campaign');
-      pushProjectField(project._id, 'tags', 'Republican Party');
-      pushProjectField(project._id, 'tags', 'GOP');
-      getUserByField('username', 'vputin', function(err, user) {
-        pushProjectField(project._id, 'members', user._id);
+  this.getUserByField('username', 'dtrump', function(err, creator) {
+    this.createProject('Trump for President!', creator._id, function(err, project) {
+      this.pushProjectField(project._id, 'tags', 'USA Presidential Campaign');
+      this.pushProjectField(project._id, 'tags', 'Republican Party');
+      this.pushProjectField(project._id, 'tags', 'GOP');
+      this.getUserByField('username', 'vputin', function(err, user) {
+        this.pushProjectField(project._id, 'members', user._id);
       });
-      setProjectField(project._id, 'basicInfo',
+      this.setProjectField(project._id, 'basicInfo',
         'This is basic information about the project!');
-      setProjectField(project._id, 'detailedInfo', 'This is a much much much much much\
+      this.setProjectField(project._id, 'detailedInfo', 'This is a much much much much much\
         much much much much much much much much much much much much much much much \
         much much much much much much much much much much much much much much much \
         much much much much much much much much much much much much much much much \
         much much much much much much much much much longer information section');
     }, function(err, project) {
-      createJob(
+      this.createJob(
         'Website Designer', project._id, creator._id, Date.now(), 1500, function(err, job) {
-          setJobField(job._id, 'intro',
+          this.setJobField(job._id, 'intro',
             'This is the introduction to the job!');
-          pushJobField(job._id, 'descriptionTags', 'Webdev');
-          pushJobField(job._id, 'descriptionTags', 'Campaigning');
-          setJobField(job._id, 'details',
+          this.pushJobField(job._id, 'descriptionTags', 'Webdev');
+          this.pushJobField(job._id, 'descriptionTags', 'Campaigning');
+          this.setJobField(job._id, 'details',
             'These are the details for the job!');
-          setJobField(job._id, 'url', 'http://www.trump.com/connect-with-us/');
+          this.setJobField(job._id, 'url', 'http://www.trump.com/connect-with-us/');
       });
-      createJob(
+      this.createJob(
         'Campaign Stumper', project._id, creator._id, Date.now(), 5000, function(err, job) {
-          setJobField(job._id, 'intro',
+          this.setJobField(job._id, 'intro',
             'This is the introduction to the job!');
-          pushJobField(job._id, 'descriptionTags', 'Webdev');
-          pushJobField(job._id, 'descriptionTags', 'Campaigning');
-          setJobField(job._id, 'details',
+          this.pushJobField(job._id, 'descriptionTags', 'Webdev');
+          this.pushJobField(job._id, 'descriptionTags', 'Campaigning');
+          this.setJobField(job._id, 'details',
             'These are the details for the job!');
-          setJobField(job._id, 'url', 'http://www.trump.com/connect-with-us/');
+          this.setJobField(job._id, 'url', 'http://www.trump.com/connect-with-us/');
       });
     });
   })
-  getUserByField('username', 'bsanders', function(err, creator) {
-    createProject('Sanders for President!', creator._id, function(err, project) {
-      pushProjectField(project._id, 'tags', 'USA Presidential Campaign');
-      pushProjectField(project._id, 'tags', 'Democratic Party');
-      pushProjectField(project._id, 'tags', 'DNC');
-      setProjectField(project._id, 'basicInfo',
+  this.getUserByField('username', 'bsanders', function(err, creator) {
+    this.createProject('Sanders for President!', creator._id, function(err, project) {
+      this.pushProjectField(project._id, 'tags', 'USA Presidential Campaign');
+      this.pushProjectField(project._id, 'tags', 'Democratic Party');
+      this.pushProjectField(project._id, 'tags', 'DNC');
+      this.setProjectField(project._id, 'basicInfo',
         'This is basic information about the project!');
-      setProjectField(project._id, 'detailedInfo', 'This is a much much much much much\
-        much much much much much much much much much much much much much much much \
-        much much much much much much much much much much much much much much much \
-        much much much much much much much much much much much much much much much \
+      this.setProjectField(project._id, 'detailedInfo', 'This is a much much much \
+        much much much much much much much much much much much much much much \
+        much much much much much much much much much much much much much much \
+        much much much much much much much much much much much much much much \
         much much much much much much much much much longer information section');
     });
   });
@@ -209,9 +185,9 @@ module.exports.createJob = function(name, project, owner, deadline, budget, call
   job.owner = owner;
   job.deadline = deadline;
   job.budget = budget;
-  pushUserField(owner, 'jobs', job);
-  pushProjectField(project, 'jobs', job);
   job.save(callback);
+  pushUserField('owner', 'jobs', job._id);
+  pushProjectField('project', 'jobs', job._id);
 }
 
 // Create a new message
@@ -412,4 +388,3 @@ module.exports.comparePassword = function(candidatePassword, hash, callback){
 };
 
 module.exports.models = models;
-module.exports.connect = connect;
