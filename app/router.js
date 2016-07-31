@@ -179,7 +179,7 @@ router.get('/logout', function(req, res, next) {
 });
 
 // create a new job
-router.post('/jobs/new', function (req, res) {
+router.post('/job/new', function (req, res) {
 	/*
 		TODO:
 		after the posting, send to the front end the link
@@ -247,8 +247,12 @@ router.post('/jobs/new', function (req, res) {
 	res.send(JSON.stringify(json));
 });
 
+router.get('/job/:job_id', function(req, res) {
+  res.sendFile('contract.html', { root: "./" });
+});
+
 // details of job with job_id
-router.get('/jobs/:job_id', function (req, res) {
+router.get('/api/job/:job_id', function (req, res) {
 	/*
 	Job page:
 
@@ -266,7 +270,8 @@ router.get('/jobs/:job_id', function (req, res) {
 		deadline: job deadline,
 		intro: introduction to the job details
 	}*/
-	try {
+	
+  /*try {
 		var json = new Object();
 		var job_id = req.params.job_id;
 		db.Job.findById(job_id, function(err, job){
@@ -310,17 +315,45 @@ router.get('/jobs/:job_id', function (req, res) {
 		}
 		return;
 	}
+  */
+  
+  //SEND DUMMY JSON TODO: CHANGE THIS!!!
+      var contract1 =
+      {
+      "id": "1",
+      "title": "2D Animator",
+      "intro": "Animate 2D stuff for us pls",
+      "employer_id": "1",
+      "employer_name": "Jordan Belfort",
+      "employer_username": "jbelfort",
+      "project_id": "1",
+      "project_name": "Super Awesome Game",
+      "status": "open",
+      "latest_update": "06-06-2006",
+      "tags": [{
+        "name": "Cooking",
+        "rating": 3
+      }, {
+        "name": "Eating",
+        "rating": 5
+      }],
+      "budget": 2000,
+      "deadline": "June 13 1995",
+      "details": "What an awesome game this is wow amazing how great and fun please support me and give me money also help me out and subscribe to my youtube channel for some awesome tetris lets plays and giveaways!"
+      }
+
+      res.json(contract1);
 });
 
 // prompt to sign a job with job_id
-router.get('/jobs/:job_id/sign', function (req, res) {
+router.get('/job/:job_id/sign', function (req, res) {
 	/**/
 });
 
 
 // list of profiles of top ten followed users
 // if user is logged in, show their following users at the bottom
-router.get('/people', function (req, res) {
+router.get('/profile', function (req, res) {
 	/*
 	get _id, name, title, skillTags, tags
 	{
@@ -357,8 +390,12 @@ router.get('/people', function (req, res) {
 	res.send(JSON.stringify(json));
 });
 
+router.get('/profile/:username', function(req, res) {
+  res.sendFile('profile.html', { root: "./" });
+});
+
 // details of people with username
-router.get('/people/:username', function (req, res) {
+router.get('/api/profile/:username', function (req, res) {
 	/*
 	{
 		id: person id,
@@ -385,7 +422,7 @@ router.get('/people/:username', function (req, res) {
 			}
 		]
 	}*/
-	try {
+	/*try {
 		var json = new Object();
 		var user_name = req.params.username;
 		db.getUserByField(user_name, function(err, user){
@@ -444,12 +481,53 @@ router.get('/people/:username', function (req, res) {
 		if (req.accepts('html')) {
 			res.render('404', { url: req.url });
 		}
-	}
+	}*/
+ 
+   var person1 =
+  {
+    "id": "1",
+    "name": "Jordan Belfort",
+    "title": "Wolf of Wall Street",
+    "avatar": "/assets/images/users/putin.jpg",
+    "skillTags": [{
+      "name": "C++",
+      "rating": 1
+    }, {
+      "name": "Banking",
+      "rating": 5
+    }, {
+      "name": "Making Money",
+      "rating": 4
+    }],
+    "tags": [{
+      "name": "Fantasy"
+    }, {
+      "name": "Simulation"
+    }],
+    "biography": "I made a lot of money on Wall Street and got fucked by the feds.",
+    "projects":  [{
+      "id": "1",
+      "name": "Super Awesome Game"
+    }, {
+      "id": "2",
+      "name": "Not This Shit Again"
+    }],
+    "jobs": [{
+      "id": "1",
+      "name": "2D Animator",
+      "completion_date": "August 12, 1994",
+      "rating": 5,
+      "comment": "Bloody brilliant mate good work made me $155,039.44!"
+    }]
+  }
+
+  res.json(person1);
 });
+
 
 // list of top ten projects
 // if user has followed projects, list them, too
-router.get('/projects', function (req, res, next) {
+router.get('/project', function (req, res, next) {
 	// get name, tags, showcase
 	var json = new Object();
 	var cursor = db.Project.find({},{"name": 1, "tags": 1, "showcase": 1}).sort({"numFollowers": -1}).limit(10);
@@ -480,7 +558,7 @@ router.get('/projects', function (req, res, next) {
 });
 
 // create a new project
-router.post('/projects/new', function (req, res, next) {
+router.post('/project/new', function (req, res, next) {
 	/*
 		TODO:
 		after the posting, send to the front end the link
@@ -520,8 +598,12 @@ router.post('/projects/new', function (req, res, next) {
   //res.send('AIDA Home Page!');
 });
 
+router.get('/project/:username', function(req, res) {
+  res.sendFile('profile.html', { root: "./" });
+});
+
 // details of project with project_id
-router.get('/projects/:project_id', function (req, res, next) {
+router.get('/api/project/:project_id', function (req, res, next) {
 	/*
 		{
 			id: project id,
@@ -562,7 +644,7 @@ router.get('/projects/:project_id', function (req, res, next) {
 			],
 		}
 	*/
-	try {
+	/*try {
 		var json = new Object();
 		var project_id = req.params.project_id;
 		var project = db.Project.findById(project_id, function(err, project){
@@ -594,7 +676,8 @@ router.get('/projects/:project_id', function (req, res, next) {
 				});
 			}
 			json.short_intro = project.basicInfo;
-			json.long_intro = project.detailedInfo;
+			json.long_intro = project.detailedInfo;*/
+      
 			/*json.long_intro = [];
 			var numParagraph = project.detailedInfo.length;
 			for (i=0;i<numParagraph;i++) {
@@ -603,7 +686,8 @@ router.get('/projects/:project_id', function (req, res, next) {
 				newParagraph.paragraph_content = project.detailedInfo[i].content;
 				json.long_intro.push(newParagraph);
 			}*/
-			json.showcase = [];
+			
+      /*json.showcase = [];
 			var numShowcase = project.showcase.assetPaths.length;
 			for (i=0;i<numShowcase;i++) {
 				var current_path = project.showcase.assetPaths[i];
@@ -627,6 +711,7 @@ router.get('/projects/:project_id', function (req, res, next) {
 				newJob.job_deadline = current.deadline;
 			}
 			res.send(JSON.stringify(json));
+      
 		});
 
 	}
@@ -637,7 +722,51 @@ router.get('/projects/:project_id', function (req, res, next) {
 			res.render('404', { url: req.url });
 		}
 	}
-  //res.send('AIDA Home Page!');
+  //res.send('AIDA Home Page!');*/
+  
+  var project1 =
+    {
+      "id":"1",
+      "title":"Super Awesome Game",
+      "publisher": {
+        "id":"1",
+        "username": "jbelfort",
+        "name":"Jordan Belfort"
+      },
+      "members": [{
+        "id":"2",
+        "name": "Donald Trump",
+        "username": "bigDTrump"
+      }],
+      "latest_update": "100 million years ago",
+      "status": "abandoned and forgotten",
+      "tags": [{
+        "name":"Fatasy"
+      }, {
+        "name":"Adventure"
+      }],
+      "brief": "This is a cool game about awesomeness and stuff I guess",
+      "details": "This game features hundreds of awesome features that are featured throughout the game. Features include featuring features featured in the game. Specifically, you can specifically specify specific specifics. Additionally, many innovative innovations have been innovated.",
+      "showcase": {
+          "path": "../assets/images/gs1.jpg"
+      },
+      "jobs": [{
+        "id": "1",
+        "title": "2D Animator",
+        "status": "open",
+        "tags": [{
+          "name": "Cooking",
+          "rating": 3
+        }, {
+          "name": "Eating",
+          "rating": 5
+        }],
+        "budget": 2000,
+        "deadline": "June 13 1995",
+      }]
+    }
+
+    res.json(project1);
 });
 
 // message inbox
