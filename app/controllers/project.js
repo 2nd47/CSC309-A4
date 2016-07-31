@@ -211,24 +211,21 @@ module.exports = function(app) {
   	*/
   	var json = new Object();
   	try {
-  		var userId = req.session.userId;
   		var projectForm = qs.parse(req.data);
+      var tags = jobForm.descriptionTags.replace(/\s+/g, '').split(",");
   		// may createJob return job _id or something...
-      var newProject = Project();
+      var newProject = Project({
+        name: projectForm.name,
+        owner: req.user._id,
+        tags: tags,
+        members: projectForm.members,
+        details: projectForm.details
+      });
 
-  		Project.createProject(projectForm.name, userId, function(err, project) {
-  			// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
-  			// into an array of strings
-  			var newProjectId = project._id;
-  			var tags = jobForm.descriptionTags.replace(/\s+/g, '').split(",");
-  			db.setProjectField(newProjectId, "tags", tags);
-  			db.setProjectField(newProjectId, "members", projectForm.members);
-  			db.setProjectField(newProjectId, "details", projectForm.details);
-  			db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));//??
-  			json.url = jobIdToUrl(newProjectId);
-  			json.success = "true";
-  		});
-
+      newProject.save(function(err, project) {
+        json.url = req.baseUrl + '/' + newProject._id;
+        json.success = true;
+      });
   	}
   	catch (e) {
   		json.success = "false";
