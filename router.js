@@ -57,7 +57,7 @@ module.exports = function(app, auth, user, project, job, search) {
     res.sendFile('landing.html', { root: "./views" });
   });
 
-  serveStaticPagesOnRequest(app, walk(VIEWPATH, []));
+  //serveStaticPagesOnRequest(app, walk(VIEWPATH, []));
 
   app.post('/signup', auth.signup);
   app.post('/login', auth.login);
@@ -67,7 +67,7 @@ module.exports = function(app, auth, user, project, job, search) {
   app.post('/job/new', job.createJob);
 
   app.get('/job/:job_id', function(req, res) {
-    res.sendFile('contract', { root: "./views" });
+    res.sendFile('contract.html', { root: "./views" });
   });
 
   // details of job with job_id
