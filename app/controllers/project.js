@@ -84,7 +84,7 @@ module.exports = function(app) {
   				newParagraph.paragraph_title = project.detailedInfo[i].title;
   				newParagraph.paragraph_content = project.detailedInfo[i].content;
   				json.long_intro.push(newParagraph);
-  			}*/
+  			}
 
         json.showcase = [];
   			var numShowcase = project.showcase.assetPaths.length;
