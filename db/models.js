@@ -261,6 +261,10 @@ var projectSchema = new Schema({
     required: true,
     unique: true
   },
+  skills: [{
+    type: skillSchema,
+    default: []
+  }]
   tags: [{
     type: String,
     default: []
