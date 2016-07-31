@@ -11,6 +11,7 @@ var session = require('express-session');
 var validator = require('validator');
 var qs = require('querystring');
 var bodyParser = require('body-parser');
+var expressValidator = require('express-validator');
 
 // testing modules
 var testCase = require('mocha').describe;
@@ -25,6 +26,7 @@ var router = require('./router');
 var db = require('../db/db.js');
 
 app.use(bodyParser());
+app.use(expressValidator());
 
 
 // app init

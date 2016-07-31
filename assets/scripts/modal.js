@@ -109,28 +109,19 @@ signupButton.onclick = function(event) {
   $('#verify_content').append($proceedButton);
   */
 
-//  var data = {};
-  /**
-  data.username = $('#username').val();
-  data.password = $('#password').val();
-  data.password2 = $('#password2').val();
-  data.email = $('#email').val();
-  data.email2 = $('#email2').val();
-  */
   var data = {
-    username: "username",
-    password: "password",
-    password2: "password2",
-    email: "email",
-    email2: "email2"
+    username: $("#username").val(),
+    password: $("#password").val(),
+    password2: $("#password2").val(),
+    email: $("#email").val(),
+    email2: $("#email2").val()
   };
-
 
     $.ajax(
       {
-        type: "post",
+        type: "POST",
         url: "/signup",
-        data: JSON.stringify(data)
+        data: data
       })
       .done(function(data) {
         alert("yay");
