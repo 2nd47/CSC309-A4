@@ -177,14 +177,21 @@ router.get('/logout', function(req, res, next) {
   res.redirect('/login');
 });
 
+app.get('/api/get_username', function(req, res){
+	res.send(req.user._id);
+});
+
 // edit user profile (profile_id: the user id of the profile)
-router.post('/edit_profile/:profile_id', function(req, res){
-	var userId = req.session.userId;
-	var profileId = req.params.profile_id;
+router.post('/edit_profile/:username', function(req, res){
+	var userId = req.user._id;
+	var username = req.params.username;
+	var profileId;
+	User.findOne({"username": username}, function(err, user){
+		profileId = user._id;
+	});
 	var profileForm = qs.parse(req.data);
 	if (canEditProfile(userId, profileId)) {
 		db.setUserField(profileId, "name", profileForm.name);
-		// TODO: set the user's password hash to profileForm.newpassword's hash
 		if (profileForm.newpassword.length != 0) {
 			if (bcrypt.hash(profileForm.newpassword) === bcrypt.hash(profileForm.repeatpassword)) {
 				db.setUserField(profileId, "passwordHash", bcrypt.hash(profileForm.newpassword));
@@ -234,7 +241,7 @@ router.post('/edit_profile/:profile_id', function(req, res){
 /*
 // edit project
 router.post('/edit_project/:project_id', function(req, res){
-	var userId = req.session.userId;
+	var userId = req.user._id;
 	var 
 }
 	
@@ -256,7 +263,7 @@ router.post('/job/new', function (req, res) {
 	*/
 	var json = new Object();
 	try {
-		var userId = req.session.userId;
+		var userId = req.user._id;
 		if (userId) {
 			var jobForm = qs.parse(req.data);
 			var projectId = jobForm.project;
@@ -417,7 +424,7 @@ router.get('/job/:job_id/sign', function (req, res) {
 
 // list of profiles of top ten followed users
 // if user is logged in, show their following users at the bottom
-router.get('/profile', function (req, res) {
+router.get('/profiles', function (req, res) {
 	/*
 	get _id, name, title, skillTags, tags
 	{
@@ -429,7 +436,7 @@ router.get('/profile', function (req, res) {
 	var cursor = db.User.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}).sort({"numFollowers": -1}).limit(10);
 	json.topTen = cursor.toArray();
 	json.following = [];
-	var userId = req.session.userId;
+	var userId = req.user._id;
 	if (userId) {
 		db.User.findById(userId, function(err, user){
 			var followings = user.followings;
@@ -601,13 +608,13 @@ router.get('/api/profile/:username', function (req, res) {
 
 // list of top ten projects
 // if user has followed projects, list them, too
-router.get('/project', function (req, res, next) {
+router.get('/projects', function (req, res, next) {
 	// get name, tags, showcase
 	var json = new Object();
 	var cursor = db.Project.find({},{"name": 1, "tags": 1, "showcase": 1}).sort({"numFollowers": -1}).limit(10);
 	json.topTen = cursor.toArray();
 	json.following = [];
-	var userId = req.session.userId;
+	var userId = req.user._id;
 	if (userId) {
 		db.User.findById(userId, function(err, user){
 			var followings = user.followings;
@@ -656,7 +663,7 @@ router.post('/project/new', function (req, res, next) {
 	*/
 	var json = new Object();
 	try {
-		var userId = req.session.userId;
+		var userId = req.user._id;
 		var projectForm = qs.parse(req.data);
 		db.createProject(projectForm.name, userId, function(err, project) {
 			// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
@@ -692,7 +699,7 @@ router.post('/project/new', function (req, res, next) {
   //res.send('AIDA Home Page!');
 });
 
-router.get('/project/:username', function(req, res) {
+router.get('/project/:project_id', function(req, res) {
   res.sendFile('profile.html', { root: "./" });
 });
 
@@ -892,7 +899,7 @@ router.get('/inbox', function (req, res) {
 	// If the user is not logged in (or login expired),   //
 	// prompt them to log in. Could be done at front end  //
 	////////////////////////////////////////////////////////
-	var userId = req.session.userId;
+	var userId = req.user._id;
 	var json = new Object();
 	json.chats = new Object();
 	if (userId) {
@@ -970,7 +977,7 @@ router.get('/inbox/:chat_id', function (req, res) {
 	*/
 
 	// Check if the person is logged in as personOne or personTwo
-	var userId = req.session.userId;
+	var userId = req.user._id;
 	var chat_id = req.params.chat_id;
 	db.Chat.findById(chat_id, function(err, chat){
 		var json = new Object();
@@ -1030,7 +1037,7 @@ router.get('/inbox/:chat_id', function (req, res) {
 
 // send message to person_id
 router.post('/inbox/:person_id/new', function (req, res) {
-	var userId = req.session.userId;
+	var userId = req.user._id;
 	var personId = req.params.person_id;
 	if (canSendMessage(userId, personId)) {
 		var message = req.body['new-message-box'];
@@ -1058,7 +1065,7 @@ router.get('/inbox/:chat_id/all', function (req, res) {
 	*/
 
 	// Check if the person is logged in as personOne or personTwo
-	var userId = req.session.userId;
+	var userId = req.user._id;
 	var chat_id = req.params.chat_id;
 	db.Chat.findById(chat_id, function(err, chat){
 		var json = new Object();
@@ -1140,7 +1147,7 @@ router.get('/search', function (req, res) {
 	////////////////////////////////////////////////////
 
 	// Get the logged in user's id to adjust search priority
-	var userId = req.session.userId;
+	var userId = req.user._id;
 	var userInfo = collectUserInfo(userId);
 	var userTags = userInfo.userTags;
 	var userSkills = userInfo.userSkills;
@@ -1536,9 +1543,10 @@ router.get('/search', function (req, res) {
 });
 
 // username search page used by the admin
-router.get('/search', function (req, res) {
+router.get('/search_user', function (req, res) {
 	/*
 	[{
+		id: user id,
 		username: username
 		frozen: true/false
 		times_frozen: number of times frozen
@@ -1549,12 +1557,20 @@ router.get('/search', function (req, res) {
 	var cursor = db.User.find({"username": {$regex: ".*" + keyword + ".*/i"}});
 	while (cursor.hasNext()) {
 		var curUser = cursor.next();
-		var newUser = new Object();
-		newUser.username = curUser.username;
-		newUser.frozen = curUser.frozen;
-		newUser.times_frozen = curUser.times_frozen;
+		if (!curUser.powerLevel) {
+			var newUser = new Object();
+			newUser.id = curUser._id;
+			newUser.username = curUser.username;
+			newUser.frozen = curUser.frozen;
+			newUser.times_frozen = curUser.times_frozen;
+			json.push(newUser);
+		}
 	}
-}
-// etc...
+});
+
+app.post('/delete_user/:userid', user.deleteUser);
+app.post('/admin/delete_database', admin.delete_database);
+app.post('/admin/repopulate_database', admin.repopulate_database);
+
 
 module.exports = router;

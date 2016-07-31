@@ -74,7 +74,7 @@ exports.canEditProfile = function (userId, profileId) {
 }
 
 exports.canDeleteProfile = function (userId, profileId) {
-	return canEditPrifile(userId, profileId);
+	return canEditPrifile(userId, profileId) && isAdmin(profileId);
 }
 
 exports.canSendMessage = function (userId, receiverId) {
