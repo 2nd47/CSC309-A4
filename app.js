@@ -7,12 +7,13 @@ function startServer() {
   var app = express();
 
   // require necessary modules and establish routing
-  var auth = require('./app/controllers/auth')(app),
+  var admin = require('./app/controllers/admin')(app),
+      auth = require('./app/controllers/auth')(app),
       user = require('./app/controllers/user')(app),
       project = require('./app/controllers/project')(app),
       job = require('./app/controllers/job')(app),
       search = require('./app/controllers/search')(app),
-      router = require('./router')(app, auth, user, project, job, search);
+      router = require('./router')(app, admin, auth, user, project, job, search);
 
   //return 404 page
   app.use(function(req, res, next){

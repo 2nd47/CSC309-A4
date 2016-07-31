@@ -38,7 +38,7 @@ var serveStaticPagesOnRequest = function(app, pageNames) {
   }
 };
 
-module.exports = function(app, auth, user, project, job, search) {
+module.exports = function(app, admin, auth, user, project, job, search) {
 
   app.use(express.static(__dirname + '/public'));
   app.set('view engine', 'html');
