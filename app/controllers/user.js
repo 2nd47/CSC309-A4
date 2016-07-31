@@ -1,6 +1,6 @@
 var User = require('../models/user'),
     Chat = require('../models/chat'),
-    Porject = require('../models/project'),
+    Project = require('../models/project'),
     permissionManager = require('../middleware/permission_manager');
 
 // send all followers of the object (project or person) at given url
