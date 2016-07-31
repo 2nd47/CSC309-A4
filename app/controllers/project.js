@@ -214,12 +214,13 @@ module.exports = function(app) {
   		var userId = req.session.userId;
   		var projectForm = qs.parse(req.data);
   		// may createJob return job _id or something...
+      var newProject = Project();
 
-  		db.createProject(projectForm.name, userId, function(err, project) {
+  		Project.createProject(projectForm.name, userId, function(err, project) {
   			// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
   			// into an array of strings
   			var newProjectId = project._id;
-  			var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
+  			var tags = jobForm.descriptionTags.replace(/\s+/g, '').split(",");
   			db.setProjectField(newProjectId, "tags", tags);
   			db.setProjectField(newProjectId, "members", projectForm.members);
   			db.setProjectField(newProjectId, "details", projectForm.details);
