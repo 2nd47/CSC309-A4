@@ -453,7 +453,7 @@ router.get('/people/:username', function (req, res) {
 				job_comment: comment on the work
 			}
 		]
-		email: use's email
+		email: user's email
 	}*/
 	try {
 		var json = new Object();
@@ -477,35 +477,41 @@ router.get('/people/:username', function (req, res) {
 			json.projects = [];
 			json.email = user.email;
 			// Where the user is the owner
-			var projects = db.Project.find({"owner": user._id},{name: 1});
-			while (projects.hasNext()) {
-				var newProject = new Object();
-				var current = projects.next();
-				newProject.project_id = current._id;
-				newProject.project_name = current.name;
-				json.projects.push(newProject);
-			}
+			db.Project.find({"owner": user._id},{name: 1}, function(err, projects){
+				while (projects.hasNext()) {
+					var newProject = new Object();
+					var current = projects.next();
+					newProject.project_id = current._id;
+					newProject.project_name = current.name;
+					json.projects.push(newProject);
+				}
+			});
+			
 			// Where the user is a member
-			var member_projects = db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}});
-			while (member_projects.hasNext()) {
-				var newProject = new Object();
-				var current = member_projects.next();
-				newProject.project_id = current._id;
-				newProject.project_name = current.name;
-				json.projects.push(newProject);
-			}
+			db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}}, function(err, member_projects){
+				while (member_projects.hasNext()) {
+					var newProject = new Object();
+					var current = member_projects.next();
+					newProject.project_id = current._id;
+					newProject.project_name = current.name;
+					json.projects.push(newProject);
+				}
+			});
+			
 			json.jobs = [];
-			var jobs = db.Job.find({"taker": ObjectId(user_id)});
-			while (jobs.hasNext()) {
-				var newJob = new Object();
-				var current = jobs.next();
-				newJob.job_id = current._id;
-				newJob.job_name = current.name;
-				newJob.completion_date = current.completion;
-				newJob.job_rating = current.rating;
-				newJob.job_comment = current.comment;
-				json.projects.push(newJob);
-			}
+			db.Job.find({"taker": ObjectId(user_id)}, function(err, jobs){
+				while (jobs.hasNext()) {
+					var newJob = new Object();
+					var current = jobs.next();
+					newJob.job_id = current._id;
+					newJob.job_name = current.name;
+					newJob.completion_date = current.completion;
+					newJob.job_rating = current.rating;
+					newJob.job_comment = current.comment;
+					json.projects.push(newJob);
+				}
+			});
+			
 
 			res.send(JSON.stringify(json));
 		});
