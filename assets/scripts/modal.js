@@ -81,12 +81,10 @@ loginButton.onclick = function(event) {
     .text("Login");
   $('#verify_content').append($proceedButton);
   */
-  alert("Log in clicked.");
   var data = {
     username: $("#username").val(),
     password: $("#password").val()
   };
-  alert("Data for log in: " + data);
 
   $.ajax(
     {

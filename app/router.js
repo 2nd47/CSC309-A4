@@ -35,16 +35,13 @@ router.use(session(
 
 // Passport Local Strategy
 passport.use(new LocalStrategy(function(username, password, done) {
-    console.log("Here in local strategy.");
-    console.log("Username is: " + username);
-    console.log("Password is: " + password);
     db.getUserByField('username', username, function(err, user){
       if(err) throw err;
       if(!user.length){
         return done(null, false, {message: 'Unknown User'});
       }
       db.comparePassword(password, user[0].passwordHash, function(err, isMatch){
-        console.log("Compare: " + password + user + user[0].passwordHash);
+        console.log(user);
         if(err) throw err;
         if(isMatch){
           return done(null, user[0]);
@@ -101,14 +98,11 @@ function ensureAuthenticated(req, res, next) {
 
 // Signup
 router.post('/signup', function (req, res, next) {
-  console.log("Sign Up Mode");
-
   var username = req.body.username;
   var password = req.body.password;
   var password2 = req.body.password2;
   var email = req.body.email;
   var email2 = req.body.email2;
-  console.log(username + password + password2 + email + email2);
 
   // Validation
   req.checkBody('username', 'Username is required').notEmpty();
@@ -140,16 +134,12 @@ router.post('/signup', function (req, res, next) {
     bcrypt.genSalt(10, function(err, salt) {
     	bcrypt.hash(password, salt, function(err, hash) {
     		var passwordHash = hash;
-        console.log("hash: " + hash);
         db.createUser(username, passwordHash, email, function(err, user){
           if(err) throw err;
-
-          console.log("This got printed.");
         });
     	});
     });
 
-    console.log("arrived here at req.flash");
     req.flash('success_msg', 'You are registered and can now login');
     /* On Frontend add these placeholders
     {{#if success_msg}}
@@ -168,7 +158,6 @@ router.post('/signup', function (req, res, next) {
       </div>
     {{/if}}
     */
-
     res.redirect('/');
   }
 });
