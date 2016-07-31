@@ -29,7 +29,7 @@ function startServer() {
   var INIT_SAMPLE_DB = process.env.INIT_SAMPLE_DB || false;
   var APP_PORT = process.env.PORT || 3000;
 
-  db = require('./db');
+  db = require('./db')();
   if (INIT_SAMPLE_DB) {
     require('./test/backend/sampleDb')(app, auth, user, project, job, search);
   }

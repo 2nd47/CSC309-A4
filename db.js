@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcryptjs');
 
-module.exports = function(createSamples) {
+module.exports = function() {
   var dbUri = process.env.MONGODB_URI || 'mongodb://localhost/appdb';
   mongoose.connect(dbUri, {
       server: {
@@ -14,7 +14,7 @@ module.exports = function(createSamples) {
   var db = mongoose.connection;
   mongoose.promise = global.promise;
   db.once("open", function() {
-    console.log('MongoDB connection opened to ' + dbUrl);
+    console.log('MongoDB connection opened to ' + dbUri);
   });
   db.on("error", console.error.bind(console, 'DATABASE ERROR:'));
 }

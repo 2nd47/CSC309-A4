@@ -5,7 +5,8 @@ var passport = require('passport'),
     bcrypt = require('bcryptjs'),
     flash = require('connect-flash'),
     cookieParser = require('cookie-parser'),
-    bodyParser = require("body-parser");
+    bodyParser = require("body-parser"),
+    User = require('../models/user');
 
 module.exports = function(app) {
 
@@ -33,18 +34,17 @@ module.exports = function(app) {
 
   // Passport Local Strategy
   passport.use(new LocalStrategy(function(username, password, done) {
-      db.getUserByField('username', username, function(err, user){
+      User.findByUsername(username, function(err, user){
         if(err) throw err;
-        if(!user.length){
-          return done(null, false, {message: 'Unknown User'});
+        if(!user){
+          return done(null, false, {message: 'Invalid username or password'});
         }
-        db.comparePassword(password, user[0].passwordHash, function(err, isMatch){
-          console.log(user);
+        bcrypt.compare(password, user.passwordHash, function(err, isMatch){
           if(err) throw err;
           if(isMatch){
-            return done(null, user[0]);
+            return done(null, user);
           } else {
-            return done(null, false, {message: 'Invalid password'});
+            return done(null, false, {message: 'Invalid username or password'});
           }
         });
       });
@@ -95,8 +95,12 @@ module.exports = function(app) {
       // Hash the password. Store the hash in var password
       bcrypt.genSalt(10, function(err, salt) {
       	bcrypt.hash(password, salt, function(err, hash) {
-      		var passwordHash = hash;
-          db.createUser(username, passwordHash, email, function(err, user){
+          var newUser = new User({
+            username: username,
+            passwordHash: hash,
+            email: email
+          });
+          newUser.save(function(err, user){
             if(err) throw err;
           });
       	});
@@ -112,10 +116,7 @@ module.exports = function(app) {
     successRedirect:'/',
     failureRedirect:'/login',
     failureFlash: true
-  }, function (req, res, next) {
-    console.log("Reached here in post/login with: " + req.username + req.password);
-    res.redirect('/');
-});
+  }, function);
 
   this.logout = function(req, res, next){
     req.logout();
