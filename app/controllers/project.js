@@ -1,3 +1,7 @@
+var User = require('../models/user'),
+    Project = require('../models/project'),
+    permissionManager = require('../middleware/permission_manager');
+
 module.exports = function(app) {
   this.getProject = function (req, res, next) {
   	/*
@@ -40,10 +44,9 @@ module.exports = function(app) {
   			],
   		}
   	*/
-  	/*try {
+  	try {
   		var json = new Object();
-  		var project_id = req.params.project_id;
-  		var project = db.Project.findById(project_id, function(err, project){
+  		Project.findById(req.params.project_id, function(err, project){
   			if (!project.length) {
   				res.status(404);
   				// project page not found
@@ -53,7 +56,7 @@ module.exports = function(app) {
   				return;
   			}
   			// Build the file
-  			json.id = project_id;
+  			json.id = project._id;
   			json.title = project.name;
   			json.publisher = new Object();
   			json.publisher.publisher_id = project.owner;
@@ -74,7 +77,7 @@ module.exports = function(app) {
   			json.short_intro = project.basicInfo;
   			json.long_intro = project.detailedInfo;*/
 
-  			/*json.long_intro = [];
+  			json.long_intro = [];
   			var numParagraph = project.detailedInfo.length;
   			for (i=0;i<numParagraph;i++) {
   				var newParagraph = new Object();
@@ -83,7 +86,7 @@ module.exports = function(app) {
   				json.long_intro.push(newParagraph);
   			}*/
 
-        /*json.showcase = [];
+        json.showcase = [];
   			var numShowcase = project.showcase.assetPaths.length;
   			for (i=0;i<numShowcase;i++) {
   				var current_path = project.showcase.assetPaths[i];
@@ -118,8 +121,8 @@ module.exports = function(app) {
   			res.render('404', { url: req.url });
   		}
   	}
-    //res.send('AIDA Home Page!');*/
-
+    //res.send('AIDA Home Page!');
+    /*
     var project1 =
       {
         "id":"1",
@@ -162,7 +165,7 @@ module.exports = function(app) {
         }]
       }
 
-      res.json(project1);
+      res.json(project1);*/
   };
 
   this.getPopularProjects = function (req, res, next) {
