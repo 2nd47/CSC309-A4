@@ -72,21 +72,66 @@ function loginMode() {
 }
 
 loginButton.onclick = function(event) {
+
+  /**
   document.getElementById("login_signup_content").style.display = "none";
   document.getElementById("verify_content").style.display = "block";
   var $proceedButton = $('<div>')
     .attr("id", "proceed_button")
     .text("Login");
   $('#verify_content').append($proceedButton);
+  */
+  var data = {};
+  data.username = $('#username').val();
+  data.password = $('#password').val();
+
+  $.ajax(
+    {
+      type: "post",
+      url: "/login",
+      data: data
+    })
+    .done(function(data) {
+      //render two-factor
+    })
+    .fail(function(jqXHR, textStatus) {
+      alert("Failed to log in" + textStatus);
+    });
 }
 
 signupButton.onclick = function(event) {
+  /**
   document.getElementById("login_signup_content").style.display = "none";
   document.getElementById("verify_content").style.display = "block";
   var $proceedButton = $('<div>')
     .attr("id", "proceed_button")
     .text("Login");
   $('#verify_content').append($proceedButton);
+  */
+
+  var data = {
+    username: $("#username").val(),
+    password: $("#password").val(),
+    password2: $("#password2").val(),
+    email: $("#email").val(),
+    email2: $("#email2").val()
+  };
+
+    $.ajax(
+      {
+        type: "POST",
+        url: "/signup",
+        data: data
+      })
+      .done(function(data) {
+        alert("yay");
+      })
+      .success(function(msg) {
+        alert("Sucess");
+      })
+      .fail(function(jqXHR, textStatus) {
+        alert("Failed to sign up" + textStatus);
+      });
 }
 
 //clear the fields

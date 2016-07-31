@@ -58,7 +58,7 @@ function renderInbox(data) {
 															</div>");
 			$messageList.append($updateMessage);
 		}
-		
+
 		// show chat list on the right side to click on
 		var $chatList = $("#chat-list-wrapper");
 		$chatList.empty();
@@ -67,7 +67,7 @@ function renderInbox(data) {
 			var avatar = value.avatar;
 			var lastMessage = value.last_message;
 			var numUnread = value.num_unread;
-			
+
 			if (numUnread > 0) {
 				// if number of unread is greater than 0, prepend a highlighted
 				// list item
@@ -87,7 +87,7 @@ function renderInbox(data) {
 											</div>");
 				$chatList.append($chat);
 			}
-			
+
 		});
 	}
 	else {
@@ -139,7 +139,7 @@ function renderChat(data) {
 				var $senderMessage = $("<div class='inbox-item message-item'>\
 																	<h4>\
 																		<a href='"+ userIdToUrl(result.other_id) +"' style='text-decoration:none;color:black'>"
-																			+ result.other_name + 
+																			+ result.other_name +
 																		"</a>\
 																	</h4>\
 																	<p>" + messageText + "</p>\
@@ -183,4 +183,3 @@ function requestChat(chatId) {
         alert( "Failed to load chat: " + textStatus );
     });
 }
-

@@ -9,7 +9,7 @@
   "dependencies": {
     "async": "^2.0.1",
     "bcryptjs": "^2.3.0",
-    "body-parser": "*",
+    "body-parser": "^1.15.2",
     "chai": "^3.5.0",
     "connect-flash": "*",
     "express": "^4.14.0",
