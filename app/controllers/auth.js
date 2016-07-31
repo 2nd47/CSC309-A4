@@ -5,7 +5,8 @@ var passport = require('passport'),
     bcrypt = require('bcryptjs'),
     flash = require('connect-flash'),
     cookieParser = require('cookie-parser'),
-    bodyParser = require("body-parser");
+    bodyParser = require("body-parser"),
+    User = require('../models/user');
 
 module.exports = function(app) {
 
@@ -28,19 +29,24 @@ module.exports = function(app) {
       resave: false,
       saveUninitialized: false}));
 
+  app.use(passport.initialize());
+  app.use(passport.session());
+
   // Passport Local Strategy
-  passport.use(new LocalStrategy({
-    passReqToCallback : true
-    }, function(username, password, done) {
+  passport.use(new LocalStrategy(function(username, password, done) {
       User.findByUsername(username, function(err, user){
         if(err) throw err;
         if(!user){
-          return done(null, false, {message: 'Invalid username/password'});
-        } else if (!bcrypt.compareSync(password, user.password)) {
-          return done(null, false, {message: 'Invalid username/password'});
-        } else {
-          return done(null, user);
+          return done(null, false, {message: 'Invalid username or password'});
         }
+        bcrypt.compare(password, user.passwordHash, function(err, isMatch){
+          if(err) throw err;
+          if(isMatch){
+            return done(null, user);
+          } else {
+            return done(null, false, {message: 'Invalid username or password'});
+          }
+        });
       });
   }));
 
@@ -54,8 +60,6 @@ module.exports = function(app) {
     });
   });
 
-  const saltRounds = 10;
-
   // Ensure authenticated so the user cannot access the home page if not logged in
   this.ensureAuthenticated = function(req, res, next) {
     if(req.isAuthenticated()) {
@@ -67,18 +71,11 @@ module.exports = function(app) {
   }
 
   this.signup = function(req, res, next) {
-    console.log("Sign Up Mode");
-    console.log("req.body: " + req.body);
     var username = req.body.username;
-    console.log('username: ' + req.body.username);
-    console.log('password: ' + req.body.password);
-    console.log('email: ' + req.body.email);
-
     var password = req.body.password;
     var password2 = req.body.password2;
     var email = req.body.email;
     var email2 = req.body.email2;
-    console.log(username + password + password2 + email + email2);
 
     // Validation
     req.checkBody('username', 'Username is required').notEmpty();
@@ -91,59 +88,35 @@ module.exports = function(app) {
     var errors = req.validationErrors();
 
     if(errors) {
-      console.log(msg);
-      /*
-      res.render('landingSignup', {
-        errors:errors
-      });
-      On The Frontend add this placeholder:
-      {{#if errors}}
-        {{#each errors}}
-          <div class="notice error">{{msg}}</div>
-        {{/each}}
-      {{/if}}
-      */
+      console.log(errors);
     } else {
       console.log('Signup No Error');
 
       // Hash the password. Store the hash in var password
-      bcrypt.genSalt(saltRounds, function(err, salt) {
+      bcrypt.genSalt(10, function(err, salt) {
       	bcrypt.hash(password, salt, function(err, hash) {
-      		var passwordHash = hash;
-          db.createUser(username, passwordHash, email, function(err, user) {
-            console.log("User created: " + user);
+          var newUser = new User({
+            username: username,
+            passwordHash: hash,
+            email: email
+          });
+          newUser.save(function(err, user){
+            if(err) throw err;
           });
       	});
       });
 
       req.flash('success_msg', 'You are registered and can now login');
-      /* On Frontend add these placeholders
-      {{#if success_msg}}
-        <div class="notice_success">
-          {{success_msg}}
-        </div>
-      {{/if}}
-      {{#if error_msg}}
-        <div class="notice_success">
-          {{error_msg}}
-        </div>
-      {{/if}}
-      {{#if error}}
-        <div class="notice_success">
-          {{error}}
-        </div>
-      {{/if}}
-      */
-
-      res.redirect('/login');
+      res.redirect('/');
     }
-  };
+  }
+
 
   this.login = passport.authenticate('local', {
     successRedirect:'/',
     failureRedirect:'/login',
     failureFlash: true
-  });
+  }, function);
 
   this.logout = function(req, res, next){
     req.logout();

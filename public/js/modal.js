@@ -81,9 +81,10 @@ loginButton.onclick = function(event) {
     .text("Login");
   $('#verify_content').append($proceedButton);
   */
-  var data = {};
-  data.username = $('#username').val();
-  data.password = $('#password').val();
+  var data = {
+    username: $("#username").val(),
+    password: $("#password").val()
+  };
 
   $.ajax(
     {
@@ -92,10 +93,16 @@ loginButton.onclick = function(event) {
       data: data
     })
     .done(function(data) {
-      //render two-factor
+      alert("Done.");
+    })
+    .success(function(msg) {
+      alert("Successfully logged in.");
     })
     .fail(function(jqXHR, textStatus) {
-      alert("Failed to log in" + textStatus);
+      $("#feedback_msg").html(jqXHR.status);
+      $("#feedback_msg").css('display','block');
+      $("#feedback_msg").css('background-color','#FF7F7F');
+      alert("Failed to log in because of: " + textStatus);
     });
 }
 
@@ -124,13 +131,13 @@ signupButton.onclick = function(event) {
         data: data
       })
       .done(function(data) {
-        alert("yay");
+        alert("Done.");
       })
       .success(function(msg) {
-        alert("Sucess");
+        alert("Successfully signed up.");
       })
       .fail(function(jqXHR, textStatus) {
-        alert("Failed to sign up" + textStatus);
+        alert("Failed to sign up because of: " + textStatus);
       });
 }
 

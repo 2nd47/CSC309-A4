@@ -54,7 +54,7 @@ module.exports = function(app, auth, user, project, job, search) {
   // refer to express documentation for more details
 
   // if logged in: feed; else: landing page
-  app.get('/', auth.ensureAuthenticated, function (req, res, next) {
+  app.get('/', function (req, res, next) {
     res.sendFile('landing.html', { root: "./views" });
   });
 
