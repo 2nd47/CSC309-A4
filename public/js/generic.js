@@ -11,7 +11,7 @@ $(document).ready(function() {
       });
 
       //change button picture
-      $(this).css("background-image", "url('assets/images/closemenu.png')");
+      $(this).css("background-image", "url('/images/closemenu.png')");
 
       nav_show = true;
     }
@@ -23,7 +23,7 @@ $(document).ready(function() {
       });
 
       //change button picture
-      $(this).css("background-image", "url('assets/images/dropmenu.png')");
+      $(this).css("background-image", "url('/images/dropmenu.png')");
 
       nav_show = false;
     }

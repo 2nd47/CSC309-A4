@@ -19,10 +19,6 @@ IT CONTAINS STYLES FOR THE CONTRACT PAGE*/
 #contract_listing {
 	list-style-type: none;
 }
-a {
-	text-decoration: underline;
-	color: black;
-}
 
 #profile_tagline {
   padding-left: 10px;
@@ -94,7 +90,6 @@ a {
 #details {
 	float: right;
 	margin: 0;
-	margin-left: calc(20% + 10px);
 	width: 100%;
 }
 .level_wrapper {
@@ -103,4 +98,28 @@ a {
 }
 #divider {
 	clear:both;
+}
+
+/*Mobile landscape*/
+@media screen and (max-width: 480px)
+{
+	#basic_info {
+		width: 100%;
+		float: none;
+		display: block;
+		margin-bottom: 20px;
+	}
+
+	#showcase {
+		width: 100%;
+		float: none;
+		display: block;
+	}
+
+	#details {
+		width: 100%;
+		float: none;
+		display: block;
+		margin: 0;
+	}
 }
