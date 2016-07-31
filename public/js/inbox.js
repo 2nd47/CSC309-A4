@@ -16,7 +16,7 @@ function requestInbox() {
 	})
 	.fail(function( jqXHR, textStatus )
     {
-      alert( "Failed to load inbox: " + textStatus );
+        alert( "Failed to load inbox: " + textStatus );
     });
 }
 
@@ -101,7 +101,7 @@ function sendMessageToChat(personId) {
 	$.ajax(
 	{
 		type: "post",
-		url: "/inbox/:" + personId + "/new",
+		url: "/inbox/:" + personId,
 	})
 	.done(function(data)
 	{

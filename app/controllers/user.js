@@ -1,7 +1,6 @@
 var User = require('../models/user'),
     Chat = require('../models/chat'),
     Project = require('../models/project'),
-		Message = require('../models/message'),
     permissionManager = require('../middleware/permission_manager');
 
 // send all followers of the object (project or person) at given url
@@ -31,9 +30,9 @@ var broadcastFollowers = function (id, url, message) {
 	for (i=0;i<numFollowers;i++) {
 		User.findById(followers[i], function(err, follower){
 			if (follower.length) {
-				createBroadcast(url, message, function(err, broadcast){
+				db.createBroadcast(url, message, function(err, broadcast){
 					messageboard.push(broadcast);
-					pushUserField(followers[i], "messageBoard", messageboard);
+					db.pushUserField(followers[i], "messageBoard", messageboard);
 				})
 			}
 		});
@@ -42,7 +41,7 @@ var broadcastFollowers = function (id, url, message) {
 
 // push a message to a chat history
 var pushMessage = function (sender, message, chatId) {
-	createMessage(sender, message, function(err, message){
+	db.createMessage(sender, message, function(err, message){
 		Chat.findByIdAndUpdate(id, {$push: {"messages": message}});
 	});
 }
@@ -73,7 +72,7 @@ var sendMessageTo = function (sender, receiver, message) {
 					// if there is no existing chat, create a new one, add it
 					// to the chat list of both users.
 					var newChat =
-					createChat(sender, receiver, function(err, chat){
+					db.createChat(sender, receiver, function(err, chat){
 						pushMessage(sender, message, chat._id);
 						User.findByIdAndUpdate(sender, {$push: {"chats": newChat}});
 						User.findByIdAndUpdate(receiver, {$push: {"chats": newChat}});
@@ -120,7 +119,7 @@ module.exports = function(app) {
   	/*try {
   		var json = new Object();
   		var user_name = req.params.username;
-  		getUserByField(user_name, function(err, user){
+  		db.getUserByField(user_name, function(err, user){
   			if (!user.length) {
   				res.status(404);
   				// page not found
@@ -155,7 +154,7 @@ module.exports = function(app) {
   				json.projects.push(newProject);
   			}
   			json.jobs = [];
-  			var jobs = Job.find({"taker": ObjectId(user_id)});
+  			var jobs = db.Job.find({"taker": ObjectId(user_id)});
   			while (jobs.hasNext()) {
   				var newJob = new Object();
   				var current = jobs.next();
@@ -298,7 +297,7 @@ module.exports = function(app) {
   				var i;
   				json.messageBoard = found.messageBoard;
   				// Clear message board broadcasts
-  				setUserField(userId, messageBoard, []);
+  				db.setUserField(userId, messageBoard, []);
   				var chats = found.chats;
   				var numChats = chats.length;
   				for (i=0;i<numChats;i++) {
@@ -459,7 +458,7 @@ module.exports = function(app) {
   			var numMessages = json.messages.length;
   			for (i=0;i<numMessages;i++) {
   				// Mark all the messages shown as read
-  				Message.findByIdAndUpdate(chat_id, {$set: { 'unread': false }});
+  				db.Message.findByIdAndUpdate(chat_id, {$set: { 'unread': false }});
   			}
   		}
   		else {
@@ -481,14 +480,6 @@ module.exports = function(app) {
       else { console.log('Created User ' + user); callback(err, user); }
     });
   };
-	
-	// Delete an existing account given the id
-	this.deleteUser = function(req, res) {
-		var userId = req.user._id;
-		var accountId = req.params.userid;
-		if (canDeleteProfile(userId, accountId)) {
-			User.remove({_id: accountId});
-		}
-	}
+
   return this;
 }
