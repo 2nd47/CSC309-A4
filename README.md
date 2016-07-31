@@ -23,3 +23,4 @@ For Windows:
 - Password retries: fail 5 times wait 15 minutes
 - Logout if inactive
 - File upload
+- Favicon

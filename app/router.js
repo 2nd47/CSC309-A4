@@ -11,8 +11,11 @@ var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
 var flash = require('connect-flash');
 var session = require('express-session');
+var shortid = require('shortid');
+var fs = require('fs');
+var qs = require('querystring');
 var expressValidator = require('express-validator');
-//var bodyParser = require("body-parser");
+
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -51,22 +54,6 @@ passport.use(new LocalStrategy(function(username, password, done) {
       });
     });
 }));
-/**
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    });
-  }
-));
-*/
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -116,17 +103,6 @@ router.post('/signup', function (req, res, next) {
 
   if(errors) {
     console.log(errors);
-        /*
-    res.render('landingSignup', {
-      errors:errors
-    });
-    On The Frontend add this placeholder:
-    {{#if errors}}
-      {{#each errors}}
-        <div class="notice error">{{msg}}</div>
-      {{/each}}
-    {{/if}}
-    */
   } else {
     console.log('Signup No Error');
 
@@ -141,23 +117,6 @@ router.post('/signup', function (req, res, next) {
     });
 
     req.flash('success_msg', 'You are registered and can now login');
-    /* On Frontend add these placeholders
-    {{#if success_msg}}
-      <div class="notice_success">
-        {{success_msg}}
-      </div>
-    {{/if}}
-    {{#if error_msg}}
-      <div class="notice_success">
-        {{error_msg}}
-      </div>
-    {{/if}}
-    {{#if error}}
-      <div class="notice_success">
-        {{error}}
-      </div>
-    {{/if}}
-    */
     res.redirect('/');
   }
 });
@@ -176,6 +135,71 @@ router.get('/logout', function(req, res, next) {
   req.flash('success_msg', 'You are logged out');
   res.redirect('/login');
 });
+
+// edit user profile (profile_id: the user id of the profile)
+router.post('/edit_profile/:profile_id', function(req, res){
+	var userId = req.session.userId;
+	var profileId = req.params.profile_id;
+	var profileForm = qs.parse(req.data);
+	if (canEditProfile(userId, profileId)) {
+		db.setUserField(profileId, "name", profileForm.name);
+		// TODO: set the user's password hash to profileForm.newpassword's hash
+		if (profileForm.newpassword.length != 0) {
+			if (bcrypt.hash(profileForm.newpassword) === bcrypt.hash(profileForm.repeatpassword)) {
+				db.setUserField(profileId, "passwordHash", bcrypt.hash(profileForm.newpassword));
+			}
+		}
+		db.setUserField(profileId, "avatar", profileForm.image.id);
+		db.setUserField(profileId, "title", profileForm.title);
+		db.setUserField(profileId, "bio", profileForm.bio);
+		db.setUserField(profileId, "tags", profileForm.tags.replace(/\s+/g, '').split(","));
+		db.setUserField(profileId, "email", profileForm.email);
+
+		// edit skill tags
+		db.getUserById(profileId, function(err, profile){
+			// delete all current skills
+			var curSkills = profile.skillTags;
+			var numCurSkills = curSkills.length;
+			var i;
+			if (i=0;i<numCurSkills;i++) {
+				var id = curSkills[i]._id;
+				db.Skill.remove({_id: id});
+			}
+			db.setUserField(profileId, "skillTags", []);
+
+		});
+		// build new skill tags
+		var skills = profileForm.skill
+		var skillLevels = profileForm.level;
+		var numSkills = skills.length;
+		var i;
+		if (i=0;i<numSkills;i++) {
+			var skill = new models.Skill({
+				name: skills[i],
+				rating: skillLevel[i]
+			});
+			skill.save(function(err, st){
+				db.pusUserField(profileId, "skillTags", st);
+			});
+		}
+		res.send('200');
+	}
+	else {
+		res.send('401');
+	}
+
+});
+
+/*
+// edit project
+router.post('/edit_project/:project_id', function(req, res){
+	var userId = req.session.userId;
+	var
+}
+
+// edit contract
+router.post('/edit_contract/:contract_id', function(req, res){
+}*/
 
 // create a new job
 router.post('/job/new', function (req, res) {
@@ -217,7 +241,7 @@ router.post('/job/new', function (req, res) {
 					db.setJobField(newJobId, "skillTags", skillTags);
 					// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
 					// into an array of strings
-					var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
+					var tags = jobForm.descriptionTags.replace(/\s+/g, '').split(",");
 					db.setJobField(newJobId, "descriptionTags", tags);
 					db.setJobField(newJobId, "details", jobForm.details);
 					db.setJobField(newJobId, "url", jobIdToUrl(newJobId));//??
@@ -399,9 +423,10 @@ router.get('/api/profile/:username', function (req, res) {
 	{
 		id: person id,
 		name: person's name,
+		avatar: path to the person's avatar,
 		title: person's title,
 		skills: person's skillTags,
-		tags: [tags]
+		tags: [tags],
 		biography: person's biography,
 		projects:
 		[
@@ -420,6 +445,7 @@ router.get('/api/profile/:username', function (req, res) {
 				job_comment: comment on the work
 			}
 		]
+		email: user's email
 	}*/
 	/*try {
 		var json = new Object();
@@ -435,41 +461,49 @@ router.get('/api/profile/:username', function (req, res) {
 			}
 			json.id = user._id;
 			json.name = user.name;
+			json.avatar = user.avatar;
 			json.title = user.title;
 			json.skills = user.skillTags;
 			json.tags = user.tags;
 			json.biography = user.bio;
 			json.projects = [];
+			json.email = user.email;
 			// Where the user is the owner
-			var projects = db.Project.find({"owner": user._id},{name: 1});
-			while (projects.hasNext()) {
-				var newProject = new Object();
-				var current = projects.next();
-				newProject.project_id = current._id;
-				newProject.project_name = current.name;
-				json.projects.push(newProject);
-			}
+			db.Project.find({"owner": user._id},{name: 1}, function(err, projects){
+				while (projects.hasNext()) {
+					var newProject = new Object();
+					var current = projects.next();
+					newProject.project_id = current._id;
+					newProject.project_name = current.name;
+					json.projects.push(newProject);
+				}
+			});
+
 			// Where the user is a member
-			var member_projects = db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}});
-			while (member_projects.hasNext()) {
-				var newProject = new Object();
-				var current = member_projects.next();
-				newProject.project_id = current._id;
-				newProject.project_name = current.name;
-				json.projects.push(newProject);
-			}
+			db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}}, function(err, member_projects){
+				while (member_projects.hasNext()) {
+					var newProject = new Object();
+					var current = member_projects.next();
+					newProject.project_id = current._id;
+					newProject.project_name = current.name;
+					json.projects.push(newProject);
+				}
+			});
+
 			json.jobs = [];
-			var jobs = db.Job.find({"taker": ObjectId(user_id)});
-			while (jobs.hasNext()) {
-				var newJob = new Object();
-				var current = jobs.next();
-				newJob.job_id = current._id;
-				newJob.job_name = current.name;
-				newJob.completion_date = current.completion;
-				newJob.job_rating = current.rating;
-				newJob.job_comment = current.comment;
-				json.projects.push(newJob);
-			}
+			db.Job.find({"taker": ObjectId(user_id)}, function(err, jobs){
+				while (jobs.hasNext()) {
+					var newJob = new Object();
+					var current = jobs.next();
+					newJob.job_id = current._id;
+					newJob.job_name = current.name;
+					newJob.completion_date = current.completion;
+					newJob.job_rating = current.rating;
+					newJob.job_comment = current.comment;
+					json.projects.push(newJob);
+				}
+			});
+
 
 			res.send(JSON.stringify(json));
 		});
@@ -556,6 +590,17 @@ router.get('/project', function (req, res, next) {
   //res.send('AIDA Home Page!');
 });
 
+router.post('/image_upload', function(req, res){
+	/* uploads a file and res.send path of uploaded file*/
+	var upload = req.files.image;
+	fs.readFile(upload.path, function(err, data){
+		var filePath = __dirname + "assets/user_content" + shortid.generate() + upload.name;
+		fs.writeFile(filePath, data, function(err){
+			res.send(filePath);
+		});
+	});
+});
+
 // create a new project
 router.post('/project/new', function (req, res, next) {
 	/*
@@ -572,8 +617,6 @@ router.post('/project/new', function (req, res, next) {
 	try {
 		var userId = req.session.userId;
 		var projectForm = qs.parse(req.data);
-		// may createJob return job _id or something...
-
 		db.createProject(projectForm.name, userId, function(err, project) {
 			// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
 			// into an array of strings
@@ -582,11 +625,22 @@ router.post('/project/new', function (req, res, next) {
 			db.setProjectField(newProjectId, "tags", tags);
 			db.setProjectField(newProjectId, "members", projectForm.members);
 			db.setProjectField(newProjectId, "details", projectForm.details);
-			db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));//??
+			// build up the showcase object with uploaded file
+			var showcasePath = projectForm.image.id;
+			var showcase = new models.Showcase({
+																						project: newProjectId,
+																						assetPath: showcasePath
+																					});
+			showcase.save(
+				function(err, sc){
+					db.setProjectField(newProjectId, "showcase", sc);
+				}
+			);
+			db.setProjectField(newProjectId, "showcase", );
+			db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));
 			json.url = jobIdToUrl(newProjectId);
 			json.success = "true";
 		});
-
 	}
 	catch (e) {
 		json.success = "false";
@@ -1440,6 +1494,26 @@ router.get('/search', function (req, res) {
 
 });
 
+// username search page used by the admin
+router.get('/search', function (req, res) {
+	/*
+	[{
+		username: username
+		frozen: true/false
+		times_frozen: number of times frozen
+	}]
+	*/
+	var json = [];
+	var keyword = url.parse(req.url, true).query.key;
+	var cursor = db.User.find({"username": {$regex: ".*" + keyword + ".*/i"}});
+	while (cursor.hasNext()) {
+		var curUser = cursor.next();
+		var newUser = new Object();
+		newUser.username = curUser.username;
+		newUser.frozen = curUser.frozen;
+		newUser.times_frozen = curUser.times_frozen;
+	}
+}
 // etc...
 
 module.exports = router;
