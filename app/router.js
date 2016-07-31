@@ -34,24 +34,42 @@ router.use(session(
     saveUninitialized: false}));
 
 // Passport Local Strategy
-passport.use(new LocalStrategy({
-  passReqToCallback : true
-  }, function(username, password, done) {
-    User.getUserByUsername(username, function(err, user){
+passport.use(new LocalStrategy(function(username, password, done) {
+    console.log("Here in local strategy.");
+    console.log("Username is: " + username);
+    console.log("Password is: " + password);
+    db.getUserByField('username', username, function(err, user){
       if(err) throw err;
-      if(!user){
+      if(!user.length){
         return done(null, false, {message: 'Unknown User'});
       }
-      User.comparePassword(password, user.passwordHash, function(err, isMatch){
+      db.comparePassword(password, user[0].passwordHash, function(err, isMatch){
+        console.log("Compare: " + password + user + user[0].passwordHash);
         if(err) throw err;
         if(isMatch){
-          return done(null, user);
+          return done(null, user[0]);
         } else {
           return done(null, false, {message: 'Invalid password'});
         }
       });
     });
 }));
+/**
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
+*/
 
 passport.serializeUser(function(user, done) {
   done(null, user.id);
@@ -124,18 +142,13 @@ router.post('/signup', function (req, res, next) {
     		var passwordHash = hash;
         console.log("hash: " + hash);
         db.createUser(username, passwordHash, email, function(err, user){
-          //if(err) throw err;
-          console.log("user created: " + user);
+          if(err) throw err;
+
+          console.log("This got printed.");
         });
     	});
     });
 
-/**
-    db.createUser(username, passwordHash, email, function(err, user){
-      if(err) throw err;
-      console.log(user);
-    });
-    */
     console.log("arrived here at req.flash");
     req.flash('success_msg', 'You are registered and can now login');
     /* On Frontend add these placeholders
@@ -164,6 +177,7 @@ router.post('/signup', function (req, res, next) {
 router.post('/login',
   passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login', failureFlash: true}),
     function (req, res, next) {
+      console.log("Reached here in post/login with: " + req.username + req.password);
       res.redirect('/');
 });
 

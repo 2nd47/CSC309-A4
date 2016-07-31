@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 
 var models = require("./models.js");
+var bcrypt = require('bcryptjs');
+
 
 module.exports.connect = function(dbUrl, createSamples, callback) {
   var db = mongoose.connect(dbUrl).connection;
@@ -285,8 +287,12 @@ module.exports.getUserField = function(id, field, callback) {
 
 // Get individual user by searching for a field value
 module.exports.getUserByField = function(field, value, callback) {
-  var query = [];
+  console.log("Im here in db.");
+  var query = {};
+  console.log("Query: " + query);
   query[field] = value;
+  console.log("Value: " + value);
+  console.log("Query now: " + query[field]);
   models.User.find(query, callback);
 }
 

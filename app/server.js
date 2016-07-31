@@ -9,6 +9,7 @@ var express = require('express');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var validator = require('validator');
+var passport = require('passport');
 var qs = require('querystring');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
@@ -27,6 +28,9 @@ var db = require('../db/db.js');
 
 app.use(bodyParser());
 app.use(expressValidator());
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 
 // app init
