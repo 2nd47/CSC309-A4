@@ -75,7 +75,7 @@ module.exports = function(app) {
   				});
   			}
   			json.short_intro = project.basicInfo;
-  			json.long_intro = project.detailedInfo;*/
+  			json.long_intro = project.detailedInfo;
 
   			json.long_intro = [];
   			var numParagraph = project.detailedInfo.length;

@@ -1,7 +1,7 @@
 /* AIDA Source Code */
 /* Contributors located at: github.com/2nd47/CSC309-A4 */
 
-function startServer() {
+var startServer = function(testServer) {
   // server modules
   var express = require('express');
   var app = express();
@@ -38,4 +38,8 @@ function startServer() {
   console.log('Server listening on port ' + APP_PORT);
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
+} else {
+  module.exports = startServer;
+}
