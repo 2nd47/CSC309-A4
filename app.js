@@ -14,8 +14,6 @@ function startServer() {
       search = require('./app/controllers/search')(app),
       router = require('./router')(app, auth, user, project, job, search);
 
-  app.use(express.static(__dirname + '/public'));
-
   //return 404 page
   app.use(function(req, res, next){
     res.sendFile('404.html', { root: "./views" });
