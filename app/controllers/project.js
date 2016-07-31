@@ -60,7 +60,7 @@ module.exports = function(app) {
   			json.title = project.name;
   			json.publisher = new Object();
   			json.publisher.publisher_id = project.owner;
-  			db.User.findById(project.owner, function(err, publisher_info){
+  			User.findById(project.owner, function(err, publisher_info){
   				json.publisher.publisher_name = publisher_info.name;
   				json.members = [];
   			});
@@ -69,7 +69,7 @@ module.exports = function(app) {
   			for (i=0;i<numMembers;i++) {
   				var newMember = new Object();
   				newMember.member_id = project.members[i].user;
-  				db.User.findById(project.members[i].user, function(err, memberName){
+  				User.findById(project.members[i].user, function(err, memberName){
   					newMember.member_name = memberName.name;
   					json.members.push(newMember);
   				});
@@ -98,7 +98,7 @@ module.exports = function(app) {
   			json.latest_update = project.updatedAt;
   			json.status = project.status;
   			json.tags = project.tags;
-  			var jobs = db.Job.find({"project": ObjectId(project_id)});
+  			var jobs = Job.find({"project": ObjectId(project_id)});
   			json.open_jobs = [];
   			while (jobs.hasNext()) {
   				var newJob = new Object();
@@ -171,17 +171,17 @@ module.exports = function(app) {
   this.getPopularProjects = function (req, res, next) {
   	// get name, tags, showcase
   	var json = new Object();
-  	var cursor = db.Project.find({},{"name": 1, "tags": 1, "showcase": 1}).sort({"numFollowers": -1}).limit(10);
+  	var cursor = Project.find({},{"name": 1, "tags": 1, "showcase": 1}).sort({"numFollowers": -1}).limit(10);
   	json.topTen = cursor.toArray();
   	json.following = [];
   	var userId = req.session.userId;
   	if (userId) {
-  		db.User.findById(userId, function(err, user){
+  		User.findById(userId, function(err, user){
   			var followings = user.followings;
   			var numFollowings = followings.length;
   			var i;
   			for (i=0;i<numFollowings;i++) {
-  				db.Project.findById(followings[i], function(){
+  				Project.findById(followings[i], function(){
   					// the object being followed is an existing project
   					if (project.length) {
   						var newProject = new Object();
