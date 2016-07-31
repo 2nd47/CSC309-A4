@@ -144,6 +144,7 @@ module.exports = function(app) {
     "project_id": "1",
     "project_name": "Super Awesome Game",
     "status": "open",
+    "post_date": "06-06-2006",
     "latest_update": "06-06-2006",
     "tags": [{
       "name": "Cooking",

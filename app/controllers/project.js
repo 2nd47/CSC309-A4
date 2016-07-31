@@ -144,7 +144,7 @@ module.exports = function(app) {
         "brief": "This is a cool game about awesomeness and stuff I guess",
         "details": "This game features hundreds of awesome features that are featured throughout the game. Features include featuring features featured in the game. Specifically, you can specifically specify specific specifics. Additionally, many innovative innovations have been innovated.",
         "showcase": {
-            "path": "../assets/images/gs1.jpg"
+            "path": "/images/gs1.jpg"
         },
         "jobs": [{
           "id": "1",

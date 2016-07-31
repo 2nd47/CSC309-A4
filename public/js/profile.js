@@ -32,7 +32,7 @@ $(document).ready(function() {
 
 	//make api request and render json data on the html
 	$.get(path, function(data) {
-		$("#avatar").attr("src", "../" + JSON.stringify(data.avatar).slice(1,-1));
+		$("#avatar").attr("src", JSON.stringify(data.avatar).slice(1,-1));
 		$("#profile_name").html(JSON.stringify(data.name).slice(1,-1));
 		$("#profile_tagline").html(JSON.stringify(data.title).slice(1,-1));
 

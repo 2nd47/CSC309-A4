@@ -66,6 +66,7 @@ $(document).ready(function() {
 	$.get(path, function(data) {
 		$("#job_title").html(JSON.stringify(data.title).slice(1,-1));
 		$("#job_intro").html(JSON.stringify(data.intro).slice(1,-1));
+		$("#post_date").html(JSON.stringify(data.post_date).slice(1,-1));
 		$("#status").html(JSON.stringify(data.status).slice(1,-1));
 		$("#employer").html(JSON.stringify(data.employer_name).slice(1,-1));
 

@@ -14,10 +14,10 @@
     <link rel="stylesheet" type="text/css" href="/css/modal.css">
 
     <!--Scripts-->
-    <script type="text/javascript" src="/scripts/jquery-2.2.4.min.js" defer></script>
-    <script type="text/javascript" src="/scripts/modal.js" defer></script>
-    <script type="text/javascript" src="/scripts/contract.js" defer></script>
-    <script type="text/javascript" src="/scripts/generic.js" defer></script>
+    <script type="text/javascript" src="/js/jquery-2.2.4.min.js" defer></script>
+    <script type="text/javascript" src="/js/modal.js" defer></script>
+    <script type="text/javascript" src="/js/contract.js" defer></script>
+    <script type="text/javascript" src="/js/generic.js" defer></script>
   </head>
 
   <body>
@@ -95,79 +95,67 @@
       <div id="content_background">
         <div id="content_wrapper">
           <div id="content">
-			<section id="basic_info">
-				<div class="box_tag">
-					Basic Info
-				</div>
-				<div class="box_content">
-					<h2>3D Character Modelling</h2>
-					<p>
-						You will be making models for various characters.
-						It will include goats, tall goats, huge goats, and many other goats.
-					</p>
-					<p><strong>Posted on:</strong> 2016-07-07 16:45</p>
-					<p><strong>Status:</strong> <span id="status" style="color:red">signed</span></p>
-					<p><strong>Employer:</strong> <a href="profile.html">Donald Trump</a></p>
-					<a href="project.html">See Project</a>
-					<div id="status_change">
-						<p><strong>Choose actions:</strong></p>
-						<button id="sign">Sign Contract</button>
-						<button id="finish">Finish Contract</button>
-						<button id="cancel">Cancel Contract</button>
-						<div id="rating" class="hidden">
-							Rate your employer/employee:<br>
-							<input type="radio" name="score"/>0
-							<input type="radio" name="score"/>1
-							<input type="radio" name="score"/>2
-							<input type="radio" name="score"/>3
-							<input type="radio" name="score"/>4
-							<input type="radio" name="score"/>5<br>
-							Add a brief comment (optional)<br>
-							<textarea id="comment" rows="10"></textarea><br>
-							<button id="submit">Submit</button>
-							<button id="cancel_submit">Cancel</button>
-						</div>
-					</div>
-				</div>
-			</section>
-			<section id="showcase">
-				<div class="box_tag">
-					Specifications
-				</div>
-				<div class="box_content">
-					<p>Required skills:</p>
-					<ul>
-						<li>3d modelling: ★★★★☆</li>
-						<li>Concept art: ★★★☆☆</li>
-					</ul>
-					<p>Budget: $$$$ ($5000~10000)</p>
-					<p>Deadline: 2017-07-07</p>
-				</div>
-			</section>
-			<!--Container for the second level of blocks-->
-			<div class="level_wrapper">
-				<section id="details">
-					<div class="box_tag">
-						Contract Details
-					</div>
-					<div class="box_content">
-						<section id="details_introduction">
-							<h2>Introduction</h2>
-							<p>
-								The game will need a lot of models for goats that will have over 10 degrees of freedom.
-								Besides, there will be humans, zombies, robots and many more characters.
-								Contact us for more information so that we do not spoil the fun of the game.
-								We will pay you according to how many models you will work on.
-							</p>
-						</section>
-						<section id="details_application">
-							<h2>Contact</h2>
-							<p>Please contact us with in-site messages.
-							   Your payment is negotiable.</p>
-						</section>
-					</div>
-				</section>
-			</div>
+      			<section id="basic_info">
+      				<div class="box_tag">
+      					Basic Info
+      				</div>
+      				<div class="box_content">
+      					<h2 id="job_title"> </h2>
+      					<p id="job_intro">
+
+                </p>
+                <p><strong>Posted on:</strong> <span id="post_date"> </span></p>
+      					<p><strong>Status:</strong> <span id="status"> </span></p>
+      					<p><strong>Employer:</strong> <a id="employer" href="profile.html"> </a></p>
+      					<a id="project_link" href="project.html">See Project</a>
+      					<div id="status_change">
+      						<p><strong>Choose actions:</strong></p>
+      						<button id="sign">Sign Contract</button>
+      						<button id="finish">Finish Contract</button>
+      						<button id="cancel">Cancel Contract</button>
+      						<div id="rating" class="hidden">
+      							Rate your employer/employee:<br>
+      							<input type="radio" name="score"/>0
+      							<input type="radio" name="score"/>1
+      							<input type="radio" name="score"/>2
+      							<input type="radio" name="score"/>3
+      							<input type="radio" name="score"/>4
+      							<input type="radio" name="score"/>5<br>
+      							Add a brief comment (optional)<br>
+      							<textarea id="comment" rows="10"></textarea><br>
+      							<button id="submit">Submit</button>
+      							<button id="cancel_submit">Cancel</button>
+      						</div>
+      					</div>
+      				</div>
+      			</section>
+      			<section id="showcase">
+      				<div class="box_tag">
+      					Specifications
+      				</div>
+      				<div class="box_content">
+      					<p>Required skills:</p>
+      					<ul id="skill_tags">
+
+
+      					</ul>
+      					<p id="budget"> </p>
+      					<p id="deadline"> </p>
+      				</div>
+      			</section>
+      			<!--Container for the second level of blocks-->
+      			<div class="level_wrapper">
+      				<section id="details">
+      					<div class="box_tag">
+      						Contract Details
+      					</div>
+      					<div class="box_content">
+      						<section id="details_introduction">
+
+      						</section>
+      					</div>
+      				</section>
+      			</div>
           </div>
         </div>
       </div>

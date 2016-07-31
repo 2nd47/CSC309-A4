@@ -182,7 +182,7 @@ module.exports = function(app) {
       "id": "1",
       "name": "Jordan Belfort",
       "title": "Wolf of Wall Street",
-      "avatar": "/assets/images/users/putin.jpg",
+      "avatar": "/images/users/putin.jpg",
       "skillTags": [{
         "name": "C++",
         "rating": 1
