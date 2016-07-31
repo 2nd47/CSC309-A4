@@ -471,7 +471,7 @@ module.exports = function(app) {
 
   // Create a new user given the required fields
   this.createUser = function(username, passwordHash, email, callback) {
-    var user = new models.User();
+    var user = User();
     user.username = username;
     user.passwordHash = passwordHash;
     user.email = email;
