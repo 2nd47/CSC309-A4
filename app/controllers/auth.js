@@ -32,7 +32,7 @@ module.exports = function(app) {
   passport.use(new LocalStrategy({
     passReqToCallback : true
     }, function(username, password, done) {
-      User.findByName(username, function(err, user){
+      User.findByUsername(username, function(err, user){
         if(err) throw err;
         if(!user){
           return done(null, false, {message: 'Invalid username/password'});
