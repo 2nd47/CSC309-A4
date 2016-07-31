@@ -81,3 +81,7 @@ exports.canSendMessage = function (userId, receiverId) {
 	var receiver = db.User.findById(receiverId);
 	return (!(userId in receiver.blocked) && !isFrozen(userId));
 }
+
+exports.canChangeDatabase = function (userId) {
+	return isAdmin(userId);
+}
