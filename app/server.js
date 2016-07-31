@@ -9,7 +9,6 @@ var express = require('express');
 var mongoose = require('mongoose');
 var session = require('express-session');
 var validator = require('validator');
-var qs = require('querystring');
 var bodyParser = require('body-parser');
 var expressValidator = require('express-validator');
 
