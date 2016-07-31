@@ -2,8 +2,46 @@
 /* Contributors located at: github.com/2nd47/CSC309-A4 */
 
 var express = require('express');
+var fs = require('fs');
+
+var VIEWPATH = __dirname + '/views';
+
+var walk = function(path, viewList, prepend) {
+  if (!prepend) {
+    prepend = "";
+  }
+
+  var views = fs.readdirSync(path);
+  for (var i = 0; i < views.length; i++) {
+    var file = views[i];
+    var newPath = path + '/' + file;
+    var stat = fs.statSync(newPath);
+
+    if (stat.isFile()) {
+      if (/(.*)\.(html$|ejs$)/.test(file)) {
+        viewList.push(prepend + file.replace(/\.(html$|ejs$)/, ''));
+      }
+    } else if (stat.isDirectory() && file != 'partials') {
+      walk(newPath, viewList, prepend + file + "/");
+    }
+  }
+
+  return viewList;
+};
+
+var serveStaticPagesOnRequest = function(app, pageNames) {
+  for (var i = 0; i < pageNames.length; i++) {
+    var page = pageNames[i];
+    app.get('/' + page, function(req, res) {
+      res.sendFile(page, { root: './' });
+    });
+  }
+};
 
 module.exports = function(app, auth, user, project, job, search) {
+
+  app.set('view engine', 'html');
+  app.set('views', __dirname + '/views');
 
   // middleware that is specific to this router
   app.use(function timeLog(req, res, next) {
@@ -19,6 +57,8 @@ module.exports = function(app, auth, user, project, job, search) {
     res.sendFile('landing.html', { root: "./views" });
   });
 
+  serveStaticPagesOnRequest(app, walk(VIEWPATH, []));
+
   app.post('/signup', auth.signup);
   app.post('/login', auth.login);
   app.get('/logout', auth.logout);
@@ -27,7 +67,7 @@ module.exports = function(app, auth, user, project, job, search) {
   app.post('/job/new', job.createJob);
 
   app.get('/job/:job_id', function(req, res) {
-    res.sendFile('contract.html', { root: "./views" });
+    res.sendFile('contract', { root: "./views" });
   });
 
   // details of job with job_id
@@ -77,4 +117,4 @@ module.exports = function(app, auth, user, project, job, search) {
 
   // search page
   app.get('/search', search.getSearch);
-}
+};

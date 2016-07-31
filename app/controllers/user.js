@@ -1,4 +1,6 @@
 var User = require('../models/user'),
+    Chat = require('../models/chat'),
+    Porject = require('../models/project'),
     permissionManager = require('../middleware/permission_manager');
 
 // send all followers of the object (project or person) at given url
@@ -6,9 +8,9 @@ var User = require('../models/user'),
 var broadcastFollowers = function (id, url, message) {
 	// Check if it's a user's id
 	var object;
-	db.User.findById(id, function(err, user){
+	User.findById(id, function(err, user){
 		if (!user.length) {
-			db.Project.findById(id, function(err, user){
+			Project.findById(id, function(err, user){
 				if (!project.length) {
 					console.log("ERROR: something deleted is being updated");
 					return;
@@ -26,7 +28,7 @@ var broadcastFollowers = function (id, url, message) {
 	var numFollowers = object.numFollowers;
 	var i;
 	for (i=0;i<numFollowers;i++) {
-		db.User.findById(followers[i], function(err, follower){
+		User.findById(followers[i], function(err, follower){
 			if (follower.length) {
 				db.createBroadcast(url, message, function(err, broadcast){
 					messageboard.push(broadcast);
@@ -40,15 +42,15 @@ var broadcastFollowers = function (id, url, message) {
 // push a message to a chat history
 var pushMessage = function (sender, message, chatId) {
 	db.createMessage(sender, message, function(err, message){
-		db.Chat.findByIdAndUpdate(id, {$push: {"messages": message}});
+		Chat.findByIdAndUpdate(id, {$push: {"messages": message}});
 	});
 }
 
 // send a message from the sender to the receiver
 var sendMessageTo = function (sender, receiver, message) {
 	// if there is existing chat, push message into the chat
-	db.User.findById(sender, function(err, senderUser){
-		db.User.findById(sender, function(err, receiverUser){
+	User.findById(sender, function(err, senderUser){
+		User.findById(sender, function(err, receiverUser){
 			if (senderUser.length && receiverUser.length) {
 				var chats = senderUser.chats;
 				var numChats = chats.length;
@@ -56,7 +58,7 @@ var sendMessageTo = function (sender, receiver, message) {
 				var chat;
 				var found = false;
 				for (i=0;i<numContracts;i++) {
-					chat = db.Chat.findById(chats[i]);
+					chat = Chat.findById(chats[i]);
 					if (chat.personOne === receiver || chat.personTwo === receiver) {
 						found = true;
 						break;
@@ -72,8 +74,8 @@ var sendMessageTo = function (sender, receiver, message) {
 					var newChat =
 					db.createChat(sender, receiver, function(err, chat){
 						pushMessage(sender, message, chat._id);
-						db.User.findByIdAndUpdate(sender, {$push: {"chats": newChat}});
-						db.User.findByIdAndUpdate(receiver, {$push: {"chats": newChat}});
+						User.findByIdAndUpdate(sender, {$push: {"chats": newChat}});
+						User.findByIdAndUpdate(receiver, {$push: {"chats": newChat}});
 					});
 
 				}
@@ -134,7 +136,7 @@ module.exports = function(app) {
   			json.biography = user.bio;
   			json.projects = [];
   			// Where the user is the owner
-  			var projects = db.Project.find({"owner": user._id},{name: 1});
+  			var projects = Project.find({"owner": user._id},{name: 1});
   			while (projects.hasNext()) {
   				var newProject = new Object();
   				var current = projects.next();
@@ -143,7 +145,7 @@ module.exports = function(app) {
   				json.projects.push(newProject);
   			}
   			// Where the user is a member
-  			var member_projects = db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}});
+  			var member_projects = Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}});
   			while (member_projects.hasNext()) {
   				var newProject = new Object();
   				var current = member_projects.next();
@@ -225,17 +227,17 @@ module.exports = function(app) {
   	}
   	*/
   	var json = new Object();
-  	var cursor = db.User.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}).sort({"numFollowers": -1}).limit(10);
+  	var cursor = User.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}).sort({"numFollowers": -1}).limit(10);
   	json.topTen = cursor.toArray();
   	json.following = [];
   	var userId = req.session.userId;
   	if (userId) {
-  		db.User.findById(userId, function(err, user){
+  		User.findById(userId, function(err, user){
   			var followings = user.followings;
   			var numFollowings = followings.length;
   			var i;
   			for (i=0;i<numFollowings;i++) {
-  				db.User.findById(followings[i], function(err, person){
+  				User.findById(followings[i], function(err, person){
   					// the object being followed is an existing user
   					if (person) {
   						var newPerson = new Object();
@@ -286,7 +288,7 @@ module.exports = function(app) {
   	json.chats = new Object();
   	if (userId) {
   		// The user is logged in
-  		db.User.findById(userId, function(err, found){
+  		User.findById(userId, function(err, found){
   			if (!err) {
   				// Add all existing chats to the chat list
   				// Sort  messages in descending order by date, then
@@ -300,14 +302,14 @@ module.exports = function(app) {
   				var numChats = chats.length;
   				for (i=0;i<numChats;i++) {
   					var other;
-  					db.Chat.findById(chats[i], function(err, chat){
+  					Chat.findById(chats[i], function(err, chat){
   						if (userId === chat.personOne) {
-  							db.User.findById(chat.personTwo, function(err, user){
+  							User.findById(chat.personTwo, function(err, user){
   								other = user;
   							});
   						}
   						else {
-  							db.User.findById(chat.personOne, function(err, user){
+  							User.findById(chat.personOne, function(err, user){
   								other = user;
   							});
   						}
@@ -360,7 +362,7 @@ module.exports = function(app) {
   	// Check if the person is logged in as personOne or personTwo
   	var userId = req.session.userId;
   	var chat_id = req.params.chat_id;
-  	db.Chat.findById(chat_id, function(err, chat){
+  	Chat.findById(chat_id, function(err, chat){
   		var json = new Object();
   		if (userId === chat.personOne || userId === chat.personTwo) {
   			json.success = "true";
@@ -368,13 +370,13 @@ module.exports = function(app) {
   			var other;
   			if (userId === chat.personOne) {
   				// the other person is person two
-  				db.User.findById(chat.personTwo, function(err, user){
+  				User.findById(chat.personTwo, function(err, user){
   					other = user;
   				});
   			}
   			else {
   				// the other person is person one
-  				db.User.findById(chat.personOne, function(err, user){
+  				User.findById(chat.personOne, function(err, user){
   					other = user;
   				});
   			}
@@ -446,7 +448,7 @@ module.exports = function(app) {
   	// Check if the person is logged in as personOne or personTwo
   	var userId = req.session.userId;
   	var chat_id = req.params.chat_id;
-  	db.Chat.findById(chat_id, function(err, chat){
+  	Chat.findById(chat_id, function(err, chat){
   		var json = new Object();
   		if (userId === chat.personOne || userId === chat.personTwo) {
   			json.success = "true";

@@ -14,7 +14,7 @@ function startServer() {
       search = require('./app/controllers/search')(app),
       router = require('./router')(app, auth, user, project, job, search);
 
-  app.use(express.static('./public'));
+  app.use(express.static(__dirname + '/public'));
 
   //return 404 page
   app.use(function(req, res, next){
@@ -28,10 +28,13 @@ function startServer() {
   var assert = require('chai').assert;
 
   // app init
-  var INIT_SAMPLE_DB = process.env.INIT_SAMPLE_DB || false;
+  var INIT_SAMPLE_DB = process.env.INIT_SAMPLE_DB || true;
   var APP_PORT = process.env.PORT || 3000;
 
-  db = require('./db')(INIT_SAMPLE_DB);
+  db = require('./db');
+  if (INIT_SAMPLE_DB) {
+    //require('./test/backend/sampleDb')(app, auth, user, project, job, search);
+  }
 
   app.listen(APP_PORT);
   console.log('Server listening on port ' + APP_PORT);
