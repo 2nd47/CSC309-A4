@@ -1,3 +1,8 @@
+//Check to see if the user can create a team in the org
+exports.canEditJob = function(user, job){
+  return job.owner === user._id;
+};
+
 exports.isAdmin = function (userId) {
 	return (db.User.findById(userId).powerLevel != 0);
 }
@@ -41,7 +46,7 @@ exports.canApplyContract = function (userId, contractId) {
 // only the project owner may add contracts to the project
 exports.canAddContractToProject = function (userId, projectId) {
 	var project = db.Project.findById(projectId);
-	return (project.owner === userId && !isFrozen(userId);
+	return (project.owner === userId && !isFrozen(userId));
 }
 
 // only owner and admin may delete

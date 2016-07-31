@@ -1,13 +1,20 @@
 var mongoose = require('mongoose');
 
-var models = require("./models.js");
-
-module.exports.connect = function(dbUrl, createSamples, callback) {
-  var db = mongoose.connect(dbUrl).connection;
-  db.on("error", function(err) { console.log(err.message); });
+module.exports = function(createSamples) {
+  var dbUri = process.env.MONGODB_URI || 'mongodb://localhost/appdb';
+  mongoose.connect(dbUri, {
+      server: {
+          auto_reconnect: true,
+          socketOptions: {
+              keepAlive: 1
+          }
+      }
+  });
+  var db = mongoose.connection;
   db.once("open", function() {
     console.log('MongoDB connection opened to ' + dbUrl);
   });
+  db.on("error", console.error.bind(console, 'DATABASE ERROR:'));
   if (createSamples) {
     this.initSampleDb();
   }
@@ -162,18 +169,7 @@ module.exports.initSampleDb = function() {
   });
 }
 
-// Create a new user given the required fields
-module.exports.createUser = function(username, passwordHash, email, callback) {
-  var user = new models.User();
-  user.username = username;
-  user.passwordHash = passwordHash;
-  user.email = email;
-  user.save(function(err, user) {
-    if (err) { console.log(err); }
-    else { callback(err, user); }
-  });
-  console.log('Created User ' + user);;
-}
+
 
 // Create a new project given the required fields
 module.exports.createProject = function(name, owner, callback) {
@@ -401,5 +397,3 @@ module.exports.comparePassword = function(candidatePassword, hash, callback){
     callback(null, isMatch);
   });
 };
-
-module.exports.models = models;

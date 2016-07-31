@@ -1,45 +1,40 @@
 /* AIDA Source Code */
 /* Contributors located at: github.com/2nd47/CSC309-A4 */
 
-// main app
+function startServer() {
+  // server modules
+  var express = require('express');
+  var app = express();
 
-// server modules
-var bcrypt = require('bcryptjs');
-var express = require('express');
-var mongoose = require('mongoose');
-var session = require('express-session');
-var validator = require('validator');
-var qs = require('querystring');
-var bodyParser = require('body-parser');
-var expressValidator = require('express-validator');
+  // require necessary modules and establish routing
+  var auth = require('./app/controllers/auth')(app),
+      user = require('./app/controllers/user')(app),
+      project = require('./app/controllers/project')(app),
+      job = require('./app/controllers/job')(app),
+      search = require('./app/controllers/search')(app),
+      router = require('./router')(app, auth, user, project, job, search);
 
-// testing modules
-var testCase = require('mocha').describe;
-var pre = require('mocha').before;
-var assertions = require('mocha').it;
-var assert = require('chai').assert;
+  app.use(express.static('./public'));
 
-// module init
-var app = express();
-// router import keeps main file clean
-var router = require('./router');
-var db = require('../db/db.js');
+  //return 404 page
+  app.use(function(req, res, next){
+    res.sendFile('404.html', { root: "./views" });
+  });
 
-app.use(bodyParser());
-app.use(expressValidator());
+  // testing modules
+  var testCase = require('mocha').describe;
+  var pre = require('mocha').before;
+  var assertions = require('mocha').it;
+  var assert = require('chai').assert;
 
+  // app init
+  var INIT_SAMPLE_DB = process.env.INIT_SAMPLE_DB || false;
+  var APP_PORT = process.env.PORT || 3000;
 
-// app init
-var url = process.env.MONGODB_URI || 'mongodb://localhost/appdb';
-var sampleInit = process.env.INIT_SAMPLE_DB || false;
-const APP_PORT = process.env.PORT || 3000;
-const saltRounds = 10;
+  db = require('./db')(INIT_SAMPLE_DB);
 
-function main() {
-  app.use('/', router);
   app.listen(APP_PORT);
-  db.connect(url, sampleInit);
   console.log('Server listening on port ' + APP_PORT);
 }
 
-main();
+startServer();
