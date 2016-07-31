@@ -24,3 +24,4 @@ For Windows:
 - Logout if inactive
 - File upload
 - Favicon
+- Mobile friendly (except top 10 projects, top 10 people, inbox)

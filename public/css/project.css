@@ -20,6 +20,7 @@ video {
 	margin: 5px;
 }
 
+/* OBSOLETE
 #showcase_control {
   background-color: #220231;
   color: #FFFFFF;
@@ -38,6 +39,7 @@ video {
   display: inline-block;
   float: right;
 }
+*/
 
 #contract_listing {
   margin: 0;
@@ -77,7 +79,7 @@ video {
 }
 
 a {
-	color: #111111;
+	color:white;
 }
 
 #showcase_control button {
@@ -123,4 +125,31 @@ a {
 
 #divider {
 	clear:both;
+}
+
+/*Mobile landscape*/
+@media screen and (max-width: 480px)
+{
+	#basic_info {
+		float: none;
+		margin: 0;
+		width: 100%;
+	}
+
+	#showcase {
+	  float: none;
+		margin-top: 10px;
+		width: 100%;
+	  display: inline-block;
+	}
+
+	#contract_listing li {
+	  width: 100%;
+	}
+
+	.contract_intro {
+		width: 100%;
+		margin: 0;
+		padding: 2px;
+	}
 }
