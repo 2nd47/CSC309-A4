@@ -33,9 +33,9 @@ module.exports.pushOntoProperty = function(field, props) {
     lookupHash[field] = caseInsensitive ? new RegExp('^' + value + '$', 'i') : value;
 
     if (isFindOne) {
-      this.
+      //
     } else {
-      this.
+      //
     }
   }
 }
