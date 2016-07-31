@@ -16,3 +16,7 @@ For Windows:
 - Open your command window in the root folder of the app and enter:
 
   node app/server.js
+
+
+# Enhancements / Ideas for Final
+- Database select: field
