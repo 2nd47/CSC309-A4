@@ -40,6 +40,7 @@ var serveStaticPagesOnRequest = function(app, pageNames) {
 
 module.exports = function(app, auth, user, project, job, search) {
 
+  app.use(express.static(__dirname + '/public'));
   app.set('view engine', 'html');
   app.set('views', __dirname + '/views');
 
@@ -96,8 +97,8 @@ module.exports = function(app, auth, user, project, job, search) {
   // create a new project
   app.post('/project/new', project.createProject);
 
-  app.get('/project/:username', function(req, res) {
-    res.sendFile('profile.html', { root: "./views" });
+  app.get('/project/:project_id', function(req, res) {
+    res.sendFile('project.html', { root: "./views" });
   });
 
   // details of project with project_id

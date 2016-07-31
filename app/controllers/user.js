@@ -183,7 +183,7 @@ module.exports = function(app) {
       "id": "1",
       "name": "Jordan Belfort",
       "title": "Wolf of Wall Street",
-      "avatar": "/assets/images/users/putin.jpg",
+      "avatar": "/images/users/putin.jpg",
       "skillTags": [{
         "name": "C++",
         "rating": 1
@@ -472,7 +472,7 @@ module.exports = function(app) {
 
   // Create a new user given the required fields
   this.createUser = function(username, passwordHash, email, callback) {
-    var user = new models.User();
+    var user = User();
     user.username = username;
     user.passwordHash = passwordHash;
     user.email = email;

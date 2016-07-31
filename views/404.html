@@ -1,9 +1,112 @@
-<!doctype html>
-<head>
-  <title> AIDA | Not Found </title>
-  <link href='/css/404.css' rel='stylesheet'>
-</head>
-<body>
-  <div>Sorry, this page doesn't exist.</div>
-  <div>Return to your <a href="/profile">profile</a></div>
-</div> <!-- end AIDA-app -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--Title, description, authors and any other metadata we might need-->
+    <meta charset="utf-8">
+    <title>AIDA</title>
+    <meta name="author" content="ADIA"/>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!--Stylesheets-->
+    <link rel="stylesheet" type="text/css" href="/css/generic.css">
+    <link rel="stylesheet" type="text/css" href="/css/profile.css">
+    <link rel="stylesheet" type="text/css" href="/css/modal.css">
+    <link rel="stylesheet" type="text/css" href="/css/404.css">
+
+    <!--Scripts-->
+    <script type="text/javascript" src="/js/jquery-2.2.4.min.js" defer></script>
+    <script type="text/javascript" src="/js/modal.js" defer></script>
+    <script type="text/javascript" src="/js/generic.js" defer></script>
+  </head>
+
+  <body>
+    <!--Header bar at the top-->
+    <header>
+      <div id="navbar_wrapper">
+        <div id="navbar">
+          <div id="mobile_nav"></div>
+          <div id="logo_nav">
+            <a class="navbutton" href="landing.html">
+              <!--Replace this with our website logo (32px tall)-->
+              <img src="/images/logo.png" height="32" width="32">
+            </a>
+          </div>
+          <div id="login_nav">
+            <a class="navbutton" href="#login">Log in</a>
+          </div>
+          <div id="searchbar_nav">
+            <!--The search button will be implemented in javascript later-->
+            <form action="search.html">
+              <input id="searchbar_button" type="submit" value="">
+              <input id="searchbar_input" type="text" name="search" placeholder="Search">
+            </form>
+          </div>
+          <div class="navpiece"  id="feed_nav">
+            <a class="navbutton" href="feed.html">Feed</a>
+          </div>
+          <div class="navpiece"  id="project_nav">
+            <a class="navbutton" href="project.html">Projects</a>
+          </div>
+          <div class="navpiece"  id="contract_nav">
+            <a class="navbutton" href="contract.html">Contracts</a>
+          </div>
+          <div class="navpiece"  id="people_nav">
+            <a class="navbutton" href="profile.html">People</a>
+          </div>
+          <div class="navpiece" id="inbox_nav">
+            <a class="navbutton" href="inbox.html">Inbox</a>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <div id="modal_title">
+          <h2>Login</h2>
+        </div>
+        <div id="login_signup_content">
+          <div id="modal-login-box">
+            <input type="text" placeholder="Username"><br>
+            <input type="password" placeholder="Password">
+          </div>
+          <div id="modal-signup-box">
+            <input type="password" placeholder="Confirm Password"><br>
+            <input type="text" placeholder="Email Address"><br>
+            <input type="text" placeholder="Confirm Email Address"><br>
+          </div>
+          <div id="login_button">Login</div>
+          <div id="signup_button">Sign up</div>
+          <h3 id="signup_text">No account yet? <span id="signup_switch">Sign up!</span></h3>
+          <h3 id="login_text">Have an account? <span id="login_switch">Login!</span></h3>
+        </div>
+        <div id="verify_content">
+          <h3 id="verify_text">Enter your security code</h3>
+          <input id="verify_input" type="text">
+        </div>
+      </div>
+    </div>
+
+    <!--Main page content-->
+    <main>
+      <div id="content_background">
+        <div id="content_wrapper">
+          <div id="content">
+      			<h1>404</h1>
+            <p>We couldn't find anything here</p>
+            <p id="spooky">There may have been something here before but it's not here anymore...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!--Footer at the bottom-->
+    <footer>
+      <div id="footer_content">
+        Footer stuff goes here
+      </div>
+    </footer>
+  </body>
+</html>
