@@ -109,20 +109,11 @@ module.exports = function(app) {
       // Hash the password. Store the hash in var password
       bcrypt.genSalt(saltRounds, function(err, salt) {
       	bcrypt.hash(password, salt, function(err, hash) {
-      		password = hash;
+      		var passwordHash = hash;
+          db.createUser(username, passwordHash, email, function(err, user) {
+            console.log("User created: " + user);
+          });
       	});
-      });
-
-      // Create the user
-      var newUser = new User({
-        username: username,
-        password: password,
-        email: email
-      });
-
-      User.createUser(newUser, function(err, user){
-        if(err) throw err;
-        console.log(user);
       });
 
       req.flash('success_msg', 'You are registered and can now login');
