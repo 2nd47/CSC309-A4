@@ -10,6 +10,7 @@ var mongoose = require('mongoose');
 var session = require('express-session');
 var validator = require('validator');
 var qs = require('querystring');
+var bodyParser = require('body-parser');
 
 // testing modules
 var testCase = require('mocha').describe;
@@ -22,6 +23,9 @@ var app = express();
 // router import keeps main file clean
 var router = require('./router');
 var db = require('../db/db.js');
+
+app.use(bodyParser());
+
 
 // app init
 var url = process.env.MONGODB_URI || 'mongodb://localhost/appdb';

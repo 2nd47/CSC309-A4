@@ -11,6 +11,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
 var flash = require('connect-flash');
 var session = require('express-session');
+//var bodyParser = require("body-parser");
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -81,13 +82,17 @@ function ensureAuthenticated(req, res, next) {
 
 // Signup
 router.post('/signup', function (req, res, next) {
+  console.log("Sign Up Mode");
+  console.log("req.body: " + req.body);
   var username = req.body.username;
+  console.log('username: ' + req.body.username);
   var password = req.body.password;
   var password2 = req.body.password2;
   var email = req.body.email;
   var email2 = req.body.email2;
 
   // Validation
+  
   req.checkBody('username', 'Username is required').notEmpty();
   req.checkBody('password', 'Password is required').notEmpty();
   req.checkBody('password2', 'Passwords do not match').equals(req.body.password);

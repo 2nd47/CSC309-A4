@@ -109,22 +109,34 @@ signupButton.onclick = function(event) {
   $('#verify_content').append($proceedButton);
   */
 
-  var data = {};
+//  var data = {};
+  /**
   data.username = $('#username').val();
   data.password = $('#password').val();
   data.password2 = $('#password2').val();
   data.email = $('#email').val();
   data.email2 = $('#email2').val();
+  */
+  var data = {
+    username: "username",
+    password: "password",
+    password2: "password2",
+    email: "email",
+    email2: "email2"
+  };
 
 
     $.ajax(
       {
         type: "post",
         url: "/signup",
-        data: data
+        data: JSON.stringify(data)
       })
       .done(function(data) {
-        //render two-factor
+        alert("yay");
+      })
+      .success(function(msg) {
+        alert("Sucess");
       })
       .fail(function(jqXHR, textStatus) {
         alert("Failed to sign up" + textStatus);
