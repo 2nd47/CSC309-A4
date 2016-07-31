@@ -191,13 +191,9 @@ var showcaseSchema = new Schema({
     ref: 'Project'
   },
   // Display order inferred from indices
-  assetPaths: [{
+  assetPath: {
     type: String
-  }],
-  // Can extract mediatype from full path
-  mediaTypes: [{
-    type: String
-  }]
+  }
 }, { collection: 'showcases', timestamps: true });
 
 var Showcase = mongoose.model('Showcase', showcaseSchema);

@@ -11,6 +11,9 @@ var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
 var flash = require('connect-flash');
 var session = require('express-session');
+var shortid = require('shortid');
+var fs = require('fs');
+var qs = require('querystring');
 
 // middleware that is specific to this router
 router.use(function timeLog(req, res, next) {
@@ -169,6 +172,66 @@ router.get('/logout', function(req, res, next) {
   res.redirect('/login');
 });
 
+// edit user profile (profile_id: the user id of the profile)
+router.post('/edit_profile/:profile_id', function(req, res){
+	var userId = req.session.userId;
+	var profileId = req.params.profile_id;
+	var profileForm = qs.parse(req.data);
+	if (canEditProfile(userId, profileId)) {
+		db.setUserField(profileId, "name", profileForm.name);
+		// TODO: set the user's password hash
+		db.setUserField(profileId, "avatar", profileForm.image.id);
+		db.setUserField(profileId, "title", profileForm.title);
+		db.setUserField(profileId, "bio", profileForm.bio);
+		db.setUserField(profileId, "tags", profileForm.tags.replace(/\s+/g, '').split(","));
+		db.setUserField(profileId, "email", profileForm.email);
+		
+		// edit skill tags
+		db.getUserById(profileId, function(err, profile){
+			// delete all current skills
+			var curSkills = profile.skillTags;
+			var numCurSkills = curSkills.length;
+			var i;
+			if (i=0;i<numCurSkills;i++) {
+				var id = curSkills[i]._id;
+				db.Skill.remove({_id: id});
+			}
+			db.setUserField(profileId, "skillTags", []);
+			
+		});
+		// build new skill tags
+		var skills = profileForm.skill
+		var skillLevels = profileForm.level;
+		var numSkills = skills.length;
+		var i;
+		if (i=0;i<numSkills;i++) {
+			var skill = new models.Skill({
+				name: skills[i],
+				rating: skillLevel[i]
+			});
+			skill.save(function(err, st){
+				db.pusUserField(profileId, "skillTags", st);
+			});
+		}
+		res.send('200');
+	}
+	else {
+		res.send('401');
+	}
+	
+});
+
+/*
+// edit project
+router.post('/edit_project/:project_id', function(req, res){
+	var userId = req.session.userId;
+	var 
+}
+	
+// edit contract
+router.post('/edit_contract/:contract_id', function(req, res){
+}*/
+
 // create a new job
 router.post('/jobs/new', function (req, res) {
 	/*
@@ -209,7 +272,7 @@ router.post('/jobs/new', function (req, res) {
 					db.setJobField(newJobId, "skillTags", skillTags);
 					// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
 					// into an array of strings
-					var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
+					var tags = jobForm.descriptionTags.replace(/\s+/g, '').split(",");
 					db.setJobField(newJobId, "descriptionTags", tags);
 					db.setJobField(newJobId, "details", jobForm.details);
 					db.setJobField(newJobId, "url", jobIdToUrl(newJobId));//??
@@ -354,6 +417,7 @@ router.get('/people/:username', function (req, res) {
 	{
 		id: person id,
 		name: person's name,
+		avatar: path to the person's avatar,
 		title: person's title,
 		skills: person's skillTags,
 		tags: [tags]
@@ -390,6 +454,7 @@ router.get('/people/:username', function (req, res) {
 			}
 			json.id = user._id;
 			json.name = user.name;
+			json.avatar = user.avatar;
 			json.title = user.title;
 			json.skills = user.skillTags;
 			json.tags = user.tags;
@@ -438,6 +503,7 @@ router.get('/people/:username', function (req, res) {
 	}
 });
 
+
 // list of top ten projects
 // if user has followed projects, list them, too
 router.get('/projects', function (req, res, next) {
@@ -470,6 +536,17 @@ router.get('/projects', function (req, res, next) {
   //res.send('AIDA Home Page!');
 });
 
+router.post('/image_upload', function(req, res){
+	/* uploads a file and res.send path of uploaded file*/
+	var upload = req.files.image;
+	fs.readFile(upload.path, function(err, data){
+		var filePath = __dirname + "assets/user_content" + shortid.generate() + upload.name;
+		fs.writeFile(filePath, data, function(err){	
+			res.send(filePath);
+		});
+	});
+});
+
 // create a new project
 router.post('/projects/new', function (req, res, next) {
 	/*
@@ -486,8 +563,6 @@ router.post('/projects/new', function (req, res, next) {
 	try {
 		var userId = req.session.userId;
 		var projectForm = qs.parse(req.data);
-		// may createJob return job _id or something...
-
 		db.createProject(projectForm.name, userId, function(err, project) {
 			// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
 			// into an array of strings
@@ -496,11 +571,22 @@ router.post('/projects/new', function (req, res, next) {
 			db.setProjectField(newProjectId, "tags", tags);
 			db.setProjectField(newProjectId, "members", projectForm.members);
 			db.setProjectField(newProjectId, "details", projectForm.details);
-			db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));//??
+			// build up the showcase object with uploaded file
+			var showcasePath = projectForm.image.id;
+			var showcase = new models.Showcase({
+																						project: newProjectId,
+																						assetPath: showcasePath
+																					});
+			showcase.save(
+				function(err, sc){
+					db.setProjectField(newProjectId, "showcase", sc);
+				}
+			);
+			db.setProjectField(newProjectId, "showcase", );
+			db.setProjectField(newProjectId, "url", projectIdToUrl(newProjectId));
 			json.url = jobIdToUrl(newProjectId);
 			json.success = "true";
 		});
-
 	}
 	catch (e) {
 		json.success = "false";
