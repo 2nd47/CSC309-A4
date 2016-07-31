@@ -179,7 +179,12 @@ router.post('/edit_profile/:profile_id', function(req, res){
 	var profileForm = qs.parse(req.data);
 	if (canEditProfile(userId, profileId)) {
 		db.setUserField(profileId, "name", profileForm.name);
-		// TODO: set the user's password hash
+		// TODO: set the user's password hash to profileForm.newpassword's hash
+		if (profileForm.newpassword.length != 0) {
+			if (bcrypt.hash(profileForm.newpassword) === bcrypt.hash(profileForm.repeatpassword)) {
+				db.setUserField(profileId, "passwordHash", bcrypt.hash(profileForm.newpassword));
+			}
+		}
 		db.setUserField(profileId, "avatar", profileForm.image.id);
 		db.setUserField(profileId, "title", profileForm.title);
 		db.setUserField(profileId, "bio", profileForm.bio);
@@ -420,7 +425,7 @@ router.get('/people/:username', function (req, res) {
 		avatar: path to the person's avatar,
 		title: person's title,
 		skills: person's skillTags,
-		tags: [tags]
+		tags: [tags],
 		biography: person's biography,
 		projects:
 		[
@@ -439,6 +444,7 @@ router.get('/people/:username', function (req, res) {
 				job_comment: comment on the work
 			}
 		]
+		email: use's email
 	}*/
 	try {
 		var json = new Object();
@@ -460,6 +466,7 @@ router.get('/people/:username', function (req, res) {
 			json.tags = user.tags;
 			json.biography = user.bio;
 			json.projects = [];
+			json.email = user.email;
 			// Where the user is the owner
 			var projects = db.Project.find({"owner": user._id},{name: 1});
 			while (projects.hasNext()) {
@@ -1389,6 +1396,26 @@ router.get('/search', function (req, res) {
 
 });
 
+// username search page used by the admin
+router.get('/search', function (req, res) {
+	/*
+	[{
+		username: username
+		frozen: true/false
+		times_frozen: number of times frozen
+	}]
+	*/
+	var json = [];
+	var keyword = url.parse(req.url, true).query.key;
+	var cursor = db.User.find({"username": {$regex: ".*" + keyword + ".*/i"}});
+	while (cursor.hasNext()) {
+		var curUser = cursor.next();
+		var newUser = new Object();
+		newUser.username = curUser.username;
+		newUser.frozen = curUser.frozen;
+		newUser.times_frozen = curUser.times_frozen;
+	}
+}
 // etc...
 
 module.exports = router;

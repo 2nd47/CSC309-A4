@@ -173,7 +173,7 @@ module.exports.createProject = function(name, owner, callback) {
   var project = new models.Project();
   project.name = name;
   project.owner = owner;
-  project.members = [owner];
+  project.members = [];
   project.save(callback);
 }
 
