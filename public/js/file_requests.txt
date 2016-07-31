@@ -1,0 +1,113 @@
+Project page:
+
+{
+	id: project id,
+	title: project title,
+	publisher: project owner,
+	short_intro: short description, 300 characters max,
+	long_intro:
+	{
+		paragraph_title: content
+	},
+	latest_update: date of the latest update, in seconds,
+	status: project status,
+	tags: [list of tags],
+	open_contracts:
+	[
+		{
+			contract_id: contract id,
+			contract_title: contract title,
+			contract_tags: [list of skill names],
+			contract_budget: budget level estimation between 1 to 5,
+			contract_deadline: contract deadline
+		}
+	],
+}
+
+------------
+
+Contract page:
+
+{
+	id: contract id,
+	title: contract title,
+	employer_id: employer id,
+	employer_name: employer name,
+	project_id: project id,
+	project_name: project name,
+	status: contract status,
+	latest_update: date of the latest update,
+	tags: [tag names],
+	budget: budget level estimation between 1 to 5,
+	deadline: contract deadline,
+	intro: introduction to the contract details
+}
+
+-------------
+
+People page:
+
+{
+	id: person id,
+	name: person's name,
+	skills:
+	[
+		{
+			skill_id: skill id,
+			skill_name: skill name,
+			skill_level: self rating on the skill between 1 to 5
+		}
+	],
+	biography: person's biography,
+	projects:
+	[
+		{
+			project_id: project id,
+			project_name: project name
+		}
+	],
+	contracts:
+	[
+		{
+			contract_id: contract id,
+			contract_name: contract name,
+			completion_date: completion date,
+			contract_rating: contract_rating
+		}
+	]
+}
+
+----------------------------
+
+Message page:
+
+{
+	contact_list:
+	[
+		{
+			contact_id: contact id,
+			contact_name: contact name
+		}
+	]
+}
+
+(When clicking on a contact:)
+
+[
+	{
+		id: message sender's id,
+		message: the message,
+		time: the time when the message is sent
+	}
+]
+
+-----------------------------
+
+Feed:
+{
+	updates:
+	[
+		
+	],
+	reccomendations:[]
+}

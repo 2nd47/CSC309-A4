@@ -1,0 +1,106 @@
+/*THIS IS THE CONTRACT PAGE STYLESHEET
+IT CONTAINS STYLES FOR THE CONTRACT PAGE*/
+
+#rating {
+	margin: 10px;
+	line-height: 150%;
+}
+#comment {
+	height: 50px;
+	width: 70%;
+}
+
+#basic_info {
+	float: left;
+	margin: 0;
+	width: 50%;
+}
+
+#contract_listing {
+	list-style-type: none;
+}
+a {
+	text-decoration: underline;
+	color: black;
+}
+
+#profile_tagline {
+  padding-left: 10px;
+  font-size: 16px;
+}
+
+.contract_intro {
+	display: block;
+	padding: 10px;
+	background-color: #EEEEEE;
+	width: 40%;
+	clear: left;
+}
+
+#basic_info_content, #showcase_content, #details_content, #navigator_wrapper {
+  padding: 8px;
+  border: 1px solid #E9E9E9;
+  border-radius: 2px;
+}
+
+#showcase {
+	float: right;
+	margin: 0;
+	width: calc(50% - 20px);
+	display: inline-block;
+}
+
+
+#showcase_display img {
+	width: calc(100% - 10px);
+	height: calc(100% - 10px);
+	margin: 5px;
+}
+
+.hidden {
+	display: none;
+}
+
+#showcase_control button {
+	color: white;
+	outline: none;
+	padding: 3px 10px;
+	margin: 3px 5px;
+	background-color: #8B42A8;
+	border: solid 2px #8B42A8;
+	border-radius: 2px;
+}
+
+#showcase_control button:link {
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+#showcase_control button:visited {
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+#showcase_control button:hover {
+    text-decoration: none;
+    color: #CBCBCB;
+}
+
+#showcase_control button:active {
+    text-decoration: none;
+    color: #A1A1A1;
+}
+
+#details {
+	float: right;
+	margin: 0;
+	margin-left: calc(20% + 10px);
+	width: 100%;
+}
+.level_wrapper {
+	clear: both;
+	padding-top: 20px;
+}
+#divider {
+	clear:both;
+}
