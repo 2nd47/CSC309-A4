@@ -403,6 +403,7 @@ var reportSchema = new Schema({
 }, { collection: 'reports', timestamps: true });
 
 var Report = mongoose.model('Report', jobSchema);
+mongoose.Promise = global.Promise;
 
 module.exports.Skill = Skill;
 module.exports.Message = Message;

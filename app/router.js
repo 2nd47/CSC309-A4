@@ -5,7 +5,7 @@
 
 var express = require('express');
 var router = express.Router();
-var db = require('../db/db');
+var db = require('../db/db.js');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcryptjs');
@@ -84,12 +84,8 @@ function ensureAuthenticated(req, res, next) {
 // Signup
 router.post('/signup', function (req, res, next) {
   console.log("Sign Up Mode");
-  console.log("req.body: " + req.body);
-  var username = req.body.username;
-  console.log('username: ' + req.body.username);
-  console.log('password: ' + req.body.password);
-  console.log('email: ' + req.body.email);
 
+  var username = req.body.username;
   var password = req.body.password;
   var password2 = req.body.password2;
   var email = req.body.email;
@@ -107,8 +103,8 @@ router.post('/signup', function (req, res, next) {
   var errors = req.validationErrors();
 
   if(errors) {
-    console.log(msg);
-    /*
+    console.log(errors);
+        /*
     res.render('landingSignup', {
       errors:errors
     });
@@ -125,22 +121,22 @@ router.post('/signup', function (req, res, next) {
     // Hash the password. Store the hash in var password
     bcrypt.genSalt(10, function(err, salt) {
     	bcrypt.hash(password, salt, function(err, hash) {
-    		password = hash;
+    		var passwordHash = hash;
+        console.log("hash: " + hash);
+        db.createUser(username, passwordHash, email, function(err, user){
+          //if(err) throw err;
+          console.log("user created: " + user);
+        });
     	});
     });
 
-    // Create the user
-    var newUser = new User({
-      username: username,
-      password: password,
-      email: email
-    });
-
-    User.createUser(newUser, function(err, user){
+/**
+    db.createUser(username, passwordHash, email, function(err, user){
       if(err) throw err;
       console.log(user);
     });
-
+    */
+    console.log("arrived here at req.flash");
     req.flash('success_msg', 'You are registered and can now login');
     /* On Frontend add these placeholders
     {{#if success_msg}}
@@ -160,7 +156,7 @@ router.post('/signup', function (req, res, next) {
     {{/if}}
     */
 
-    res.redirect('/login');
+    res.redirect('/');
   }
 });
 
