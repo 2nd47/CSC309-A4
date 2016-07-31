@@ -105,7 +105,8 @@ var userSchema = new Schema({
   },
   username: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   passwordHash: {
     type: String,
@@ -257,7 +258,8 @@ var projectSchema = new Schema({
   },
   name: {
     type: String,
-    required: true
+    required: true,
+    unique: true
   },
   tags: [{
     type: String,
@@ -402,7 +404,7 @@ var reportSchema = new Schema({
   }
 }, { collection: 'reports', timestamps: true });
 
-var Report = mongoose.model('Report', jobSchema);
+var Report = mongoose.model('Report', reportSchema);
 
 module.exports.Skill = Skill;
 module.exports.Message = Message;
