@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var bcrypt = require('bcryptjs');
 
 module.exports = function(createSamples) {
   var dbUri = process.env.MONGODB_URI || 'mongodb://localhost/appdb';
@@ -128,7 +129,7 @@ module.exports.getUserField = function(id, field, callback) {
 
 // Get individual user by searching for a field value
 module.exports.getUserByField = function(field, value, callback) {
-  var query = [];
+  var query = {};
   query[field] = value;
   models.User.find(query, callback);
 }
@@ -145,7 +146,7 @@ module.exports.getProjectField = function(id, field, callback) {
 
 // Get individual project by searching for a field value
 module.exports.getProjectByField = function(field, value, callback) {
-  var query = [];
+  var query = {};
   query[field] = value;
   models.Project.find(query, callback);
 }
@@ -172,7 +173,7 @@ module.exports.getJob = function(id, callback) {
 
 // Get individual job by searching for a field value
 module.exports.getJobByField = function(field, value, callback) {
-  var query = [];
+  var query = {};
   query[field] = value;
   models.Job.find(query, callback);
 }

@@ -37,18 +37,17 @@ router.use(session(
     saveUninitialized: false}));
 
 // Passport Local Strategy
-passport.use(new LocalStrategy({
-  passReqToCallback : true
-  }, function(username, password, done) {
-    User.getUserByUsername(username, function(err, user){
+passport.use(new LocalStrategy(function(username, password, done) {
+    db.getUserByField('username', username, function(err, user){
       if(err) throw err;
-      if(!user){
+      if(!user.length){
         return done(null, false, {message: 'Unknown User'});
       }
-      User.comparePassword(password, user.passwordHash, function(err, isMatch){
+      db.comparePassword(password, user[0].passwordHash, function(err, isMatch){
+        console.log(user);
         if(err) throw err;
         if(isMatch){
-          return done(null, user);
+          return done(null, user[0]);
         } else {
           return done(null, false, {message: 'Invalid password'});
         }
@@ -86,14 +85,11 @@ function ensureAuthenticated(req, res, next) {
 
 // Signup
 router.post('/signup', function (req, res, next) {
-  console.log("Sign Up Mode");
-
   var username = req.body.username;
   var password = req.body.password;
   var password2 = req.body.password2;
   var email = req.body.email;
   var email2 = req.body.email2;
-  console.log(username + password + password2 + email + email2);
 
   // Validation
   req.checkBody('username', 'Username is required').notEmpty();
@@ -107,17 +103,6 @@ router.post('/signup', function (req, res, next) {
 
   if(errors) {
     console.log(errors);
-        /*
-    res.render('landingSignup', {
-      errors:errors
-    });
-    On The Frontend add this placeholder:
-    {{#if errors}}
-      {{#each errors}}
-        <div class="notice error">{{msg}}</div>
-      {{/each}}
-    {{/if}}
-    */
   } else {
     console.log('Signup No Error');
 
@@ -125,40 +110,13 @@ router.post('/signup', function (req, res, next) {
     bcrypt.genSalt(10, function(err, salt) {
     	bcrypt.hash(password, salt, function(err, hash) {
     		var passwordHash = hash;
-        console.log("hash: " + hash);
         db.createUser(username, passwordHash, email, function(err, user){
-          //if(err) throw err;
-          console.log("user created: " + user);
+          if(err) throw err;
         });
     	});
     });
 
-/**
-    db.createUser(username, passwordHash, email, function(err, user){
-      if(err) throw err;
-      console.log(user);
-    });
-    */
-    console.log("arrived here at req.flash");
     req.flash('success_msg', 'You are registered and can now login');
-    /* On Frontend add these placeholders
-    {{#if success_msg}}
-      <div class="notice_success">
-        {{success_msg}}
-      </div>
-    {{/if}}
-    {{#if error_msg}}
-      <div class="notice_success">
-        {{error_msg}}
-      </div>
-    {{/if}}
-    {{#if error}}
-      <div class="notice_success">
-        {{error}}
-      </div>
-    {{/if}}
-    */
-
     res.redirect('/');
   }
 });
@@ -167,6 +125,7 @@ router.post('/signup', function (req, res, next) {
 router.post('/login',
   passport.authenticate('local', {successRedirect:'/', failureRedirect:'/login', failureFlash: true}),
     function (req, res, next) {
+      console.log("Reached here in post/login with: " + req.username + req.password);
       res.redirect('/');
 });
 
@@ -195,7 +154,7 @@ router.post('/edit_profile/:profile_id', function(req, res){
 		db.setUserField(profileId, "bio", profileForm.bio);
 		db.setUserField(profileId, "tags", profileForm.tags.replace(/\s+/g, '').split(","));
 		db.setUserField(profileId, "email", profileForm.email);
-		
+
 		// edit skill tags
 		db.getUserById(profileId, function(err, profile){
 			// delete all current skills
@@ -207,7 +166,7 @@ router.post('/edit_profile/:profile_id', function(req, res){
 				db.Skill.remove({_id: id});
 			}
 			db.setUserField(profileId, "skillTags", []);
-			
+
 		});
 		// build new skill tags
 		var skills = profileForm.skill
@@ -228,16 +187,16 @@ router.post('/edit_profile/:profile_id', function(req, res){
 	else {
 		res.send('401');
 	}
-	
+
 });
 
 /*
 // edit project
 router.post('/edit_project/:project_id', function(req, res){
 	var userId = req.session.userId;
-	var 
+	var
 }
-	
+
 // edit contract
 router.post('/edit_contract/:contract_id', function(req, res){
 }*/
@@ -519,7 +478,7 @@ router.get('/api/profile/:username', function (req, res) {
 					json.projects.push(newProject);
 				}
 			});
-			
+
 			// Where the user is a member
 			db.Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}}, function(err, member_projects){
 				while (member_projects.hasNext()) {
@@ -530,7 +489,7 @@ router.get('/api/profile/:username', function (req, res) {
 					json.projects.push(newProject);
 				}
 			});
-			
+
 			json.jobs = [];
 			db.Job.find({"taker": ObjectId(user_id)}, function(err, jobs){
 				while (jobs.hasNext()) {
@@ -544,7 +503,7 @@ router.get('/api/profile/:username', function (req, res) {
 					json.projects.push(newJob);
 				}
 			});
-			
+
 
 			res.send(JSON.stringify(json));
 		});
@@ -636,7 +595,7 @@ router.post('/image_upload', function(req, res){
 	var upload = req.files.image;
 	fs.readFile(upload.path, function(err, data){
 		var filePath = __dirname + "assets/user_content" + shortid.generate() + upload.name;
-		fs.writeFile(filePath, data, function(err){	
+		fs.writeFile(filePath, data, function(err){
 			res.send(filePath);
 		});
 	});
