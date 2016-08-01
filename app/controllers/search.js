@@ -405,7 +405,7 @@ module.exports = function(app) {
   					addNewJob(current, MATCH_TAGS);
   				}
   			}
-				
+
 				// match jobs by skills
   			while (jobsByTags.hasNext()) {
   				var newJob = new Object();
