@@ -115,7 +115,8 @@ module.exports = function(app, auth, user, project, job, search) {
                 much much much much much much much much much much much much much \
                 much much much much much much much much much much much much much \
                 much much much much much much much much much much much much much \
-                much much much much much much much longer information section'
+                much much much much much much much longer information section \
+                for the \'Trump for President!\' job!'
             });
             var project2 = Project({
               name: 'Sanders for President!',
@@ -131,7 +132,8 @@ module.exports = function(app, auth, user, project, job, search) {
                 much much much much much much much much much much much much much much \
                 much much much much much much much much much much much much much much \
                 much much much much much much much much much much much much much much \
-                much much much much much much much much much longer information section'
+                much much much much much much much much much longer information section \
+                for the \'Sanders for President!\' job!'
             });
             project1.save(function(err, trumpProj) {
               if (err) { console.log(err); }
