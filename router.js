@@ -88,7 +88,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 
   // list of profiles of top ten followed users
   // if user is logged in, show their following users at the bottom
-  app.get('/profile', user.getPopularUsers);
+  app.get('/profiles', user.getPopularUsers);
 
   app.get('/profile/:username', function(req, res) {
     res.sendFile('profile.html', { root: "./views" });
