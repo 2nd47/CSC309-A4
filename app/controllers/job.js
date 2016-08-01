@@ -1,4 +1,5 @@
-var Job = require('../models/job');
+var Job = require('../models/job'),
+    User = require('../models/user');
 
 module.exports = function(app) {
   this.renderJobPage = function(req, res) {
@@ -16,12 +17,15 @@ module.exports = function(app) {
       sort({ createdAt: 1 }).
       skip((pageNum - 1) * resultsPerPage).
       limit(resultsPerPage).
-      select({ _id: 1, name: 1 }).
+      select({ _id: 1, name: 1, intro: 1, owner: 1 }).
       exec(function(err, jobs) {
         if (err) {
         res.status(500).send(err);
         } else {
-          res.status(200).send(jobs);
+          // Get user associated with job so we can load their profile picture
+          User.findById(owner, function(err, user) {
+            res.status(200).send(jobs);
+          });
         }
       });
   }
