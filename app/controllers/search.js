@@ -109,7 +109,7 @@ module.exports = function(app) {
   	var userJobSkills = userInfo.userJobSkills;
 
   	var results = new Object();
-  	var queries = url.parse(req.url, true).query;
+  	var queries = req.url.parse(req.url, true).query;
 
   	// Parse the queries
   	var category;
