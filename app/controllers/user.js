@@ -239,7 +239,12 @@ module.exports = function(app) {
 			console.log(cursor);
       //cursor should be an array now?
   		//cursor = cursor.sort({"numFollowers": -1}).limit(10);
-  		res.send(JSON.stringify(cursor));
+  		if (!err) {
+				res.status(200).send(cursor);
+			};
+			else {
+				res.status(404).send('404');
+			}
   		return;
   		/*json.following = [];
   		var userId = req.session.userId;
@@ -265,8 +270,6 @@ module.exports = function(app) {
   			});
       }*/
 		});
-
-  	res.send(JSON.stringify(json));
   };
 
   this.getMessages = function (req, res) {
