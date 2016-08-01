@@ -234,6 +234,7 @@ module.exports = function(app) {
         userMap[user._id] = user;
         console.log(userMap);
       });
+
       res.send(JSON.stringify(userMap));
     /*{"name": 1, "title": 1, "skillTags": 1, "tags": 1});*/
 		//cursor = cursor.sort({"numFollowers": -1}).limit(10);

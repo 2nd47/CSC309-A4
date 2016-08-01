@@ -43,7 +43,7 @@ module.exports = function(app, auth, user, project, job, search) {
   });
   var user2 = User({
     username: 'bsanders',
-    passswordHash: bcrypt.hashSync('passwordsanders'),
+    passwordHash: bcrypt.hashSync('passwordsanders'),
     email: 'bsanders@gmail.com',
     name: 'Bernie Sanders',
     title: 'Democratic Presidential Nominee Runner-up',
