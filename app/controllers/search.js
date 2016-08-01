@@ -6,13 +6,15 @@ var collectUserInfo = function(userId) {
   var userProjectTags = [];
   var userJobSkills = [];
   if (userId) {
-    var user = db.User.findOne({"_id": ObjectId(userId)});
+    var user = db.User.findById(userId).exec(function(err, user){
+			
+		});
     var userProjects;
-		db.Project.find({"owner": user._id, "status": "ongoing"}, function(err, projects){
+		db.Project.find({"owner": user._id, "status": "ongoing"}).lean().exec(function(err, projects){
 			userProjects = projects;
 		});
     var userJobs;
-		db.Job.find({"owner": ObjectId(userId), "status": "open"}, function(err, jobs){
+		db.Job.find({"owner": ObjectId(userId), "status": "open"}).lean().exec(function(err, jobs){
 			userJobs = jobs;
 		});
     // User's tags on themselves
@@ -20,19 +22,24 @@ var collectUserInfo = function(userId) {
     // User's skills
     userSkills = user.skillTags;
     // User's tags on ongoing projects
-    while (userProjects.hasNext()) {
-      var current = userProjects.next();
+		var i;
+		var numUserProjects = userProjects.length;
+    for (i=0;i<numUserProjects;i++) {
+      var current = userProjects[i];
       var tags = current.tags;
-      for (i=0;i<tags.length;i++) {
-        userProjectTags.push(tags[i]);
+			var j;
+      for (j=0;j<tags.length;j++) {
+        userProjectTags.push(tags[j]);
       }
     }
     // User's jobs' required skills
-    while (userJobs.hasNext()) {
-      var current = userJobs.next();
+		var numUserJobs = userJobs.length;
+    for (i=0;i<numUserJobs;i++) {
+      var current = userJobs[i];
       var skillTags = current.skillTags;
-      for (i=0;i<skillTags.length;i++) {
-        userJobSkills.push(skillTags[i]);
+			var j;
+      for (j=0;j<skillTags.length;j++) {
+        userJobSkills.push(skillTags[j]);
       }
     }
   }
@@ -104,7 +111,7 @@ module.exports = function(app) {
 
   	// Get the logged in user's id to adjust search priority
   	var userId = req.session.userId;
-  	var userInfo = collectUserInfo(userId);
+  	var userInfo = JSON.parse(collectUserInfo(userId));
   	var userTags = userInfo.userTags;
   	var userSkills = userInfo.userSkills;
   	var userProjectTags = userInfo.userProjectTags;
@@ -123,7 +130,7 @@ module.exports = function(app) {
   	}
 		
 		var keywords;
-		if (keywords) {
+		if (queries.keywords) {
 			keywords = queries.keywords.split(",");
 		}
 		else {
@@ -244,26 +251,25 @@ module.exports = function(app) {
   		// Get projects
   		if (category === "projects") {
   			var projectsByName;
-				db.Project.find({"name": {$regex: ".*" + keyword + ".*/i"}}, function(err, projects){
+				db.Project.find({"name": {$regex: ".*" + keyword + ".*/i"}}).lean().exec(function(err, projects){
 					projectsByName = projects;
 				});
   			var projectsByTags;
-				db.Project.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}}, function(err, projects){
+				db.Project.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}}).lean().exec(function(err, projects){
 					projectsByTags = projects;
 				});
   			var projectsByIntro;
-				db.Project.find({"basicInfo": {$regex: ".*" + keyword + ".*/i"}}, function(err, projects){
+				db.Project.find({"basicInfo": {$regex: ".*" + keyword + ".*/i"}}).lean().exec(function(err, projects){
 					projectsByIntro = projects;
 				});
   			var projectsByDetail;
-				db.Project.find({"detailedInfo": {$regex: ".*" + keyword + ".*/i"}}, function(err, projects){
-					projectsByDetail = projecs;
+				db.Project.find({"detailedInfo": {$regex: ".*" + keyword + ".*/i"}}).lean().exec(function(err, projects){
+					projectsByDetail = projects;
 				});
 
   			// match projects by name
-  			while (projectsByName.hasNext()) {
+  			for (var current in projectsByName){
   				var newProject = new Object();
-  				var current = projectsByName.next();
   				if (current._id in results) {
   					// The object is found before
   					updateProjectPriority(current, MATCH_NAME);
@@ -275,9 +281,8 @@ module.exports = function(app) {
   			}
 
   			// match projects by tags
-  			while (projectsByTags.hasNext()) {
+  			for (var current in projectsByTags) {
   				var newProject = new Object();
-  				var current = projectsByTags.next();
   				if (current._id in results) {
   					// The object is found before
   					updateProjectPriority(current, MATCH_TAGS);
@@ -289,9 +294,8 @@ module.exports = function(app) {
   			}
 
   			// match projects by intro
-  			while (projectsByIntro.hasNext()) {
+  			for (var current in projectsByIntro) {
   				var newProject = new Object();
-  				var current = projectsByIntro.next();
   				if (current._id in results) {
   					// The object is found before
   					updateProjectPriority(current, MATCH_REST);
@@ -303,9 +307,8 @@ module.exports = function(app) {
   			}
 
   			// match projects by detail
-  			while (projectsByDetail.hasNext()) {
+  			for (var current in projectsByDetail) {
   				var newProject = new Object();
-  				var current = projectsByDetail.next();
   				if (current._id in results) {
   					// The object is found before
   					updateProjectPriority(current, MATCH_REST);
@@ -321,30 +324,29 @@ module.exports = function(app) {
   		// Get people
   		if (category === "people") {
   			var peopleByName;
-				db.User.find({"name": {$regex: ".*" + keyword + ".*/i"}}, function(err, people){
+				db.User.find({"name": {$regex: ".*" + keyword + ".*/i"}}).lean().exec(function(err, people){
 					peopleByName = people;
 				});
   			var peopleByTags;
-				db.User.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}}, function(err, people){
+				db.User.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}}).lean().exec(function(err, people){
 					peopleByTags = people;
 				});
   			var peopleBySkill;
-				db.User.find({"skillTags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}}, function(err, people){
+				db.User.find({"skillTags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}}).lean().exec(function(err, people){
 					peopleBySkill = people;
 				});
   			var peopleByTitle;
-				db.User.find({"title": {$regex: ".*" + keyword + ".*/i"}}, function(err, people){
+				db.User.find({"title": {$regex: ".*" + keyword + ".*/i"}}).lean().exec(function(err, people){
 					peopleByTitle = people;
 				});
   			var peopleByBio;
-				db.User.find({"bio": {$regex: ".*" + keyword + ".*/i"}}, function(err, people){
+				db.User.find({"bio": {$regex: ".*" + keyword + ".*/i"}}).lean().exec(function(err, people){
 					peopleByBio = people;
 				});
 
   			// match people by name
-  			while (peopleByName.hasNext()) {
+  			for (var current in peopleByName){
   				var newProject = new Object();
-  				var current = peopleByName.next();
   				if (current._id in results) {
   					// The object is found before
   					updatePersonPriority(current, MATCH_NAME);
@@ -356,9 +358,8 @@ module.exports = function(app) {
   			}
 
   			// match people by tags
-  			while (peopleByTags.hasNext()) {
+  			for (var current in peopleByTags){
   				var newProject = new Object();
-  				var current = peopleByTags.next();
   				if (current._id in results) {
   					// The object is found before
   					updatePersonPriority(current, MATCH_TAGS);
@@ -370,9 +371,8 @@ module.exports = function(app) {
   			}
 
   			// match people by skill
-  			while (peopleBySkill.hasNext()) {
+  			for (var current in peopleBySkill){
   				var newProject = new Object();
-  				var current = peopleBySkill.next();
   				if (current._id in results) {
   					// The object is found before
   					updatePersonPriority(current, MATCH_TAGS);
@@ -384,9 +384,8 @@ module.exports = function(app) {
   			}
 
   			// match people by title
-  			while (peopleByTitle.hasNext()) {
+  			for (var current in peopleByTitle){
   				var newProject = new Object();
-  				var current = peopleByTitle.next();
   				if (current._id in results) {
   					// The object is found before
   					updatePersonPriority(current, MATCH_TAGS);
@@ -398,9 +397,8 @@ module.exports = function(app) {
   			}
 
   			// match people by bio
-  			while (peopleByBio.hasNext()) {
+  			for (var current in peopleByBio){
   				var newProject = new Object();
-  				var current = peopleByBio.next();
   				if (current._id in results) {
   					// The object is found before
   					updatePersonPriority(current, MATCH_REST);
@@ -415,30 +413,29 @@ module.exports = function(app) {
   		// Get jobs
   		if (category === "jobs") {
   			var jobsByName;
-				db.Job.find({"name": {$regex: ".*" + keyword + ".*/i"}, "status": "open"}, function(err, jobs){
+				db.Job.find({"name": {$regex: ".*" + keyword + ".*/i"}, "status": "open"}).lean().exec(function(err, jobs){
 					jobsByName = jobs;
 				});
   			var jobsByTags;
-				db.Job.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"}, function(err, jobs){
+				db.Job.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"}).lean().exec(function(err, jobs){
 					jobsByTags = jobs;
 				});
   			var jobsBySkills;
-				db.Job.find({"skillTags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"}, function(err, jobs){
+				db.Job.find({"skillTags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"}).lean().exec(function(err, jobs){
 					jobsBySkills = jobs;
 				});
   			var jobsByIntro;
-				db.Job.find({"info": {$regex: ".*" + keyword + ".*/i"}, "status": "open"}, function(err, jobs){
+				db.Job.find({"info": {$regex: ".*" + keyword + ".*/i"}, "status": "open"}).lean().exec(function(err, jobs){
 					jobsByIntro = jobs;
 				});
   			var jobsByDetail;
-				db.Job.find({"details": {$regex: ".*" + keyword + ".*/i"}, "status": "open"}, function(err, jobs){
+				db.Job.find({"details": {$regex: ".*" + keyword + ".*/i"}, "status": "open"}).lean().exec(function(err, jobs){
 					jobsByDetail = jobs;
 				});
 
   			// match jobs by name
-  			while (jobsByName.hasNext()) {
+  			for (var current in jobsByName) {
   				var newJob = new Object();
-  				var current = jobsByName.next();
   				if (current._id in results) {
   					// The object is found before
   					updateJobPriority(current, MATCH_NAME);
@@ -450,9 +447,8 @@ module.exports = function(app) {
   			}
 
   			// match jobs by tags
-  			while (jobsByTags.hasNext()) {
+  			for (var current in jobsByTags) {
   				var newJob = new Object();
-  				var current = jobsByTags.next();
   				if (current._id in results) {
   					// The object is found before
   					updateJobPriority(current, MATCH_TAGS);
@@ -464,9 +460,8 @@ module.exports = function(app) {
   			}
 
 				// match jobs by skills
-  			while (jobsByTags.hasNext()) {
+  			for (var current in jobsBySkills) {
   				var newJob = new Object();
-  				var current = jobsBySkills.next();
   				if (current._id in results) {
   					// The object is found before
   					updateJobPriority(current, MATCH_TAGS);
@@ -478,9 +473,8 @@ module.exports = function(app) {
   			}
 
   			// match jobs by intro
-  			while (jobsByIntro.hasNext()) {
+  			for (var current in jobsByIntro) {
   				var newJob = new Object();
-  				var current = jobsByIntro.next();
   				if (current._id in results) {
   					// The object is found before
   					updateJobPriority(current, MATCH_REST);
@@ -492,9 +486,8 @@ module.exports = function(app) {
   			}
 
   			// match jobs by detail
-  			while (jobsByDetail.hasNext()) {
+  			for (var current in jobsByName) {
   				var newJob = new Object();
-  				var current = jobsByDetail.next();
   				if (current._id in results) {
   					// The object is found before
   					updateJobPriority(current, MATCH_REST);

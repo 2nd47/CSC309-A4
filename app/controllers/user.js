@@ -241,7 +241,7 @@ module.exports = function(app) {
   		//cursor = cursor.sort({"numFollowers": -1}).limit(10);
   		if (!err) {
 				res.status(200).send(cursor);
-			};
+			}
 			else {
 				res.status(404).send('404');
 			}
