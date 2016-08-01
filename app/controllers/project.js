@@ -217,6 +217,7 @@ module.exports = function(app) {
   		var projectForm = qs.parse(req.data);
       var tags = jobForm.descriptionTags.replace(/\s+/g, '').split(",");
   		// may createJob return job _id or something...
+			var showcasePath = projectForm.image.id;
       var newProject = Project({
         name: projectForm.name,
         owner: req.user._id,
