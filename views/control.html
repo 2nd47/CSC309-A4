@@ -116,11 +116,9 @@
                 Select View
               </div>
               <div id="view_content" class="box_content">
-								<div id="profileview">
-									<form id="profile-edit">
+								<div id="profileview" class="hidden">
+									<!--<form id="profile-edit">
 										Name: <input type="text" name="name" required/></br>
-										Password: <input type="password" placeholder="Password" required/></br>
-										<!--TODO: Check password when submitting form-->
 										New Password: <input type="password" placeholder="New password" name="newpassword"/></br>
 										Repeat Password: <input type="password" placeholder="Repeat password" name="repeatpassword"/></br>
 										Short description (30 chars max): <input type="text" name="title"/></br>
@@ -128,20 +126,23 @@
 										Biography: <textarea rows="10" type="text" name="bio"></textarea></br>
 										Tags (e.g. goat,pixel): <input type="text" name="tags"/></br>
 										Email: <input type="text" name="email" pattern="/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i" required/></br>
-										<input type="submit" value="Submit"/>
-									</form>
+										<input id="profile-edit-submit" type="submit" value="Submit"/>
+									</form>-->
 								</div>
 								<div id="projectview" class="hidden">
-									<!--List of projects followed by relevant job postings and a delete button after each-->
+									<!--List of projects followed by relevant job postings-->
 								</div>
 								<div id="jobview" class="hidden">
-									<!--List of jobs the user is doing as a contractor followed by-->
-								</div>
-								<div id="reportview" class="admin-only hidden">
-									<!--List of reports submitted by users-->
+									<!--List of jobs the user is doing as a contractor-->
 								</div>
 								<div id="accountview" class="admin-only hidden">
-									<!--List of all accounts from username search result-->
+									<form id="search-for-user">
+										<input type="text" name="usersearch"/>
+										<input type="submit" value="Search" onClick="requestSearchUser()"/>
+									</form>
+									<div id="user-list">
+										<!--List of all accounts from username search result-->
+									</div>
 								</div>
 								<div id="databaseview" class="admin-only hidden">
 									<!--A button of doom and a button of recovery-->
