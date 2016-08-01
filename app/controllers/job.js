@@ -24,20 +24,8 @@ module.exports = function(app) {
   					var newJobId = job._id
   					db.setJobField(newJobId, "intro", jobForm.intro);
   					// Create new skill objects
-  					var skills = jobForm.skillTags;
-  					var numSkills = skills.length;
-  					var i;
-  					var skillTags = [];
-  					for (i=0;i<numSkills;i++) {
-  						var curSkill = skills[i];
-  						db.createSkill(curSkill.name, curSkill.rating, function(err, skill){
-  							skillTags.push(skill);
-  						});
-
-  					}
-  					db.setJobField(newJobId, "skillTags", skillTags);
-  					// Turn the tags in the form "tag1, tag2, tag3" (or without the whitespaces)
-  					// into an array of strings
+  					var skills = jobForm.skillTags.replace(/\s+/g, '');split(",");
+  					db.setJobField(newJobId, "skillTags", skills);
   					var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
   					db.setJobField(newJobId, "descriptionTags", tags);
   					db.setJobField(newJobId, "details", jobForm.details);

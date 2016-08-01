@@ -7,7 +7,7 @@ var model = mongoose.model;
 var Schema = mongoose.Schema;
 var ObjectId = Schema.Types.ObjectId;
 
-//SKILLS
+/*//SKILLS
 var skillSchema = new Schema({
   _id: {
     type: String,
@@ -24,7 +24,7 @@ var skillSchema = new Schema({
   }
 }, { collection: 'skills' });
 
-var Skill = mongoose.model('Skill', skillSchema);
+var Skill = mongoose.model('Skill', skillSchema);*/
 
 //MESSAGES
 var messageSchema = new Schema({
@@ -130,7 +130,7 @@ var userSchema = new Schema({
     default: ""
   },
   skillTags: [{
-    type: skillSchema,
+    type: String,
     default: []
   }],
   bio: {
@@ -323,7 +323,7 @@ var jobSchema = new Schema({
 		default: "open"
   },
   skillTags: [{
-    type: skillSchema,
+    type: String,
     default: []
   }],
   descriptionTags: [{
