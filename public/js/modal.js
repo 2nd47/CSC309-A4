@@ -154,7 +154,7 @@ googleIcon.onclick = function(event) {
 
   $.ajax(
     {
-      type: "POST",
+      type: "GET",
       url: "/google",
       data: {username: "izzy"}
     })
@@ -170,7 +170,7 @@ githubIcon.onclick = function(event) {
 
   $.ajax(
     {
-      type: "POST",
+      type: "GET",
       url: "/github",
       data: {username: "izzy"}
     })

@@ -10,11 +10,7 @@ var collectUserInfo = function(userId) {
     // User's tags on themselves
     userTags = user.tags;
     // User's skills
-    var i;
-    var numSkills = user.skillTags.length;
-    for (i=0;i<numSkills;i++) {
-      userSkills.push(user.skillTags[i].name);
-    }
+    userSkills = user.skillTags;
     // User's tags on ongoing projects
     while (userProjects.hasNext()) {
       var current = userProjects.next();
@@ -28,7 +24,7 @@ var collectUserInfo = function(userId) {
       var current = userContracts.next();
       var skillTags = current.skillTags;
       for (i=0;i<skillTags.length;i++) {
-        userContractSkills.push(skillTags[i].name);
+        userContractSkills.push(skillTags[i]);
       }
     }
   }
@@ -196,12 +192,7 @@ module.exports = function(app) {
   		// base priority
   		people_results[person._id].priority = basePriority;
   		// match priority by jobs' required skills posted by user
-  		var personSkills = [];
-  		var n;
-  		var num = person.skillTags.length;
-  		for (n=0;n<num;n++) {
-  			personSkills.push(person.skillTags[n].name);
-  		}
+  		var personSkills = person.skillTags;
   		updatePersonPriority(person, matchPriority(userJobSkills, personSkills));
   		// match priority by user's projects' tags and the person's tags
   		updatePersonPriority(person, matchPriority(userProjectTags, person.tags));
@@ -228,12 +219,7 @@ module.exports = function(app) {
   		// base priority
   		jobs_results[job._id].priority = basePriority;
   		// match priority by user's skills and the job's required skills
-  		var jobSkills = [];
-  		var n;
-  		var num = job.skillTags.length;
-  		for (n=0;n<num;n++) {
-  			jobSkills.push(job.skillTags[n].name);
-  		}
+  		var jobSkills = job.skillTags;
   		updateJobPriority(job, matchPriority(userSkills, jobSkills));
   	}
 
@@ -310,7 +296,7 @@ module.exports = function(app) {
   		if (category === "all" || category === "people") {
   			var peopleByName = db.Project.find({"name": {$regex: ".*" + keyword + ".*/i"}});
   			var peopleByTags = db.Project.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}});
-  			var peopleBySkill = db.Project.find({"skillTags": {$elemMatch: {"name": {$regex: ".*" + keyword + ".*/i"}}}});
+  			var peopleBySkill = db.Project.find({"skillTags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}});
   			var peopleByTitle = db.Project.find({"title": {$regex: ".*" + keyword + ".*/i"}});
   			var peopleByBio = db.Project.find({"bio": {$regex: ".*" + keyword + ".*/i"}});
 
@@ -389,6 +375,7 @@ module.exports = function(app) {
   		if (category === "all" || category === "jobs") {
   			var jobsByName = db.Job.find({"name": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
   			var jobsByTags = db.Job.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"});
+  			var jobsBySkills = db.Job.find({"skillTags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"});
   			var jobsByIntro = db.Job.find({"info": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
   			var jobsByDetail = db.Job.find({"details": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
 
@@ -410,6 +397,20 @@ module.exports = function(app) {
   			while (jobsByTags.hasNext()) {
   				var newJob = new Object();
   				var current = jobsByTags.next();
+  				if (current._id in jobs_results) {
+  					// The object is found before
+  					updateJobPriority(current, MATCH_TAGS);
+  				}
+  				else {
+  					// The object is found in current iteration
+  					addNewJob(current, MATCH_TAGS);
+  				}
+  			}
+				
+				// match jobs by skills
+  			while (jobsByTags.hasNext()) {
+  				var newJob = new Object();
+  				var current = jobsBySkills.next();
   				if (current._id in jobs_results) {
   					// The object is found before
   					updateJobPriority(current, MATCH_TAGS);
