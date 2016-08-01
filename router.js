@@ -38,7 +38,7 @@ var serveStaticPagesOnRequest = function(app, pageNames) {
   }
 };
 
-module.exports = function(app, auth, user, project, job, search) {
+module.exports = function(app, auth, user, project, job, search, admin) {
 
   app.use(express.static(__dirname + '/public'));
   app.set('view engine', 'html');
@@ -118,4 +118,75 @@ module.exports = function(app, auth, user, project, job, search) {
 
   // search page
   app.get('/search', search.getSearch);
+	// username search page used by the admin
+	app.get('/search_user', admin.searchUser);
+
+	app.post('/delete_user/:userid', user.deleteUser);
+	//app.post('/admin/delete_database', admin.delete_database);
+	//app.post('/admin/repopulate_database', admin.repopulate_database);
+	app.get('/inbox.html', function(req, res){
+		res.sendFile('inbox.html', { root: "./views/" });
+	});
+	app.get('/control.html', function(req, res){
+		res.sendFile('control.html', { root: "./views/" });
+	});
+	app.get('/api/get_username', function(req, res){
+		res.send(req.user._id);
+	});
+	// edit user profile (profile_id: the user id of the profile)
+	app.post('/edit_profile/:username', function(req, res){
+		var userId = req.user._id;
+		var username = req.params.username;
+		var profileId;
+		User.findOne({"username": username}, function(err, user){
+			profileId = user._id;
+		});
+		var profileForm = qs.parse(req.data);
+		if (canEditProfile(userId, profileId)) {
+			db.setUserField(profileId, "name", profileForm.name);
+			if (profileForm.newpassword.length != 0) {
+				if (bcrypt.hash(profileForm.newpassword) === bcrypt.hash(profileForm.repeatpassword)) {
+					db.setUserField(profileId, "passwordHash", bcrypt.hash(profileForm.newpassword));
+				}
+			}
+			db.setUserField(profileId, "avatar", profileForm.image.id);
+			db.setUserField(profileId, "title", profileForm.title);
+			db.setUserField(profileId, "bio", profileForm.bio);
+			db.setUserField(profileId, "tags", profileForm.tags.replace(/\s+/g, '').split(","));
+			db.setUserField(profileId, "email", profileForm.email);
+			
+			// edit skill tags
+			db.getUserById(profileId, function(err, profile){
+				// delete all current skills
+				var curSkills = profile.skillTags;
+				var numCurSkills = curSkills.length;
+				var i;
+				for (i=0;i<numCurSkills;i++) {
+					var id = curSkills[i]._id;
+					db.Skill.remove({_id: id});
+				}
+				db.setUserField(profileId, "skillTags", []);
+				
+			});
+			// build new skill tags
+			var skills = profileForm.skill
+			var skillLevels = profileForm.level;
+			var numSkills = skills.length;
+			var i;
+			for (i=0;i<numSkills;i++) {
+				var skill = new models.Skill({
+					name: skills[i],
+					rating: skillLevel[i]
+				});
+				skill.save(function(err, st){
+					db.pusUserField(profileId, "skillTags", st);
+				});
+			}
+			res.send('200');
+		}
+		else {
+			res.send('401');
+		}
+		
+	});
 };
