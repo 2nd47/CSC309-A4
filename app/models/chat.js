@@ -28,9 +28,6 @@ var chat = new Schema({
   }]
 },{ collection : 'chats', timestamps: true });
 
-chat.statics.find =
-  helpers.finderForProperty("_id", { findOne: true, caseInsensitive: false });
-
 chat.statics.findByPersonOne =
   helpers.finderForProperty("personOne", { findOne: true, caseInsensitive: false });
 

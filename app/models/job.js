@@ -69,9 +69,6 @@ var job = new Schema({
   }
 }, { collection: 'jobs', timestamps: true });
 
-job.statics.find =
-  helpers.finderForProperty("_id", { findOne: true, caseInsensitive: false });
-
 job.statics.findByName =
   helpers.finderForProperty("name", { findOne: true, caseInsensitive: true });
 

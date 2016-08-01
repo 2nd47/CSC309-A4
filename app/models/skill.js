@@ -21,9 +21,6 @@ var skill = new Schema({
   }
 }, { collection: 'skills' });
 
-skill.statics.find =
-  helpers.finderForProperty("_id", { findOne: true, caseInsensitive: false });
-
 skill.statics.findByName =
   helpers.finderForProperty("name", { findOne: true, caseInsensitive: true });
 

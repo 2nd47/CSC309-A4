@@ -113,9 +113,6 @@ var user = new Schema({
 	}]
 }, { collection : 'users', timestamps: true });
 
-user.statics.find =
-  helpers.finderForProperty("_id", { findOne: true, caseInsensitive: false });
-
 user.statics.findByUsername =
   helpers.finderForProperty("username", { findOne: true, caseInsensitive: true });
 

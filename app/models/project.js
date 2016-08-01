@@ -92,9 +92,6 @@ var project = new Schema({
   }
 }, { collection : 'projects', timestamps: true });
 
-project.statics.find =
-  helpers.finderForProperty("_id", { findOne: true, caseInsensitive: false });
-
 project.statics.findByName =
   helpers.finderForProperty("name", { findOne: true, caseInsensitive: true });
 
