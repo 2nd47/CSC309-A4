@@ -12,7 +12,8 @@ function startServer() {
       project = require('./app/controllers/project')(app),
       job = require('./app/controllers/job')(app),
       search = require('./app/controllers/search')(app),
-      router = require('./router')(app, auth, user, project, job, search);
+			admin = require('./app/controllers/admin')(app),
+      router = require('./router')(app, auth, user, project, job, search, admin);
 
   //return 404 page
   app.use(function(req, res, next){
