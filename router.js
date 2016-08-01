@@ -112,7 +112,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 			res.send(req.user._id);
 		}
 		else {
-			//res.send(null);
+			res.send('User not found');
 		}
 	});
 };

@@ -12,29 +12,35 @@ $(document).ready(function(){
 		})
 		.done(function(data)
 		{
-			var id = data.id;
-			var name = data.name;
-			var title = data.title;
-			var skills = data.skills;
-			var tags = data.tags;
-			var biography = data.biography;
-			var email = data.email;
-			var $profileForm = $("<div id='profile-" + username + "'>\
-														<form id='profile-edit-'" + username + ">\
-															Name: <input type='text' name='name' value='" + name + "' required/></br>\
-															New Password: <input type='password' placeholder='New password' name='newpassword'/></br>\
-															Repeat Password: <input type='password' placeholder='Repeat password' name='repeatpassword'/></br>\
-															Short description (30 chars max): <input type='text' name='title' value='" + title + "'/></br>\
-															Profile image: <input type='file' name='image'/></br>\
-															Biography: <textarea rows='10' type='text' name='bio' value='" + biography + "'></textarea></br>\
-															Skills (e.g. conceptArt): <input type='text' name='skillTags' value='" + skills + "'/>\
-															Tags (e.g. goat,pixel): <input type='text' name='tags' value='" + tags + "'/></br>\
-															Email: <input type='text' name='email' value='" + email + "' pattern='/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i' required/></br>\
-															<input type='submit' value='Submit' onClick='requestEditPrfile(" + username  + ") '/>\
-														</form>\
-													</div>");
-			$("#profileview").append($profileForm);
-			showProfile();
+			if (data === 'User not found') {
+				var id = data.id;
+				var name = data.name;
+				var title = data.title;
+				var skills = data.skills;
+				var tags = data.tags;
+				var biography = data.biography;
+				var email = data.email;
+				var $profileForm = $("<div id='profile-" + username + "'>\
+															<form id='profile-edit-'" + username + ">\
+																Name: <input type='text' name='name' value='" + name + "' required/></br>\
+																New Password: <input type='password' placeholder='New password' name='newpassword'/></br>\
+																Repeat Password: <input type='password' placeholder='Repeat password' name='repeatpassword'/></br>\
+																Short description (30 chars max): <input type='text' name='title' value='" + title + "'/></br>\
+																Profile image: <input type='file' name='image'/></br>\
+																Biography: <textarea rows='10' type='text' name='bio' value='" + biography + "'></textarea></br>\
+																Skills (e.g. conceptArt): <input type='text' name='skillTags' value='" + skills + "'/>\
+																Tags (e.g. goat,pixel): <input type='text' name='tags' value='" + tags + "'/></br>\
+																Email: <input type='text' name='email' value='" + email + "' pattern='/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i' required/></br>\
+																<input type='submit' value='Submit' onClick='requestEditPrfile(" + username  + ") '/>\
+															</form>\
+														</div>");
+				$("#profileview").append($profileForm);
+				showProfile();
+			}
+			else {
+				alert( "Please re-login.");
+				window.location.replace("/");
+			}
 		})
 		.fail(function( jqXHR, textStatus )
 			{
