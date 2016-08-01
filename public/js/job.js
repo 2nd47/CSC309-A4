@@ -68,11 +68,11 @@ $(document).ready(function() {
 		$("#job_intro").html(JSON.stringify(data.intro).slice(1,-1));
 		$("#post_date").html(JSON.stringify(data.createdAt).slice(1,-1));
 		$("#status").html(JSON.stringify(data.status).slice(1,-1));
-		$("#employer").html(JSON.stringify(data.owner.name).slice(1,-1));
+		$("#employer").append($("<strong>").append($("<em>").html(JSON.stringify(data.owner.name).slice(1,-1))));
 
 		$("#employer").attr("href", "../profile/" + JSON.stringify(data.owner.username).slice(1,-1));
 		$("#project_link").attr("href", "../projects/" + JSON.stringify(data.project._id).slice(1,-1));
-		$("#project_link").text(data.project.name);
+		$("#project_link").append($("<strong>").append($("<em>").text(data.project.name)));
 
 		//render every skill requirement
 		$.each(data.tags, function(index, skill) {
