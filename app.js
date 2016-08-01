@@ -3,8 +3,7 @@
 
 var startServer = function(testServer) {
   // server modules
-  var express = require('express');
-  var app = express();
+  var app = require('express')();
 
   // require necessary modules and establish routing
   var auth = require('./app/controllers/auth')(app),

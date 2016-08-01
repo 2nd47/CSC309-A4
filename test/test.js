@@ -1,26 +1,13 @@
-var bcrypt = require('bcryptjs'),
-    mongoose = require('mongoose'),
-    user = require('../app/controllers/user')();
+var express = require('express'),
+    request = require('supertest');
+
+var app;
 
 describe('APIs', function() {
-  var url = 'localhost:3000';
   // within before() you can run all the operations that are needed to setup your tests. In this case
   // I want to create a connection with the database, and when I'm done, I call done().
   before(function(done) {
-    // In our tests we use the sample db
-    var db = require('../db')();
-    collectionsToDrop = [
-      'skills',
-      'messages',
-      'broadcasts',
-      'chats',
-      'users',
-      'showcases',
-      'projects',
-      'jobs']
-    for (var i = 0; i<collectionsToDrop.length; i++) {
-      mongoose.connection.collections[collectionsToDrop[i]].drop();
-    }
+    app = require('../app')();
     done();
   });
   // use describe to give a title to your test suite, in this case the tile is "Account"
@@ -31,35 +18,14 @@ describe('APIs', function() {
   // to specify when our test is completed, and that's what makes easy
   // to perform async test!
   describe('Users', function() {
-    var userId;
-    it('should create a new, unique user', function(done) {
-      user.createUser('dkouznetsov', 'hashedPassword', 'dkouznetsov@aida.com', function(err, user) {
-        if (err) {
-          throw err;
-        } else {
-          userId = user._id;
-          done();
-        }
-      });
+  });
+  describe('GET /jobs', function() {
+    it('should respond with JSON', function(done) {
+      request(app).
+        get('/jobs').
+        set('Accept', 'application/json').
+        expect('Content-Type', /json/).
+        expect(200, done)
     });
-    /*
-    it('should retrieve an existing user', function(done) {
-      req = {
-        user: {
-          _id: userId
-        },
-        params: {
-          username: 'dkouznetsov'
-        }
-      };
-      res = {};
-      user.deleteUser(req, res, function(err, user) {
-        if (err) {
-          throw err;
-        } else {
-          done();
-        }
-      });
-      */
-    });
+  });
 });
