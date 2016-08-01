@@ -1,4 +1,5 @@
 var bcrypt = require('bcryptjs');
+    user = require('../app/controllers/user');
 
 describe('APIs', function() {
   var url = 'localhost:3000';
@@ -15,14 +16,9 @@ describe('APIs', function() {
   // specify a function that takes a single parameter, "done", that we will use
   // to specify when our test is completed, and that's what makes easy
   // to perform async test!
-  describe('Account', function() {
-    it('should return error trying to save duplicate username', function(done) {
-      var profile = {
-        username: 'vgheri',
-        password: 'test',
-        firstName: 'Valerio',
-        lastName: 'Gheri'
-      };
+  describe('Users', function() {
+    it('should be able to create a new user that doesn\'t use an existing username', function(done) {
+      
     // once we have specified the info we want to send to the server via POST verb,
     // we need to actually perform the action on the resource, in this case we want to
     // POST on /api/profiles and we want to send some info
