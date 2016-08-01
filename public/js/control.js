@@ -30,7 +30,7 @@ $(document).ready(function(){
 																Biography: <textarea rows='10' type='text' name='bio'></textarea></br>\
 																Tags (e.g. goat,pixel): <input type='text' name='tags'/></br>\
 																Email: <input type='text' name='email' pattern='/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i' required/></br>\
-																<input type='submit' value='Submit'/>\
+																<input type='submit' value='Submit' onClick=''/>\
 															</form>\
 														</div>");
 			$("#profileview").append($profileForm);
@@ -112,11 +112,11 @@ function showDatabase() {
 // post requests and ther rendering functions  //
 /////////////////////////////////////////////////
 
-function requestEditProfile(personId, queryString) {
+function requestEditProfile(username, queryString) {
 	$.ajax(
 	{
 		type: "post",
-		url: "/edit_profile/:" + personId,
+		url: "/edit_profile/:" + username,
 		data: queryString
 	})
 	.done(function(data)
@@ -130,12 +130,12 @@ function requestEditProfile(personId, queryString) {
     });
 }
 
-function requestDeleteProfile(personId) {
+function requestDeleteProfile(username) {
 	var ans = confirm("ARE YOU SURE YOU WANT TO DELETE THIS ACCOUNT? THIS CANNOT BE REVERTED.");
 	if (ans) {
 		$.ajax({
 			type: "post",
-			url: "/delete_pofile/:" + personId
+			url: "/delete_pofile/:" + username
 		})
 		.done(function(data)
 		{
@@ -175,7 +175,7 @@ function displayProfileForm(username) {
 														</form>\
 													</div>");
 		
-		$("#user-" + personId).append($profileForm);
+		$("#user-" + username).append($profileForm);
 	})
 	.fail(function( jqXHR, textStatus )
 		{
@@ -183,10 +183,10 @@ function displayProfileForm(username) {
 		});
 }
 
-function deleteProfileForm(personId) {
-	$("#updatebtn-" + personId).removeClass("hidden");
-	$("#hidebtn-" + personId).addClass("hidden");
-	$("#profile-" + personId).remove();
+function deleteProfileForm(username) {
+	$("#updatebtn-" + username).removeClass("hidden");
+	$("#hidebtn-" + username).addClass("hidden");
+	$("#profile-" + username).remove();
 }
 
 function requestSearchUser() {

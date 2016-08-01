@@ -121,7 +121,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 	// username search page used by the admin
 	app.get('/search_user', admin.searchUser);
 
-	app.post('/delete_user/:userid', user.deleteUser);
+	app.post('/delete_user/:username', user.deleteUser);
 	//app.post('/admin/delete_database', admin.delete_database);
 	//app.post('/admin/repopulate_database', admin.repopulate_database);
 	app.get('/inbox.html', function(req, res){

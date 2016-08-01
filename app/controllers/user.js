@@ -487,7 +487,11 @@ module.exports = function(app) {
 	// Delete an existing account given the id
 	this.deleteUser = function(req, res) {
 		var userId = req.user._id;
-		var accountId = req.params.userid;
+		var username = req.params.username;
+		var accountId;
+		User.findOne({"username": username}, function(err, user){
+			accountId = user._id;
+		});
 		if (canDeleteProfile(userId, accountId)) {
 			User.remove({_id: accountId});
 		}
