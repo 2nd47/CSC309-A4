@@ -5,12 +5,13 @@ module.exports = function(app) {
     res.sendFile('contract.html', { root: "./views" });
   }
   this.renderLatestJobPage = function(req, res) {
-    res.sendFile('job.html', { root: './views' });
+    res.sendFile('jobs.html', { root: './views' });
   }
   this.getLatestJobs = function (req, res) {
     //var pageNum = req.pageNum;
     var pageNum = 1;
     var resultsPerPage = 10;
+    // Find all jobs but limit results to the ones relevant for the page number
     Job.find({}).
       sort({ createdAt: 1 }).
       skip((pageNum - 1) * resultsPerPage).
