@@ -1,5 +1,6 @@
-var bcrypt = require('bcryptjs');
-    user = require('../app/controllers/user');
+var bcrypt = require('bcryptjs'),
+    mongoose = require('mongoose'),
+    user = require('../app/controllers/user')();
 
 describe('APIs', function() {
   var url = 'localhost:3000';
@@ -8,6 +9,19 @@ describe('APIs', function() {
   before(function(done) {
     // In our tests we use the sample db
     var db = require('../db')();
+    collectionsToDrop = [
+      'skills',
+      'messages',
+      'broadcasts',
+      'chats',
+      'users',
+      'showcases',
+      'projects',
+      'jobs']
+    for (var i = 0; i<collectionsToDrop.length; i++) {
+      mongoose.connection.collections[collectionsToDrop[i]].drop();
+    }
+    done();
   });
   // use describe to give a title to your test suite, in this case the tile is "Account"
   // and then specify a function in which we are going to declare all the tests
@@ -17,46 +31,35 @@ describe('APIs', function() {
   // to specify when our test is completed, and that's what makes easy
   // to perform async test!
   describe('Users', function() {
-    it('should be able to create a new user that doesn\'t use an existing username', function(done) {
-      
-    // once we have specified the info we want to send to the server via POST verb,
-    // we need to actually perform the action on the resource, in this case we want to
-    // POST on /api/profiles and we want to send some info
-    // We do this using the request object, requiring supertest!
-    request(url)
-	.post('/api/profiles')
-	.send(profile)
-    // end handles the response
-	.end(function(err, res) {
-          if (err) {
-            throw err;
-          }
-          // this is should.js syntax, very clear
-          res.should.have.status(400);
+    var userId;
+    it('should create a new, unique user', function(done) {
+      user.createUser('dkouznetsov', 'hashedPassword', 'dkouznetsov@aida.com', function(err, user) {
+        if (err) {
+          throw err;
+        } else {
+          userId = user._id;
           done();
-        });
+        }
+      });
     });
-    it('should correctly update an existing account', function(done){
-	var body = {
-		firstName: 'JP',
-		lastName: 'Berd'
-	};
-	request(url)
-		.put('/api/profiles/vgheri')
-		.send(body)
-		.expect('Content-Type', /json/)
-		.expect(200) //Status code
-		.end(function(err,res) {
-			if (err) {
-				throw err;
-			}
-			// Should.js fluent syntax applied
-			res.body.should.have.property('_id');
-	                res.body.firstName.should.equal('JP');
-	                res.body.lastName.should.equal('Berd');
-	                res.body.creationDate.should.not.equal(null);
-			done();
-		});
-	});
-  });
+    /*
+    it('should retrieve an existing user', function(done) {
+      req = {
+        user: {
+          _id: userId
+        },
+        params: {
+          username: 'dkouznetsov'
+        }
+      };
+      res = {};
+      user.deleteUser(req, res, function(err, user) {
+        if (err) {
+          throw err;
+        } else {
+          done();
+        }
+      });
+      */
+    });
 });
