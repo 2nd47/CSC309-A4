@@ -227,10 +227,18 @@ module.exports = function(app) {
   	}
   	*/
   	var json = new Object();
-  	var cursor = User.find({},/*{"name": 1, "title": 1, "skillTags": 1, "tags": 1}*/);
+  	var cursor = User.find({}, function(err, users) {
+      var userMap = {};
+
+      users.forEach(function(user) {
+        userMap[user._id] = user;
+        console.log(userMap);
+      });
+      res.send(JSON.stringify(userMap));
+    /*{"name": 1, "title": 1, "skillTags": 1, "tags": 1});*/
 		//cursor = cursor.sort({"numFollowers": -1}).limit(10);
 		json.topTen = cursor.toArray();
-		res.send(JSON.stringify(json));
+		//res.send(JSON.stringify(json));
 		return;
 		json.following = [];
 		var userId = req.session.userId;
@@ -254,9 +262,9 @@ module.exports = function(app) {
 					});
 				}
 			});
-		}
-
-  	res.send(JSON.stringify(json));
+    }
+  });
+  	//res.send(JSON.stringify(json));
   };
 
   this.getMessages = function (req, res) {
@@ -484,7 +492,7 @@ module.exports = function(app) {
       else { console.log('Created User ' + user); callback(err, user); }
     });
   };
-	
+
 	// Delete an existing account given the id
 	this.deleteUser = function(req, res) {
 		var userId = req.user._id;
@@ -497,7 +505,7 @@ module.exports = function(app) {
 			User.remove({_id: accountId});
 		}
 	}
-	
+
 	this.editProfile = function(req, res){
 		var userId = req.user._id;
 		var username = req.params.username;

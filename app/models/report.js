@@ -34,9 +34,6 @@ var report = new Schema({
   }
 }, { collection: 'reports', timestamps: true });
 
-report.statics.find =
-  helpers.finderForProperty("_id", { findOne: true, caseInsensitive: false });
-
 report.statics.findByReporter =
   helpers.finderForProperty("reporter", { findOne: false, caseInsensitive: false });
 

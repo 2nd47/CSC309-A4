@@ -49,16 +49,16 @@ var project = new Schema({
     default: []
   }],
   owner: {
-    type: ObjectId,
+    type: String,
     required: true,
     ref: 'User'
   },
   members: [{
-    type: ObjectId,
+    type: String,
     default: []
   }],
   jobs: [{
-    type: ObjectId,
+    type: String,
     ref: 'Job',
     default: []
   }],
@@ -91,9 +91,6 @@ var project = new Schema({
     default: ""
   }
 }, { collection : 'projects', timestamps: true });
-
-project.statics.find =
-  helpers.finderForProperty("_id", { findOne: true, caseInsensitive: false });
 
 project.statics.findByName =
   helpers.finderForProperty("name", { findOne: true, caseInsensitive: true });

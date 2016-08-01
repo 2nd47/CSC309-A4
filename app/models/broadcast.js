@@ -19,7 +19,4 @@ var broadcast = new Schema({
   }
 }, { collection: 'broadcasts', timestamps: true });
 
-broadcast.statics.find =
-  helpers.finderForProperty("_id", { findOne: true, caseInsensitive: false });
-
 module.exports = mongoose.model('Broadcast', broadcast);

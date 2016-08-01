@@ -1,7 +1,7 @@
 /* AIDA Source Code */
 /* Contributors located at: github.com/2nd47/CSC309-A4 */
 
-function startServer() {
+var startServer = function(testServer) {
   // server modules
   var express = require('express');
   var app = express();
@@ -27,7 +27,7 @@ function startServer() {
   var assert = require('chai').assert;
 
   // app init
-  var INIT_SAMPLE_DB = process.env.INIT_SAMPLE_DB || false;
+  var INIT_SAMPLE_DB = process.env.INIT_SAMPLE_DB || true;
   var APP_PORT = process.env.PORT || 3000;
 
   db = require('./db')();
@@ -39,4 +39,8 @@ function startServer() {
   console.log('Server listening on port ' + APP_PORT);
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
+} else {
+  module.exports = startServer;
+}
