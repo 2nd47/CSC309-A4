@@ -8,7 +8,7 @@ function requestInbox() {
 	$.ajax(
 	{
 		type: "get",
-		url: "/inbox",
+		url: "/api/inbox",
 	})
 	.done(function(data)
 	{

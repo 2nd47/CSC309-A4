@@ -113,7 +113,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.get('/api/project/:project_id', project.getProject);
 
   // message inbox
-  app.get('/inbox', user.getMessages);
+  app.get('/api/inbox', user.getMessages);
 
   // chat message detail
   app.get('/inbox/:chat_id', user.getChat);
@@ -132,7 +132,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 	app.post('/delete_user/:username', user.deleteUser);
 	//app.post('/admin/delete_database', admin.delete_database);
 	//app.post('/admin/repopulate_database', admin.repopulate_database);
-	app.get('/inbox.html', function(req, res){
+	app.get('/inbox', function(req, res){
 		res.sendFile('inbox.html', { root: "./views/" });
 	});
 	app.get('/control.html', function(req, res){
