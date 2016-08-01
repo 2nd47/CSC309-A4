@@ -1,4 +1,8 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    bcrypt = require('bcryptjs'),
+    User = require('../../app/models/user'),
+    Project = require('../../app/models/project'),
+    Job = require('../../app/models/job');
 
 // Init sample database info
 var sample_data_init = false;
@@ -24,96 +28,140 @@ module.exports = function(app, auth, user, project, job, search) {
     mongoose.connection.collections[collectionsToDrop[i]].drop();
   }
   // Create users
-  user.createUser('dtrump', 'passwordhashtrump', 'dtrump@gmail.com', function(err, user) {
-    user.setUserField(user._id, 'name', 'Donald Trump');
-    user.setUserField(user._id, 'title', 'Republican Presidential Nominee');
-    user.setUserField(user._id, 'bio', 'I am the greatest candidate for this position!');
-    user.pushUserField(user._id, 'tags', 'Republican Party');
-    user.pushUserField(user._id, 'tags', 'GOP');
-    user.setUserField(user._id, 'isVerified', true);
-    user.setUserField(user._id, 'timeVerified', Date.now());
-    user.setUserField(user._id, 'url', 'http://www.trump.com/');
-    // Create projects
-    user.getUserByField('username', 'dtrump', function(err, creator) {
-      console.log('creator is:');
-      console.log(creator);
-      project.createProject('Trump for President!', creator._id, function(err, project) {
-        project.pushProjectField(project._id, 'tags', 'USA Presidential Campaign');
-        project.pushProjectField(project._id, 'tags', 'Republican Party');
-        project.pushProjectField(project._id, 'tags', 'GOP');
-        user.getUserByField('username', 'vputin', function(err, user) {
-          project.pushProjectField(project._id, 'members', user._id);
-        });
-        project.setProjectField(project._id, 'basicInfo',
-          'This is basic information about the project!');
-        project.setProjectField(project._id, 'detailedInfo', 'This is a much much much much much\
-          much much much much much much much much much much much much much much much \
-          much much much much much much much much much much much much much much much \
-          much much much much much much much much much much much much much much much \
-          much much much much much much much much much longer information section');
-      }, function(err, project) {
-        job.createJob(
-          'Website Designer', project._id, creator._id, Date.now(), 1500, function(err, job) {
-            job.setJobField(job._id, 'intro',
-              'This is the introduction to the job!');
-            job.pushJobField(job._id, 'descriptionTags', 'Webdev');
-            job.pushJobField(job._id, 'descriptionTags', 'Campaigning');
-            job.setJobField(job._id, 'details',
-              'These are the details for the job!');
-            job.setJobField(job._id, 'url', 'http://www.trump.com/connect-with-us/');
-        });
-        job.createJob(
-          'Campaign Stumper', project._id, creator._id, Date.now(), 5000, function(err, job) {
-            job.setJobField(job._id, 'intro',
-              'This is the introduction to the job!');
-            job.pushJobField(job._id, 'descriptionTags', 'Webdev');
-            job.pushJobField(job._id, 'descriptionTags', 'Campaigning');
-            job.setJobField(job._id, 'details',
-              'These are the details for the job!');
-            job.setJobField(job._id, 'url', 'http://www.trump.com/connect-with-us/');
+  var user1 = User({
+    username: 'dtrump',
+    passwordHash: bcrypt.hashSync('passwordtrump'),
+    email: 'dtrump@gmail.com',
+    name: 'Donald Trump',
+    title: 'Republican Presidential Nominee',
+    bio: 'I am the greatest candidate for this position!',
+    tags: 'Republican Party',
+    tags: 'GOP',
+    isVerified: true,
+    timeVerified: Date.now(),
+    url: 'http://www.trump.com/'
+  });
+  var user2 = User({
+    username: 'bsanders',
+    passswordHash: bcrypt.hashSync('passwordsanders'),
+    email: 'bsanders@gmail.com',
+    name: 'Bernie Sanders',
+    title: 'Democratic Presidential Nominee Runner-up',
+    bio: 'I wish I had gotten that position!',
+    isVerified: true,
+    timeVerified: Date.now(),
+    url: 'http://www.sanders.senate.gov/'
+  });
+  var user3 = User({
+    username: 'vputin',
+    passwordHash: bcrypt.hashSync('passwordputin'),
+    email: 'vputin@gmail.com',
+    name: 'Vladimir Putin',
+    title: 'Russian Overlord',
+    bio: 'I rule Russia forever!!!',
+    isVerified: true,
+    timeVerified: Date.now(),
+    url: 'http://eng.putin.kremlin.ru/'
+  });
+  var user4 = User({
+    username: 'hclinton',
+    passwordHash: bcrypt.hashSync('passwordclinton'),
+    email: 'human@robots.gov',
+    name: 'Hillary Clinton',
+    bio: 'VOTE FOR ME, HUMANS!',
+    isVerified: true,
+    timeVerified: Date.now(),
+    url: 'https://www.hillaryclinton.com/'
+  });
+  // Save users
+  user1.save(function(err, dtrump) {
+    console.log('User created with: ' + dtrump);
+    user2.save(function(err, bsanders) {
+      console.log('User created with ' + bsanders);
+      user3.save(function(err, vputin) {
+        console.log('User created with ' + vputin);
+        user4.save(function(err, hclinton) {
+          console.log('User created with ' + hclinton);
+          // Projects
+          var project1 = Project({
+            name: 'Trump for President!',
+            owner: user1._id,
+            tags: [
+              'GOP',
+              'Republican',
+              'USA'
+            ],
+            members: [
+              user3._id
+            ],
+            basicInfo: 'This is basic information about the project!',
+            detailedInfo: 'This is a much much much much much\
+              much much much much much much much much much much much much much \
+              much much much much much much much much much much much much much \
+              much much much much much much much much much much much much much \
+              much much much much much much much longer information section'
+          });
+          var project2 = Project({
+            name: 'Sanders for President!',
+            owner: user2._id,
+            tags: [
+              'USA',
+              'Democratic',
+              'DNC'
+            ],
+            basicInfo: 'This is basic information about the project!',
+            detailedInfo: 'This is a much much much \
+              much much much much much much much much much much much much much much \
+              much much much much much much much much much much much much much much \
+              much much much much much much much much much much much much much much \
+              much much much much much much much much much longer information section'
+          });
+          project1.save(function(err, trumpProj) {
+            console.log('project created ' + trumpProj);
+            project2.save(function(err, sandersProj) {
+              console.log('project created ' + sandersProj);
+              var job1 = Job({
+                name: 'Website Designer',
+                project: project1._id,
+                owner: user1._id,
+                deadline: Date.now(),
+                budget: 1500,
+                intro: 'This is the introduction to the job!',
+                descriptionTags: [
+                  'Webdev',
+                  'Campaigning'
+                ],
+                details: 'These are the details for the job!',
+                url: 'http://www.trump.com/connect-with-us/'
+              });
+              var job2 = Job({
+                name: 'Campaign Stumper',
+                project: project1._id,
+                owner: user1._id,
+                deadline: Date.now(),
+                budget: 5000,
+                descriptionTags: [
+                  'Propoganda',
+                  'Campaigning'
+                ],
+                details: 'These are the details for the job!',
+                url: 'http://www.trump.com/connect-with-us'
+              });
+              job1.save(function(err, job1) {
+                console.log(err);
+                console.log('job created at ' + job1);
+              });
+              job2.save(function(err, job2) {
+                console.log(err);
+                console.log('job created at ' + job2);
+              });
+            });
+          });
         });
       });
     });
   });
-  user.createUser('bsanders', 'passwordhashsanders', 'bsanders@gmail.com', function(err, user) {
-    user.setUserField(user._id, 'name', 'Bernie Sanders');
-    user.setUserField(user._id, 'title', 'Democratic Presidential Nominee Runner-up');
-    user.setUserField(user._id, 'bio', 'I wish I had gotten that position!');
-    user.setUserField(user._id, 'isVerified', true);
-    user.setUserField(user._id, 'timeVerified', Date.now());
-    user.setUserField(user._id, 'url', 'http://www.sanders.senate.gov/');
-    // Create projects
-    user.getUserByField('username', 'bsanders', function(err, creator) {
-      project.createProject('Sanders for President!', creator._id, function(err, project) {
-        project.pushProjectField(project._id, 'tags', 'USA Presidential Campaign');
-        project.pushProjectField(project._id, 'tags', 'Democratic Party');
-        project.pushProjectField(project._id, 'tags', 'DNC');
-        project.setProjectField(project._id, 'basicInfo',
-          'This is basic information about the project!');
-        project.setProjectField(project._id, 'detailedInfo', 'This is a much much much \
-          much much much much much much much much much much much much much much \
-          much much much much much much much much much much much much much much \
-          much much much much much much much much much much much much much much \
-          much much much much much much much much much longer information section');
-      });
-    });
-  });
-  user.createUser('vputin', 'passwordhashputin', 'vputin@gmail.com', function(err, user) {
-    user.setUserField(user._id, 'name', 'Vladimir Putin');
-    user.setUserField(user._id, 'title', 'Russian Overlord');
-    user.setUserField(user._id, 'bio', 'I rule Russia, forever.');
-    user.setUserField(user._id, 'isVerified', true);
-    user.setUserField(user._id, 'timeVerified', Date.now());
-    user.setUserField(user._id, 'url', 'http://eng.putin.kremlin.ru/');
-  });
-  user.createUser('hclinton', 'passwordhashclinton', 'human@robots.gov', function(err, user) {
-    user.setUserField(user._id, 'name', 'Hillary Clinton');
-    user.setUserField(user._id, 'title', 'Democratic Presidential Nominee');
-    user.setUserField(user._id, 'bio', 'VOTE FOR ME, HUMANS!');
-    user.setUserField(user._id, 'isVerified', true);
-    user.setUserField(user._id, 'timeVerified', Date.now());
-    user.setUserField(user._id, 'url', 'https://www.hillaryclinton.com/');
-  });
+  /*
   // Create followings
   user.getUserByField('username', 'dtrump', function(err, user) {
     user.getUserByField('username', 'vputin', function(err, otherUser) {
@@ -147,4 +195,5 @@ module.exports = function(app, auth, user, project, job, search) {
       module.exports.pushUserField(user._id, 'following', otherUser._id);
     });
   });
+  */
 }

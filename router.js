@@ -97,7 +97,6 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   // details of people with username
   app.get('/api/profile/:username', user.getUser);
 
-
   // list of top ten projects
   // if user has followed projects, list them, too
   app.get('/project', project.getPopularProjects);
