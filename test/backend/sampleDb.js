@@ -109,6 +109,7 @@ module.exports = function(app, auth, user, project, job, search) {
               members: [
                 user3._id
               ],
+              showcase: '/images/projects/trump/showcase.jpg',
               status: 'Active',
               basicInfo: 'This is basic information about the project!',
               detailedInfo: 'This is a much much much much much\
@@ -126,6 +127,7 @@ module.exports = function(app, auth, user, project, job, search) {
                 'Democratic',
                 'DNC'
               ],
+              showcase: '/images/projects/bsanders/showcase.jpg',
               status: 'Closed',
               basicInfo: 'This is basic information about the project!',
               detailedInfo: 'This is a much much much \
