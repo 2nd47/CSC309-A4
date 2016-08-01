@@ -3,6 +3,9 @@ var User = require('../models/user'),
     permissionManager = require('../middleware/permission_manager');
 
 module.exports = function(app) {
+  this.renderProjectPage = function(req, res) {
+    res.sendFile('project.html', { root: "./views" });
+  }
   this.getProject = function (req, res, next) {
   	/*
   		{
@@ -47,7 +50,7 @@ module.exports = function(app) {
   	try {
   		var json = new Object();
   		Project.findById(req.params.project_id, function(err, project){
-  			if (!project.length) {
+        if (!project.length) {
   				res.status(404);
   				// project page not found
   				if (req.accepts('html')) {

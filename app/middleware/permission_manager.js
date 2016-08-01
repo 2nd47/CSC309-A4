@@ -1,15 +1,17 @@
+var User = require('../models/user');
+
 //Check to see if the user can create a team in the org
 exports.canEditJob = function(user, job){
   return job.owner === user._id;
 };
 
 exports.isAdmin = function (userId) {
-	return (db.User.findById(userId).powerLevel != 0);
+	return (User.findById(userId).powerLevel != 0);
 }
 
 // one cannot perfom any of the following actions if they are frozen
 exports.isFrozen = function (userId) {
-	return db.getUserField(userId, "frozen");
+	return User.findById(userId).frozen;
 }
 
 exports.canDeleteContract = function (userId, contractId) {
@@ -70,11 +72,11 @@ exports.canEditProject = function (userId, projectId){
 
 // return true iff the user is the profile owner or the user is admin
 exports.canEditProfile = function (userId, profileId) {
-	return (userId === profileId || isAdmin(userId)) && !isFrozen(userId);
+	return (userId === profileId || exports.isAdmin(userId)) && !exports.isFrozen(userId);
 }
 
 exports.canDeleteProfile = function (userId, profileId) {
-	return canEditPrifile(userId, profileId);
+	return exports.canEditProfile(userId, profileId);
 }
 
 exports.canSendMessage = function (userId, receiverId) {

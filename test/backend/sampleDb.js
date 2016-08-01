@@ -24,7 +24,7 @@ module.exports = function(app, auth, user, project, job, search) {
     'projects',
     'jobs']
   for (var i = 0; i<collectionsToDrop.length; i++) {
-    console.log(collectionsToDrop[i]);
+    console.log('Dropping collection ' + collectionsToDrop[i]);
     mongoose.connection.collections[collectionsToDrop[i]].drop();
   }
   // Create users
@@ -36,14 +36,13 @@ module.exports = function(app, auth, user, project, job, search) {
     title: 'Republican Presidential Nominee',
     bio: 'I am the greatest candidate for this position!',
     tags: 'Republican Party',
-    tags: 'GOP',
     isVerified: true,
     timeVerified: Date.now(),
     url: 'http://www.trump.com/'
   });
   var user2 = User({
     username: 'bsanders',
-    passswordHash: bcrypt.hashSync('passwordsanders'),
+    passwordHash: bcrypt.hashSync('passwordsanders'),
     email: 'bsanders@gmail.com',
     name: 'Bernie Sanders',
     title: 'Democratic Presidential Nominee Runner-up',
@@ -64,11 +63,11 @@ module.exports = function(app, auth, user, project, job, search) {
     url: 'http://eng.putin.kremlin.ru/'
   });
   var user4 = User({
-    username: 'hclinton',
-    passwordHash: bcrypt.hashSync('passwordclinton'),
-    email: 'human@robots.gov',
-    name: 'Hillary Clinton',
-    bio: 'VOTE FOR ME, HUMANS!',
+    username: 'aida-admin',
+    passwordHash: bcrypt.hashSync('bananamonkeymuffin'),
+    email: 'aidawebapp@gmail.com',
+    name: 'AIDA Master',
+    bio: 'Hello, I am the adminstrator account for AIDA!',
     isVerified: true,
     timeVerified: Date.now(),
     url: 'https://www.hillaryclinton.com/'
@@ -126,7 +125,7 @@ module.exports = function(app, auth, user, project, job, search) {
                 owner: user1._id,
                 deadline: Date.now(),
                 budget: 1500,
-                intro: 'This is the introduction to the job!',
+                intro: 'Need someone to make a great pro-Trump website!',
                 descriptionTags: [
                   'Webdev',
                   'Campaigning'
@@ -140,6 +139,7 @@ module.exports = function(app, auth, user, project, job, search) {
                 owner: user1._id,
                 deadline: Date.now(),
                 budget: 5000,
+                intro: 'Need someone to stump nay-sayers!',
                 descriptionTags: [
                   'Propoganda',
                   'Campaigning'

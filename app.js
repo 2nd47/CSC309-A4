@@ -17,6 +17,7 @@ var startServer = function(testServer) {
 
   //return 404 page
   app.use(function(req, res, next){
+    res.status(404);
     res.sendFile('404.html', { root: "./views" });
   });
 
