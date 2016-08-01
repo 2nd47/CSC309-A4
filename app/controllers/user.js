@@ -227,7 +227,7 @@ module.exports = function(app) {
   	}
   	*/
   	var json = new Object();
-  	User.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}, function(err, cursor){
+  	User.find({},/*{"name": 1, "title": 1, "skillTags": 1, "tags": 1},*/ function(err, cursor){
 			cursor = cursor.sort({"numFollowers": -1}).limit(10);
 			json.topTen = cursor.toArray();
 			json.following = [];
