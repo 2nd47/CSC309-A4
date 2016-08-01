@@ -116,6 +116,10 @@ module.exports = function(app) {
     });
   });
 
+  this.redirectToHome = function(req, res){
+    res.redirect('/');
+  }
+
   // Ensure authenticated so the user cannot access the home page if not logged in
   this.ensureAuthenticated = function(req, res, next) {
     if(req.isAuthenticated()) {
