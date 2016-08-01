@@ -116,7 +116,7 @@ module.exports = function(app) {
     successRedirect:'/',
     failureRedirect:'/login',
     failureFlash: true
-  }, function);
+  });
 
   this.logout = function(req, res, next){
     req.logout();
