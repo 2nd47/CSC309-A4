@@ -219,11 +219,11 @@ footer {
 }
 
 /*Mobile landscape*/
-@media screen and (max-width: 480px)
+@media screen and (max-width: 550px)
 {
   header {
     position: fixed;
-    max-width: 480px;
+    max-width: 550px;
   }
 
   #mobile_nav {
@@ -238,7 +238,7 @@ footer {
     width: 100px;
   }
 
-  #feed_nav {
+  #project_nav {
     margin-top: -4px;
   }
 
@@ -259,10 +259,10 @@ footer {
 }
 
 /*Mobile portrait*/
-@media screen and (max-width: 320px)
+@media screen and (max-width: 400px)
 {
   header {
-    max-width: 320px;
+    max-width: 400px;
   }
 
   #searchbar_input {

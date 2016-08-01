@@ -1,7 +1,6 @@
 /*THIS IS THE PROFILE PAGE STYLESHEET
 IT CONTAINS STYLES FOR THE PROFILE PAGE*/
 #profile_info {
-  position: relative;
   width: 256px;
   margin: 0;
   display: inline-block;
@@ -59,7 +58,6 @@ button {
 }
 
 #skillset_wrapper {
-  position: relative;
   border: 1px solid #E9E9E9;
   border-radius: 2px;
   background-color: #FFFFFF;
@@ -69,4 +67,21 @@ button {
 
 .hidden {
 	display: none;
+}
+
+/*Mobile landscape*/
+@media screen and (max-width: 480px)
+{
+  #profile_info {
+    float: none;
+    display: block;
+    margin:auto;
+    margin-bottom: 10px;
+  }
+
+  #profile_details {
+    float: none;
+    display: block;
+    width: 100%;
+  }
 }

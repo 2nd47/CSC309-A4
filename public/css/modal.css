@@ -81,6 +81,15 @@ IT CONTAINS STYLES FOR THE LOGIN/SIGNUP MODAL THAT POPS UP*/
   cursor: pointer;
 }
 
+#feedback_msg {
+  display: none;
+  width: 85%;
+  padding: 6px;
+  text-align: center;
+  border-radius: 1px;
+  margin: 8px 10px;
+}
+
 #login_button {
   padding: 6px 22px;
   margin: 8px 10px;
