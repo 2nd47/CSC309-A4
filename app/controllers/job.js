@@ -1,9 +1,10 @@
 var Job = require('../models/job'),
-    User = require('../models/user');
+    User = require('../models/user'),
+    Project = require('../models/project');
 
 module.exports = function(app) {
   this.renderJobPage = function(req, res) {
-    res.sendFile('contract.html', { root: "./views" });
+    res.sendFile('job.html', { root: "./views" });
   }
   this.renderLatestJobPage = function(req, res) {
     res.sendFile('jobs.html', { root: './views' });
@@ -146,9 +147,55 @@ module.exports = function(app) {
   		return;
   	}
     */
+    Job.findById(req.params.job_id).
+      select({
+        _id: 1,
+        name: 1,
+        intro: 1,
+        owner: 1,
+        project: 1,
+        status: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        skillTags: 1,
+        budget: 1,
+        deadline: 1,
+        details: 1
+      }).
+      exec(function(err, job) {
+        if (err) {
+          res.status(404).send(err);
+        } else {
+          User.findById(job.owner).
+          select({
+            username: 1,
+            name: 1
+          }).
+          exec(function(err, owner) {
+            if (err) {
+              res.status(404).send(err);
+            } else {
+              job.owner = owner;
+              Project.findById(job.project).
+              select({
+                _id: 1,
+                name: 1
+              }).
+              exec(function(err, project) {
+                if (err) {
+                  res.status(404).send(err);
+                } else {
+                  job.project = project;
+                  res.status(200).send(job);
+                }
+              });
+            }
+          });
+        }
+      });
 
     //SEND DUMMY JSON TODO: CHANGE THIS!!!
-    var contract1 =
+    /*var contract1 =
     {
     "id": "1",
     "title": "2D Animator",
@@ -173,7 +220,7 @@ module.exports = function(app) {
     "details": "What an awesome game this is wow amazing how great and fun please support me and give me money also help me out and subscribe to my youtube channel for some awesome tetris lets plays and giveaways!"
     }
 
-    res.json(contract1);
+    res.json(contract1);*/
   };
 
   this.signJob = function (req, res) {
