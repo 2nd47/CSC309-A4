@@ -216,16 +216,3 @@ function clearFields() {
     elements[i].value = "";
   }
 }
-
-// Handle keyboard input for form field submission
-/*$('#myModal').on("keydown", function (e) {
-  if (e.keyCode === 13) {
-    if ($('#login_button').is(':visible') {
-      $('#login_button').trigger("click");
-    });
-    if ($('#signup_button').is(':visible') {
-      $('#signup_button').trigger("click");
-    })
-    return false;
-  }
-});*/

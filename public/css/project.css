@@ -78,13 +78,13 @@ video {
 	display: none;
 }
 
-#content_wrapper a {
+a {
   color: black;
   text-decoration: none;
   transition: 0.2s color ease-in-out;
 }
 
-#content_wrapper a:hover {
+a:hover {
   color: #8510bc;
 }
 

@@ -1,6 +1,6 @@
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
-    GoogleStrategy = require('passport-google-oauth20').Strategy;
+    GoogleStrategy = require('passport-google-oauth2').Strategy;
     session = require('express-session'),
     expressValidator = require('express-validator'),
     bcrypt = require('bcryptjs'),
@@ -133,7 +133,7 @@ module.exports = function(app) {
   // Ensure authenticated so the user cannot access the home page if not logged in
   this.ensureAuthenticated = function(req, res, next) {
     if(req.isAuthenticated()) {
-      res.redirect('/profile');
+      res.redirect('/profile'); //TODO: change to feed or some shit
     } else {
       req.flash('error_msg', 'You are not logged in');
       next();
@@ -182,10 +182,10 @@ module.exports = function(app) {
   }
 
   this.login = passport.authenticate('local'),
-    function(req, res) {
-      // If this function gets called, authentication was successful.
-      // `req.user` contains the authenticated user.
-      res.redirect('/');
+  function(req, res) {
+    // If this function gets called, authentication was successful.
+    // `req.user` contains the authenticated user.
+    res.redirect('/');
   }
 /**
   this.google = passport.authenticate('google'),
@@ -194,22 +194,26 @@ module.exports = function(app) {
     res.redirect('/');
   }
   */
-  /*
-  this.google = passport.authenticate('google', ['profile','email'],
-    function(req, res) {
-      // If this function gets called, authentication was successful.
-      // `req.user` contains the authenticated user.
-      alert("in auth.js");
-      console.log("In auth.js > this.google");
-      res.redirect('/');
-  });*/
 
-  this.google = passport.authenticate('google', { scope: ['profile'] });
+  this.google = passport.authenticate('google', ['profile','email']),
+  function(req, res) {
+    // If this function gets called, authentication was successful.
+    // `req.user` contains the authenticated user.
+    alert("in auuth.js");
+    console.log("In auth.js > this.google");
+    res.redirect('/');
+  }
 
-  this.googleCallback = passport.authenticate('google', {
+  this.google = passport.authenticate('google', { scope:
+  	[ 'https://www.googleapis.com/auth/plus.login',
+  	  'https://www.googleapis.com/auth/plus.profile.emails.read' ]
+  });
+
+  this.googleCallback = passport.authenticate( 'google', {
     successRedirect: '/profile',
     failureRedirect: '/login'
   });
+
 
   this.github = passport.authenticate('github'),
   function(res, req) {
