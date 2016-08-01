@@ -49,16 +49,16 @@ var project = new Schema({
     default: []
   }],
   owner: {
-    type: ObjectId,
+    type: String,
     required: true,
     ref: 'User'
   },
   members: [{
-    type: ObjectId,
+    type: String,
     default: []
   }],
   jobs: [{
-    type: ObjectId,
+    type: String,
     ref: 'Job',
     default: []
   }],

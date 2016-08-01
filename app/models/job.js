@@ -34,21 +34,21 @@ var job = new Schema({
   }],
   // ID of project member who created the job
   project: {
-    type: ObjectId,
+    type: String,
     required: true,
     ref: 'Project'
   },
   owner: {
-    type: ObjectId,
+    type: String,
     required: true,
     ref: 'User'
   },
 	taker: {
-		type: ObjectId,
+		type: String,
     ref: 'User'
 	},
   applicants: [{
-    type: ObjectId,
+    type: String,
     ref: 'User'
   }],
   details: {
