@@ -3,7 +3,7 @@ var User = require('../models/user'),
     Project = require('../models/project'),
     permissionManager = require('../middleware/permission_manager');
 
-		
+
 module.exports = function(app) {
 	this.searchUser = function (req, res) {
 		/*

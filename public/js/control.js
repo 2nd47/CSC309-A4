@@ -46,7 +46,7 @@ $(document).ready(function(){
 			alert( "Please re-login.");
 			window.location.replace("/");
 		});
-	
+
 	$("#profile-edit-submit").click(function(){requestEditProfile(),$("#profile-edit").serialize()});
 });
 
@@ -60,7 +60,7 @@ function showProfile() {
 	$("#reportview").addClass("hidden");
 	$("#accountview").addClass("hidden");
 	$("#databaseview").addClass("hidden");
-	
+
 }
 
 function showProject() {
@@ -117,7 +117,7 @@ function requestEditProfile(username) {
 	$.ajax(
 	{
 		type: "post",
-		url: "/edit_profile/:" + username,
+		url: "/profile/:" + username,
 		data: queryString
 	})
 	.done(function(data)
@@ -135,8 +135,8 @@ function requestDeleteProfile(username) {
 	var ans = confirm("ARE YOU SURE YOU WANT TO DELETE THIS ACCOUNT? THIS CANNOT BE REVERTED.");
 	if (ans) {
 		$.ajax({
-			type: "post",
-			url: "/delete_pofile/:" + username
+			type: "delete",
+			url: "/profile/:" + username
 		})
 		.done(function(data)
 		{
@@ -176,7 +176,7 @@ function displayProfileForm(username) {
 															<input type='submit' value='Submit' onClick='requestEditPrfile(" + username  + ") '/>\
 														</form>\
 													</div>");
-		
+
 		$("#user-" + username).append($profileForm);
 	})
 	.fail(function( jqXHR, textStatus )
@@ -195,7 +195,7 @@ function requestSearchUser() {
 	var search = $("#search-for-user").serialize().usersearch;
 	$.ajax({
 		type: "get",
-		url: "/search_user",
+		url: "/api/admin/search",
 		data: search
 	})
 	.done(function(data)
@@ -240,7 +240,7 @@ function requestInitializeDatabase() {
 	if (x) {
 		$.ajax({
 		type: "post",
-		url: "/admin/delete_database",
+		url: "/api/admin/delete_database",
 		data: search
 	})
 	.done(function(data)
@@ -260,7 +260,7 @@ function requestRepopolauteDatabase() {
 	if (x) {
 		$.ajax({
 		type: "post",
-		url: "/admin/repopulate_database",
+		url: "/api/admin/repopulate_database",
 		data: search
 	})
 	.done(function(data)

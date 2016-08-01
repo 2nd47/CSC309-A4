@@ -89,6 +89,12 @@ var sendMessageTo = function (sender, receiver, message) {
 }
 
 module.exports = function(app) {
+  this.renderMessagePage = function(req, res){
+		res.sendFile('inbox.html', { root: "./views/" });
+	}
+  this.renderUserPage = function(req, res) {
+    res.sendFile('profile.html', { root: "./views" });
+  }
   this.getUser = function (req, res, next) {
   	/*
   	{

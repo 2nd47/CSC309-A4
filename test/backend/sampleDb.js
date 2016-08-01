@@ -36,7 +36,6 @@ module.exports = function(app, auth, user, project, job, search) {
     title: 'Republican Presidential Nominee',
     bio: 'I am the greatest candidate for this position!',
     tags: 'Republican Party',
-    tags: 'GOP',
     isVerified: true,
     timeVerified: Date.now(),
     url: 'http://www.trump.com/'
@@ -64,11 +63,11 @@ module.exports = function(app, auth, user, project, job, search) {
     url: 'http://eng.putin.kremlin.ru/'
   });
   var user4 = User({
-    username: 'hclinton',
-    passwordHash: bcrypt.hashSync('passwordclinton'),
-    email: 'human@robots.gov',
-    name: 'Hillary Clinton',
-    bio: 'VOTE FOR ME, HUMANS!',
+    username: 'aida-admin',
+    passwordHash: bcrypt.hashSync('bananamonkeymuffin'),
+    email: 'aidawebapp@gmail.com',
+    name: 'AIDA Master',
+    bio: 'Hello, I am the adminstrator account for AIDA!',
     isVerified: true,
     timeVerified: Date.now(),
     url: 'https://www.hillaryclinton.com/'

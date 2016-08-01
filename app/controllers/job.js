@@ -1,4 +1,10 @@
 module.exports = function(app) {
+  this.renderJobPage = function(req, res) {
+    res.sendFile('contract.html', { root: "./views" });
+  }
+  this.getLatestJobs = function (req, res) {
+    // Enter function body here
+  }
   this.createJob = function (req, res) {
   	/*
   		TODO:
