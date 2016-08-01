@@ -112,42 +112,6 @@ function showDatabase() {
 // post requests and ther rendering functions  //
 /////////////////////////////////////////////////
 
-function requestGetProfile(username) {
-	$.ajax({
-		type: "post",
-		url: "/api/profile/:" + username
-	})
-	.done(function(data)
-	{
-		var name = data.name;
-		var title = data.title;
-		var skills = data.skills;
-		var tags = data.tags.join();
-		var biography = data.biography;
-		var email = data.email;
-		var $profileForm = $("<div id='profile-" + username + "'>\
-														<form id='profile-edit-'" + username + ">\
-															Name: <input type='text' name='name' value='" + name + "' required/></br>\
-															New Password: <input type='password' placeholder='New password' name='newpassword'/></br>\
-															Repeat Password: <input type='password' placeholder='Repeat password' name='repeatpassword'/></br>\
-															Short description (30 chars max): <input type='text' name='title' value='" + title + "'/></br>\
-															Profile image: <input type='file' name='image'/></br>\
-															Biography: <textarea rows='10' type='text' name='bio' value='" + biography + "'></textarea></br>\
-															Tags (e.g. goat,pixel): <input type='text' name='tags' value='" + tags + "'/></br>\
-															Email: <input type='text' name='email' value='" + email + "' pattern='/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i' required/></br>\
-															<input type='submit' value='Submit'/>\
-														</form>\
-													</div>");
-		
-		$("#user-" + personId).append($profileForm);
-		window.location.replace("/");
-	})
-	.fail(function( jqXHR, textStatus )
-		{
-			alert( "Failed to get profile form: " + textStatus );
-		});
-}
-
 function requestEditProfile(personId, queryString) {
 	$.ajax(
 	{
@@ -191,24 +155,22 @@ function displayProfileForm(username) {
 	})
 	.done(function(data)
 	{
-		var id = data.id;
 		var name = data.name;
-		var avatar = data.avatar;
 		var title = data.title;
 		var skills = data.skills;
-		var tags = data.tags;
+		var tags = data.tags.join();
 		var biography = data.biography;
 		var email = data.email;
 		var $profileForm = $("<div id='profile-" + username + "'>\
 														<form id='profile-edit-'" + username + ">\
-															Name: <input type='text' name='name' required/></br>\
+															Name: <input type='text' name='name' value='" + name + "' required/></br>\
 															New Password: <input type='password' placeholder='New password' name='newpassword'/></br>\
 															Repeat Password: <input type='password' placeholder='Repeat password' name='repeatpassword'/></br>\
-															Short description (30 chars max): <input type='text' name='title'/></br>\
+															Short description (30 chars max): <input type='text' name='title' value='" + title + "'/></br>\
 															Profile image: <input type='file' name='image'/></br>\
-															Biography: <textarea rows='10' type='text' name='bio'></textarea></br>\
-															Tags (e.g. goat,pixel): <input type='text' name='tags'/></br>\
-															Email: <input type='text' name='email' pattern='/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i' required/></br>\
+															Biography: <textarea rows='10' type='text' name='bio' value='" + biography + "'></textarea></br>\
+															Tags (e.g. goat,pixel): <input type='text' name='tags' value='" + tags + "'/></br>\
+															Email: <input type='text' name='email' value='" + email + "' pattern='/^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$/i' required/></br>\
 															<input type='submit' value='Submit'/>\
 														</form>\
 													</div>");
@@ -264,7 +226,7 @@ function renderSearchUser(data) {
 												<p>Freeze record: " + user.times_frozen + "</p>\
 												<button onClick='requestDeleteProfile(" + user.id + ")'>DELETE USER</button>\
 												<button onClick='requestFreezeProfile(" + user.id + ")'>Freeze User</button>\
-												<button id='updatebtn-" + user.username +"' onClick='displayProfileForm(" + user.username")'>Update User</button>\
+												<button id='updatebtn-" + user.username +"' onClick='displayProfileForm(" + user.username + ")'>Update User</button>\
 												<button id='hidebtn-" + user.username + "' class='hidden' onClick='deleteProfileForm(" + user.username + ")'>Hide Form</button>\
 											</div>");
 		$userList.append($newUser);

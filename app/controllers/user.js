@@ -227,31 +227,34 @@ module.exports = function(app) {
   	}
   	*/
   	var json = new Object();
-  	var cursor = User.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}).sort({"numFollowers": -1}).limit(10);
-  	json.topTen = cursor.toArray();
-  	json.following = [];
-  	var userId = req.session.userId;
-  	if (userId) {
-  		User.findById(userId, function(err, user){
-  			var followings = user.followings;
-  			var numFollowings = followings.length;
-  			var i;
-  			for (i=0;i<numFollowings;i++) {
-  				User.findById(followings[i], function(err, person){
-  					// the object being followed is an existing user
-  					if (person) {
-  						var newPerson = new Object();
-  						newPerson._id = person._id;
-  						newPerson.name = person.name;
-  						newPerson.title = person.title;
-  						newPerson.skillTags = person.skillTags;
-  						newPerson.tags = person.tags;
-  						json.following.push(newPerson);
-  					}
-  				});
-  			}
-  		});
-  	}
+  	User.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}, function(err, cursor){
+			cursor = cursor.sort({"numFollowers": -1}).limit(10);
+			json.topTen = cursor.toArray();
+			json.following = [];
+			var userId = req.session.userId;
+			if (userId) {
+				User.findById(userId, function(err, user){
+					var followings = user.followings;
+					var numFollowings = followings.length;
+					var i;
+					for (i=0;i<numFollowings;i++) {
+						User.findById(followings[i], function(err, person){
+							// the object being followed is an existing user
+							if (person) {
+								var newPerson = new Object();
+								newPerson._id = person._id;
+								newPerson.name = person.name;
+								newPerson.title = person.title;
+								newPerson.skillTags = person.skillTags;
+								newPerson.tags = person.tags;
+								json.following.push(newPerson);
+							}
+						});
+					}
+				});
+			}
+		});
+
   	res.send(JSON.stringify(json));
   };
 
@@ -480,6 +483,15 @@ module.exports = function(app) {
       else { console.log('Created User ' + user); callback(err, user); }
     });
   };
+	
+	// Delete an existing account given the id
+	this.deleteUser = function(req, res) {
+		var userId = req.user._id;
+		var accountId = req.params.userid;
+		if (canDeleteProfile(userId, accountId)) {
+			User.remove({_id: accountId});
+		}
+	}
 
   return this;
 }
