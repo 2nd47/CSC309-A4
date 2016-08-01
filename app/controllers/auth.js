@@ -1,5 +1,6 @@
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
+    GoogleStrategy = require('passport-google').Strategy;
     session = require('express-session'),
     expressValidator = require('express-validator'),
     bcrypt = require('bcryptjs'),
@@ -55,6 +56,56 @@ module.exports = function(app) {
       });
   }));
 
+  // Passport Google Strategy
+  /**
+  passport.use(new GoogleStrategy({
+    consumerKey: GOOGLE_CONSUMER_KEY,
+    consumerSecret: GOOGLE_CONSUMER_SECRET,
+    callbackURL: "http://www.example.com/auth/google/callback"
+  },
+  function(token, tokenSecret, profile, done) {
+      User.findOrCreate({ googleId: profile.id }, function (err, user) {
+        return done(err, user);
+      });
+    }
+  ));
+  */
+/**
+  passport.use(new GoogleStrategy({
+    clientID        : '913375318653-dqg1upddvrlpfssnpou9m519nh5p9vec.apps.googleusercontent.com',
+    clientSecret    : 'fGnNQThRZe__20C_3vUxKynj',
+    callbackURL     : configAuth.googleAuth.callbackURL,
+  },
+  function(token, refreshToken, profile, done) {
+      // make the code asynchronous
+      // User.findOne won't fire until we have all our data back from Google
+      process.nextTick(function() {
+          // try to find the user based on their google id
+          User.findOne({ 'google.id' : profile.id }, function(err, user) {
+              if (err)
+                  return done(err);
+              if (user) {
+                  // if a user is found, log them in
+                  return done(null, user);
+              } else {
+                  // if the user isnt in our database, create a new user
+                  var newUser          = new User();
+                  // set all of the relevant information
+                  newUser.google.id    = profile.id;
+                  newUser.google.token = token;
+                  newUser.google.name  = profile.displayName;
+                  newUser.google.email = profile.emails[0].value; // pull the first email
+                  // save the user
+                  newUser.save(function(err) {
+                      if (err)
+                          throw err;
+                      return done(null, newUser);
+                  });
+              }
+          });
+      });
+  }));
+*/
   passport.serializeUser(function(user, done) {
     done(null, user._id);
   });
@@ -122,12 +173,22 @@ module.exports = function(app) {
     // `req.user` contains the authenticated user.
     res.redirect('/');
   }
-
+/**
   this.google = passport.authenticate('google'),
   function(req, res) {
     console.log("In auth.js > this.google");
     res.redirect('/');
   }
+  */
+
+  this.google = passport.authenticate('google', { scope: 'https://www.google.com/m8/feeds' }),
+  function(req, res) {
+    // If this function gets called, authentication was successful.
+    // `req.user` contains the authenticated user.
+    console.log("In auth.js > this.google");
+    res.redirect('/');
+  }
+
 
   this.github = passport.authenticate('github'),
   function(res, req) {

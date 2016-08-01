@@ -23,6 +23,7 @@
     "passport": "*",
     "passport-http": "*",
     "passport-local": "*",
+    "passport-google": "*",
     "shortid": "^2.2.6",
     "validator": "^5.4.0"
   },

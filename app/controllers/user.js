@@ -227,44 +227,42 @@ module.exports = function(app) {
   	}
   	*/
   	var json = new Object();
-  	var cursor = User.find({}, function(err, users) {
-      var userMap = {};
 
-      users.forEach(function(user) {
-        userMap[user._id] = user;
-        console.log(userMap);
-      });
-      res.send(JSON.stringify(userMap));
-    /*{"name": 1, "title": 1, "skillTags": 1, "tags": 1});*/
-		//cursor = cursor.sort({"numFollowers": -1}).limit(10);
-		json.topTen = cursor.toArray();
-		//res.send(JSON.stringify(json));
-		return;
-		json.following = [];
-		var userId = req.session.userId;
-		if (userId) {
-			User.findById(userId, function(err, user){
-				var followings = user.followings;
-				var numFollowings = followings.length;
-				var i;
-				for (i=0;i<numFollowings;i++) {
-					User.findById(followings[i], function(err, person){
-						// the object being followed is an existing user
-						if (person) {
-							var newPerson = new Object();
-							newPerson._id = person._id;
-							newPerson.name = person.name;
-							newPerson.title = person.title;
-							newPerson.skillTags = person.skillTags;
-							newPerson.tags = person.tags;
-							json.following.push(newPerson);
-						}
-					});
-				}
-			});
-    }
-  });
-  	//res.send(JSON.stringify(json));
+  	//var cursor =
+    User.find(function(err, cursor) {
+      console.log(err);
+      console.log(cursor[0]);
+        /*{"name": 1, "title": 1, "skillTags": 1, "tags": 1}*/
+  		//cursor = cursor.sort({"numFollowers": -1}).limit(10);
+  		json.topTen = cursor.toArray();
+  		res.send(JSON.stringify(json));
+  		return;
+  		json.following = [];
+  		var userId = req.session.userId;
+  		if (userId) {
+  			User.findById(userId, function(err, user){
+  				var followings = user.followings;
+  				var numFollowings = followings.length;
+  				var i;
+  				for (i=0;i<numFollowings;i++) {
+  					User.findById(followings[i], function(err, person){
+  						// the object being followed is an existing user
+  						if (person) {
+  							var newPerson = new Object();
+  							newPerson._id = person._id;
+  							newPerson.name = person.name;
+  							newPerson.title = person.title;
+  							newPerson.skillTags = person.skillTags;
+  							newPerson.tags = person.tags;
+  							json.following.push(newPerson);
+  						}
+  					});
+  				}
+  			});
+      }
+		});
+
+  	res.send(JSON.stringify(json));
   };
 
   this.getMessages = function (req, res) {
@@ -527,6 +525,7 @@ module.exports = function(app) {
 			db.setUserField(profileId, "tags", profileForm.tags.replace(/\s+/g, '').split(","));
 			db.setUserField(profileId, "email", profileForm.email);
 			db.setUserField(profileId, "skillTags", profileForm.skillTags.replace(/\s+/g, '').split(","));
+      
 			res.send('200');
 		}
 		else {
