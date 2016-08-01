@@ -60,6 +60,9 @@ var collectUserInfo = function(userId, callback) {
 };
 
 module.exports = function(app) {
+	this.renderResultPage = function (req, res) {
+		res.sendFile('search.html', { root: "./views" });
+	}
   this.getSearch = function (req, res) {
   	/*
   	Probable Queries:

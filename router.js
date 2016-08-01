@@ -90,16 +90,18 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.post('/projects/new', project.createProject);
 
   // JOB ROUTES
-  app.get('/jobs', job.renderLatestJobPage)
+  app.get('/jobs', job.renderLatestJobPage);
   app.get('/jobs/:job_id', job.renderJobPage);
   app.get('/jobs/:job_id/sign', job.signJob);
   app.post('/jobs/new', job.createJob);
 
-	app.get('/control.html', function(req, res){
+	app.get('/control', function(req, res){
 		res.sendFile('control.html', { root: "./views/" });
 	});
+	
+	//SEARCH ROUTES
+	app.get('/search', search.renderResultPage);
 
-  app.get('/search', search.getSearch);
 
   // API ROUTES
   app.get('/api/profile/:username', user.getUser);
@@ -115,6 +117,8 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.get('/api/admin/search', admin.searchUser);
   //app.post('/api/admin/delete_database', admin.delete_database);
 	//app.post('/api/admin/repopulate_database', admin.repopulate_database);
+	
+	app.get('/api/search', search.getSearch);
 
 	app.get('/api/get_username', function(req, res){
 		if (req.user) {

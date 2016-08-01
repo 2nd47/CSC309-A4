@@ -19,10 +19,10 @@ function requestSearch() {
 	$.ajax(
 	{
 		type: "get",
-		url: "/search",
+		url: "/api/search",
 		data: {
 			category: cat,
-			keywords: key
+			search: key
 		}
 	})
 	.done(function(data)
@@ -35,6 +35,24 @@ function requestSearch() {
     });
 }
 
-function renderSearch(data) {
-	// find where the s
+function renderSearch(results) {
+	var i;
+	var numResults = reuslts.length;
+	for (i=0;i<numResults;i++) {
+		var result = results[i];
+		var $newResult = $("<div>").addClass("result")
+      $newJob.append(
+        $("<a>").attr("href", result.url).append(
+          $("<h3>").text(result.name)
+        )
+      );
+      /*$newJob.append(
+        $("<p>").text(item.basicInfo)
+      );
+      $newJob.append(
+        $("<p>").addClass("timestamp").
+          text('Created at: ' + item.createdAt)
+      );*/
+      $("#results").append($newJob);
+	}
 }
