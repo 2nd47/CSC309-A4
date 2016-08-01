@@ -330,7 +330,7 @@ module.exports = function(app) {
 									return 0;
 								}
 								resultsArray.sort(prioritySort);
-								res.send(JSON.stringify(resultsArray.slice((page-1)*perpage, page*perpage)));
+								res.send(resultsArray.slice((page-1)*perpage, page*perpage));
 							});
 						});
 					});
@@ -426,7 +426,7 @@ module.exports = function(app) {
 										return 0;
 									}
 									resultsArray.sort(prioritySort);
-									res.send(JSON.stringify(resultsArray.slice((page-1)*perpage, page*perpage)));
+									res.send(resultsArray.slice((page-1)*perpage, page*perpage));
 								});
 							});
 						});
@@ -523,7 +523,7 @@ module.exports = function(app) {
 										return 0;
 									}
 									resultsArray.sort(prioritySort);
-									res.send(JSON.stringify(resultsArray.slice((page-1)*perpage, page*perpage)));
+									res.send(resultsArray.slice((page-1)*perpage, page*perpage));
 								});
 							});
 						});

@@ -37,11 +37,12 @@ function requestSearch() {
 
 function renderSearch(results) {
 	var i;
-	var numResults = reuslts.length;
+	console.log(results);
+	var numResults = results.length;
 	for (i=0;i<numResults;i++) {
 		var result = results[i];
-		var $newResult = $("<div>").addClass("result")
-      $newJob.append(
+		var $newResult = $("<div>").addClass("result");
+      /*$newResult.append(
         $("<a>").attr("href", result.url).append(
           $("<h3>").text(result.name)
         )
@@ -53,6 +54,6 @@ function renderSearch(results) {
         $("<p>").addClass("timestamp").
           text('Created at: ' + item.createdAt)
       );*/
-      $("#results").append($newJob);
+      $("#results").append($newResult);
 	}
 }
