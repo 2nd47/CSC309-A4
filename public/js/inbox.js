@@ -27,7 +27,7 @@ function renderInbox(data) {
 	json.success = "true";
 	json.messageBoard = [];
 	var update1 = new Object();
-	update1.url = "/project.html";
+	update1.url = "/projects.html";
 	update1.message = "project";
 	var update2 = new Object();
 	update2.url = "/people.html";

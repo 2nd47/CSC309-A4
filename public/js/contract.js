@@ -71,7 +71,7 @@ $(document).ready(function() {
 		$("#employer").html(JSON.stringify(data.employer_name).slice(1,-1));
 
 		$("#employer").attr("href", "../profile/" + JSON.stringify(data.employer_username).slice(1,-1));
-		$("#project_link").attr("href", "../project/" + JSON.stringify(data.project_id).slice(1,-1));
+		$("#project_link").attr("href", "../projects/" + JSON.stringify(data.project_id).slice(1,-1));
 
 		//render every skill requirement
 		$.each(data.tags, function(index, skill) {
