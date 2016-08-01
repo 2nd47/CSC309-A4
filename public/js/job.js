@@ -64,14 +64,15 @@ $(document).ready(function() {
 
 	//make api request and render json data on the html
 	$.get(path, function(data) {
-		$("#job_title").html(JSON.stringify(data.title).slice(1,-1));
+		$("#job_title").html(JSON.stringify(data.name).slice(1,-1));
 		$("#job_intro").html(JSON.stringify(data.intro).slice(1,-1));
-		$("#post_date").html(JSON.stringify(data.post_date).slice(1,-1));
+		$("#post_date").html(JSON.stringify(data.createdAt).slice(1,-1));
 		$("#status").html(JSON.stringify(data.status).slice(1,-1));
-		$("#employer").html(JSON.stringify(data.employer_name).slice(1,-1));
+		$("#employer").append($("<strong>").append($("<em>").html(JSON.stringify(data.owner.name).slice(1,-1))));
 
-		$("#employer").attr("href", "../profile/" + JSON.stringify(data.employer_username).slice(1,-1));
-		$("#project_link").attr("href", "../projects/" + JSON.stringify(data.project_id).slice(1,-1));
+		$("#employer").attr("href", "../profile/" + JSON.stringify(data.owner.username).slice(1,-1));
+		$("#project_link").attr("href", "../projects/" + JSON.stringify(data.project._id).slice(1,-1));
+		$("#project_link").append($("<strong>").append($("<em>").text(data.project.name)));
 
 		//render every skill requirement
 		$.each(data.tags, function(index, skill) {

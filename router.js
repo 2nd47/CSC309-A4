@@ -71,8 +71,8 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.get('/api/projects', project.getPopularProjects);
   app.get('/api/projects/:project_id', project.getProject);
 
-  app.get('/api/jobs/:job_id', job.getJob);
   app.get('/api/jobs', job.getLatestJobs);
+  app.get('/api/jobs/:job_id', job.getJob);
 
   app.get('/api/inbox', user.getMessages);
 

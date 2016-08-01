@@ -31,7 +31,6 @@ $("#showcase_control_next").click(function(){
 ///////////////////
 var following = false;
 $("#profile_follow").click(function(){
-	console.log("click");
 	following = !following;
 	if (following) {
 		$("#profile_follow").html("Unfollow");
@@ -47,7 +46,6 @@ $(document).ready(function() {
 
 	//make api request and render json data on the html
 	$.get(path, function(data) {
-		console.log(data);
 		$("#project_name").html(JSON.stringify(data.name).slice(1,-1));
 		$("#project_owner").html($("<strong>").text(data.owner.name));
 		$("#project_owner").attr("href", "/profile/" + JSON.stringify(data.owner.username).slice(1,-1));
