@@ -141,8 +141,8 @@ module.exports = function(app) {
 			}
 			
 			var keyword;
-			if (queries.keyword) {
-				keyword = queries.keyword;
+			if (queries.search) {
+				keyword = queries.search;
 			}
 			else {
 				keyword = "";
@@ -170,7 +170,7 @@ module.exports = function(app) {
 				perpage = queries.perpage;
 			}
 			else {
-				perpage = 1;
+				perpage = 10;
 			}
 
 			// Priority: match name: +4 match tag: +2 match content: +1
@@ -242,9 +242,6 @@ module.exports = function(app) {
 				results[job._id].intro = job.intro;
 				results[job._id].skills = job.skillTags;
 				results[job._id].project_id = job.project;
-				Project.findById(job.project, function(err, project){
-					results[job._id].project_name = project.name;
-				});
 				results[job._id].project_tags = job.descriptionTags;
 				results[job._id].deadline = job.deadline;
 				results[job._id].budget = job.budget;
@@ -344,7 +341,6 @@ module.exports = function(app) {
 						current = peopleByName[current];
 						var newProject = new Object();
 						if (current._id in results) {
-							console.log(current);
 							// The object is found before
 							updatePersonPriority(current, MATCH_NAME);
 						}
