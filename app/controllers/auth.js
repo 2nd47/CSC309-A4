@@ -70,10 +70,10 @@ module.exports = function(app) {
     }
   ));
   */
-
+/**
   passport.use(new GoogleStrategy({
-    clientID        : configAuth.googleAuth.clientID,
-    clientSecret    : configAuth.googleAuth.clientSecret,
+    clientID        : '913375318653-dqg1upddvrlpfssnpou9m519nh5p9vec.apps.googleusercontent.com',
+    clientSecret    : 'fGnNQThRZe__20C_3vUxKynj',
     callbackURL     : configAuth.googleAuth.callbackURL,
   },
   function(token, refreshToken, profile, done) {
@@ -105,7 +105,7 @@ module.exports = function(app) {
           });
       });
   }));
-
+*/
   passport.serializeUser(function(user, done) {
     done(null, user._id);
   });
