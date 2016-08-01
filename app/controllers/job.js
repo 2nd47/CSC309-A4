@@ -29,7 +29,7 @@ module.exports = function(app) {
   					var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
   					db.setJobField(newJobId, "descriptionTags", tags);
   					db.setJobField(newJobId, "details", jobForm.details);
-  					db.setJobField(newJobId, "url", "/job/" + newJobId));//??
+  					db.setJobField(newJobId, "url", "/job/" + newJobId);//??
   					json.url = "/job/" + newJobId;
   					json.success = "true";
   					// send broadcast to all followers of the project
