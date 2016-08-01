@@ -10,14 +10,14 @@
 
     <!--Stylesheets-->
     <link rel="stylesheet" type="text/css" href="/css/generic.css">
-    <link rel="stylesheet" type="text/css" href="/css/project.css">
+    <link rel="stylesheet" type="text/css" href="/css/jobs.css">
     <link rel="stylesheet" type="text/css" href="/css/modal.css">
 
     <!--Scripts-->
     <script type="text/javascript" src="/js/jquery-2.2.4.min.js" defer></script>
-    <script type="text/javascript" src="/js/project.js" defer></script>
     <script type="text/javascript" src="/js/modal.js" defer></script>
     <script type="text/javascript" src="/js/generic.js" defer></script>
+    <script type="text/javascript" src="/js/jobs.js" defer></script>
   </head>
 
   <body>
@@ -75,7 +75,7 @@
             <input id="email" type="text" placeholder="Email Address"><br>
             <input id="email2" type="text" placeholder="Confirm Email Address"><br>
           </div>
-          <div id="feedback_msg"></div>
+          <div id="jobsback_msg"></div>
           <div id="login_button">Login</div>
           <div id="signup_button">Sign up</div>
           <h3 id="signup_text">No account yet? <span id="signup_switch">Sign up!</span></h3>
@@ -94,78 +94,19 @@
       <div id="content_background">
         <div id="content_wrapper">
           <div id="content">
-      			<section id="basic_info">
-      				<div class="box_tag">
-      					Basic Info
-      				</div>
-      				<div class="box_content">
-      					<h2 id="project_name">
-
-                </h2>
-                <p>by <a id="project_owner" href="profile.html"></a></p>
-
-      					<p id="project_brief">
-
-                </p>
-      					<p id="last_update">
-
-                </p>
-      					<p id="project_status">
-
-                </p>
-      					<div id="project_tags">
-                <strong>Tags:</strong>
-
-      					</div>
-                <br>
-                <a id="profile_follow" href="#">Follow<a>
-
-      				</div>
-      			</section>
-      			<section id="showcase">
-      				<div class="box_tag">
-      					Showcase
-      				</div>
-      				<div class="box_content">
-      					<div id="showcase_display">
-
-      					</div>
-                <!-- COMMENTED OUT BECAUSE CURRENTLY ONLY ONE PICTURE ALLOWED
-      					<div id="showcase_control">
-      						<button id="showcase_control_prev">Prev</button>
-      						<button id="showcase_control_next">Next</button>
-      					</div>
-              -->
-      				</div>
-      			</section>
-      			<!--Container for the second level of blocks-->
-      			<div class="level_wrapper">
-      				<section id="details">
-      					<div class="box_tag">
-      						Project Details
-      					</div>
-      					<div class="box_content">
-      						<section id="details_text">
-
-      						</section>
-      					</div>
-      				</section>
-      			</div>
-            <div class="level_wrapper">
-              <section id="ongoing_contracts">
-                <div class="box_tag">
-                  Contracts
-                </div>
-                <div class="box_content">
-                  <ul id="contract_listing">
-
-                  </ul>
-                </div>
-              </section>
+            <div id="left">
             </div>
-          </div>
-        </div>
-      </div>
+            <div id="right">
+              <div class="jobs-item jobs-header">
+                <h2>Recommended for You</h2>
+              </div>
+              <!--<div class="jobs-item">
+                <img src="https://openclipart.org/download/20605/radacina-men-in-black.svg">
+                <a href="project.html"><h4>Men in Black Ltd.  </h4></a>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Nunc non luctus orci, vitae lacinia ...</p>
+              </div>-->
+            </div>
           </div>
         </div>
       </div>

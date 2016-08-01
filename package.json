@@ -21,9 +21,9 @@
     "mongoose": "^4.5.5",
     "nodemon": "^1.9.2",
     "passport": "*",
+    "passport-google": "*",
     "passport-http": "*",
     "passport-local": "*",
-    "passport-google": "*",
     "shortid": "^2.2.6",
     "validator": "^5.4.0"
   },

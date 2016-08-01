@@ -24,7 +24,7 @@ module.exports = function(app, auth, user, project, job, search) {
     'projects',
     'jobs']
   for (var i = 0; i<collectionsToDrop.length; i++) {
-    console.log(collectionsToDrop[i]);
+    console.log('Dropping collection ' + collectionsToDrop[i]);
     mongoose.connection.collections[collectionsToDrop[i]].drop();
   }
   // Create users
@@ -125,7 +125,7 @@ module.exports = function(app, auth, user, project, job, search) {
                 owner: user1._id,
                 deadline: Date.now(),
                 budget: 1500,
-                intro: 'This is the introduction to the job!',
+                intro: 'Need someone to make a great pro-Trump website!',
                 descriptionTags: [
                   'Webdev',
                   'Campaigning'
@@ -139,6 +139,7 @@ module.exports = function(app, auth, user, project, job, search) {
                 owner: user1._id,
                 deadline: Date.now(),
                 budget: 5000,
+                intro: 'Need someone to stump nay-sayers!',
                 descriptionTags: [
                   'Propoganda',
                   'Campaigning'

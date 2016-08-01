@@ -49,7 +49,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.post('/project/new', project.createProject);
 
   // JOB ROUTES
-  app.get('/jobs', job.getLatestJobs);
+  app.get('/jobs', job.renderLatestJobPage)
   app.get('/jobs/:job_id', job.renderJobPage);
   app.get('/jobs/:job_id/sign', job.signJob);
   app.post('/jobs/new', job.createJob);
@@ -62,6 +62,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 
   //API ROUTES
   app.get('/api/profile/:username', user.getUser);
+  app.get('/api/jobs', job.getLatestJobs);
   app.get('/api/inbox', user.getMessages);
   app.get('/api/project/:project_id', project.getProject);
   app.get('/api/jobs/:job_id', job.getJob);

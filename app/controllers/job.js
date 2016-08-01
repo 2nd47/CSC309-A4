@@ -1,9 +1,30 @@
+var Job = require('../models/job'),
+    User = require('../models/user');
+
 module.exports = function(app) {
   this.renderJobPage = function(req, res) {
     res.sendFile('contract.html', { root: "./views" });
   }
+  this.renderLatestJobPage = function(req, res) {
+    res.sendFile('jobs.html', { root: './views' });
+  }
   this.getLatestJobs = function (req, res) {
-    // Enter function body here
+    //var pageNum = req.pageNum;
+    var pageNum = 1;
+    var resultsPerPage = 10;
+    // Find all jobs but limit results to the ones relevant for the page number
+    Job.find({}).
+      sort({ createdAt: 1 }).
+      skip((pageNum - 1) * resultsPerPage).
+      limit(resultsPerPage).
+      select({ _id: 1, createdAt: 1, name: 1, intro: 1, owner: 1 }).
+      exec(function(err, jobs) {
+        if (err) {
+        res.status(500).send(err);
+        } else {
+          res.status(200).send(jobs);
+        }
+      });
   }
   this.createJob = function (req, res) {
   	/*
