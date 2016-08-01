@@ -518,34 +518,7 @@ module.exports = function(app) {
 			db.setUserField(profileId, "bio", profileForm.bio);
 			db.setUserField(profileId, "tags", profileForm.tags.replace(/\s+/g, '').split(","));
 			db.setUserField(profileId, "email", profileForm.email);
-			
-			// edit skill tags
-			db.getUserById(profileId, function(err, profile){
-				// delete all current skills
-				var curSkills = profile.skillTags;
-				var numCurSkills = curSkills.length;
-				var i;
-				for (i=0;i<numCurSkills;i++) {
-					var id = curSkills[i]._id;
-					db.Skill.remove({_id: id});
-				}
-				db.setUserField(profileId, "skillTags", []);
-				
-			});
-			// build new skill tags
-			var skills = profileForm.skill
-			var skillLevels = profileForm.level;
-			var numSkills = skills.length;
-			var i;
-			for (i=0;i<numSkills;i++) {
-				var skill = new models.Skill({
-					name: skills[i],
-					rating: skillLevel[i]
-				});
-				skill.save(function(err, st){
-					db.pusUserField(profileId, "skillTags", st);
-				});
-			}
+			db.setUserField(profileId, "skillTags", profileForm.skillTags.replace(/\s+/g, '').split(","));
 			res.send('200');
 		}
 		else {
