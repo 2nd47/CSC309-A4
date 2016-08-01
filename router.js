@@ -61,7 +61,15 @@ module.exports = function(app, auth, user, project, job, search) {
   //serveStaticPagesOnRequest(app, walk(VIEWPATH, []));
 
   app.post('/signup', auth.signup);
-  app.post('/login', auth.login);
+  app.post('/login', auth.login, function(req, res){
+    res.redirect('/');
+  });
+  app.post('/google', auth.google, function(req, res){
+    res.redirect('/');
+  });
+  app.post('/github', auth.github, function(req, res){
+    res.redirect('/');
+  });
   app.get('/logout', auth.logout);
 
   // create a new job
