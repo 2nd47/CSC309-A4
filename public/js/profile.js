@@ -52,7 +52,7 @@ $(document).ready(function() {
 		//render every project
 		$.each(data.projects, function(index, project) {
 			$("#projects_list").append(
-				"<a href='/project/"
+				"<a href='/projects/"
 				+	JSON.stringify(project.id).slice(1,-1)
 				+ "'>"
 				+ JSON.stringify(project.name).slice(1,-1)

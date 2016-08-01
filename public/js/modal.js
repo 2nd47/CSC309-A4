@@ -148,6 +148,13 @@ signupButton.onclick = function(event) {
 googleIcon.onclick = function(event) {
   alert("goo");
 
+  modal.style.display = "none";
+  document.getElementById("login_signup_content").style.display = "block";
+  document.getElementById("verify_content").style.display = "none";
+  $("#proceed_button").remove();
+
+  clearFields();
+
   var data = {
     username: $("#username").val() //how?
   };
@@ -155,10 +162,17 @@ googleIcon.onclick = function(event) {
   $.ajax(
     {
       type: "GET",
-      url: "/google",
-      data: {username: "izzy"}
+      url: "/google"
     })
-
+    .done(function(data) {
+      //done
+    })
+    .success(function(msg) {
+      alert("Successfully gooed up.");
+    })
+    .fail(function(jqXHR, textStatus) {
+      alert("Failed to goo up because of: " + textStatus);
+    });
 }
 
 githubIcon.onclick = function(event) {

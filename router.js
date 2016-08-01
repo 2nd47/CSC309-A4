@@ -61,9 +61,14 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 
   // USER AUTHENTICATION
   app.post('/signup', auth.signup);
+
   app.post('/login', auth.login, auth.redirectToHome);
-  app.post('/google', auth.google, auth.redirectToHome);
+  //app.post('/google', auth.google, auth.redirectToHome);
+  app.get('/google', auth.google, auth.redirectToHome);
+  app.get('/google/callback', auth.googleCallback);
+
   app.post('/github', auth.github, auth.redirectToHome);
+
   app.get('/logout', auth.logout);
 
   // FRONT-FACING ROUTES
@@ -80,9 +85,9 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.post('/inbox/:person_id/new', user.createMessage);
 
   // PROJECT ROUTES
-  app.get('/project', project.getPopularProjects);
-  app.get('/project/:project_id', project.renderProjectPage);
-  app.post('/project/new', project.createProject);
+  app.get('/projects', project.renderPopularProjectPage);
+  app.get('/projects/:project_id', project.renderProjectPage);
+  app.post('/projects/new', project.createProject);
 
   // JOB ROUTES
   app.get('/jobs', job.renderLatestJobPage)
@@ -96,12 +101,16 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 
   app.get('/search', search.getSearch);
 
-  //API ROUTES
+  // API ROUTES
   app.get('/api/profile/:username', user.getUser);
+
+  app.get('/api/projects', project.getPopularProjects);
+  app.get('/api/projects/:project_id', project.getProject);
+
   app.get('/api/jobs', job.getLatestJobs);
-  app.get('/api/inbox', user.getMessages);
-  app.get('/api/project/:project_id', project.getProject);
   app.get('/api/jobs/:job_id', job.getJob);
+
+  app.get('/api/inbox', user.getMessages);
 
   app.get('/api/admin/search', admin.searchUser);
   //app.post('/api/admin/delete_database', admin.delete_database);

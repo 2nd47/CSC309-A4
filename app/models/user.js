@@ -110,7 +110,17 @@ var user = new Schema({
 	times_frozen: [{
 		type: Number,
 		default: 0
-	}]
+	}],
+  googleId: [{
+    type: String,
+    default: ""
+  }],
+  google: {
+    id: String,
+    token: String,
+    email: String,
+    name: String
+  }
 }, { collection : 'users', timestamps: true });
 
 user.statics.findByUsername =

@@ -24,8 +24,11 @@
     "passport-google": "*",
     "passport-http": "*",
     "passport-local": "*",
+    "passport-google-oauth": "*",
+    "passport-google-oauth2": "*",
     "shortid": "^2.2.6",
-    "validator": "^5.4.0"
+    "validator": "^5.4.0",
+    "mongoose-findorcreate": "*"
   },
   "devDependencies": {
     "mocha": "^2.5.3",

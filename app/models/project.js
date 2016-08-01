@@ -6,30 +6,6 @@ var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.Types.ObjectId;
 
-var showcase = new Schema({
-  _id: {
-    type: String,
-    default: shortid.generate
-  },
-  project: {
-    type: ObjectId,
-    ref: 'Project',
-    required: true
-  },
-  // Display order inferred from indices
-  assetPaths: [{
-    type: String,
-    default: []
-  }],
-  // Can extract mediatype from full path
-  mediaTypes: [{
-    type: String,
-    default: []
-  }]
-}, { collection: 'showcases', timestamps: true });
-
-var Showcase = mongoose.model('Showcase', showcase);
-
 var project = new Schema({
   _id: {
     type: String,
@@ -63,7 +39,8 @@ var project = new Schema({
     default: []
   }],
   showcase: {
-    type: showcase
+    type: String,
+    default: ""
   },
   basicInfo: {
     type: String,
