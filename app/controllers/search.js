@@ -1,3 +1,5 @@
+var url = require('url');
+
 var collectUserInfo = function(userId) {
   var userTags = [];
   var userSkills = [];
@@ -109,7 +111,7 @@ module.exports = function(app) {
   	var userJobSkills = userInfo.userJobSkills;
 
   	var results = new Object();
-  	var queries = req.url.parse(req.url, true).query;
+  	var queries = url.parse(req.url, true).query;
 
   	// Parse the queries
   	var category;
