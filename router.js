@@ -25,9 +25,14 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 
   // USER AUTHENTICATION
   app.post('/signup', auth.signup);
+
   app.post('/login', auth.login, auth.redirectToHome);
-  app.post('/google', auth.google, auth.redirectToHome);
+  //app.post('/google', auth.google, auth.redirectToHome);
+  app.get('/google', auth.google, auth.redirectToHome);
+  app.get('/google/callback', auth.googleCallback);
+
   app.post('/github', auth.github, auth.redirectToHome);
+
   app.get('/logout', auth.logout);
 
   // FRONT-FACING ROUTES

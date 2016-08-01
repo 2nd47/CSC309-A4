@@ -1,13 +1,16 @@
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
-    GoogleStrategy = require('passport-google').Strategy;
+    GoogleStrategy = require('passport-google-oauth2').Strategy;
     session = require('express-session'),
     expressValidator = require('express-validator'),
     bcrypt = require('bcryptjs'),
     flash = require('connect-flash'),
     cookieParser = require('cookie-parser'),
     bodyParser = require("body-parser"),
-    User = require('../models/user');
+    User = require('../models/user'),
+    findOrCreate = require("mongoose-findorcreate");
+
+    //UserSchema.plugin(findOrCreate);
 
 module.exports = function(app) {
 
@@ -56,30 +59,33 @@ module.exports = function(app) {
       });
   }));
 
-  // Passport Google Strategy
-  /**
+// Passport Google Strategy
   passport.use(new GoogleStrategy({
-    consumerKey: GOOGLE_CONSUMER_KEY,
-    consumerSecret: GOOGLE_CONSUMER_SECRET,
-    callbackURL: "http://www.example.com/auth/google/callback"
+    clientID        : '913375318653-dqg1upddvrlpfssnpou9m519nh5p9vec.apps.googleusercontent.com',
+    clientSecret    : 'fGnNQThRZe__20C_3vUxKynj',
+    callbackURL     : 'http://localhost:3000/google/callback',
+    passReqToCallback   : true
   },
-  function(token, tokenSecret, profile, done) {
-      User.findOrCreate({ googleId: profile.id }, function (err, user) {
-        return done(err, user);
-      });
-    }
-  ));
-  */
+  function(request, accessToken, refreshToken, profile, done) {
+    console.log("Inside Passport strategy.");
+    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));
+
 /**
   passport.use(new GoogleStrategy({
     clientID        : '913375318653-dqg1upddvrlpfssnpou9m519nh5p9vec.apps.googleusercontent.com',
     clientSecret    : 'fGnNQThRZe__20C_3vUxKynj',
-    callbackURL     : configAuth.googleAuth.callbackURL,
+    callbackURL     : 'http://localhost:3000/profiles',
   },
   function(token, refreshToken, profile, done) {
       // make the code asynchronous
       // User.findOne won't fire until we have all our data back from Google
+      console.log('reached auth.js passport.use goo');
       process.nextTick(function() {
+        console.log('dfssd');
           // try to find the user based on their google id
           User.findOne({ 'google.id' : profile.id }, function(err, user) {
               if (err)
@@ -89,6 +95,7 @@ module.exports = function(app) {
                   return done(null, user);
               } else {
                   // if the user isnt in our database, create a new user
+                  console.log('dsfdsfdsfdsfdsf');
                   var newUser          = new User();
                   // set all of the relevant information
                   newUser.google.id    = profile.id;
@@ -105,7 +112,10 @@ module.exports = function(app) {
           });
       });
   }));
+
 */
+
+// Serialize and Deserialize user
   passport.serializeUser(function(user, done) {
     done(null, user._id);
   });
@@ -185,13 +195,24 @@ module.exports = function(app) {
   }
   */
 
-  this.google = passport.authenticate('google', { scope: 'https://www.google.com/m8/feeds' }),
+  this.google = passport.authenticate('google', ['profile','email']),
   function(req, res) {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
+    alert("in auuth.js");
     console.log("In auth.js > this.google");
     res.redirect('/');
   }
+
+  this.google = passport.authenticate('google', { scope:
+  	[ 'https://www.googleapis.com/auth/plus.login',
+  	  'https://www.googleapis.com/auth/plus.profile.emails.read' ]
+  });
+
+  this.googleCallback = passport.authenticate( 'google', {
+    successRedirect: '/profile',
+    failureRedirect: '/login'
+  });
 
 
   this.github = passport.authenticate('github'),
