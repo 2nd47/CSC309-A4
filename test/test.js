@@ -1,86 +1,65 @@
-var test = require('selenium-webdriver/testing'),
-    chai = require("chai"),
-    extend = require('node.extend'),
-    webdriver = require("selenium-webdriver"),
-    chaiAsPromised = require('chai-as-promised'),
-    chaiWebdriver = require('chai-webdriver');
+var bcrypt = require('bcryptjs'),
+    mongoose = require('mongoose'),
+    user = require('../app/controllers/user')();
 
-module.exports = function() {
-    // cache this object so all the tests can require it and guarantee that it
-    // is initialized, but only the first import will actually run the initialization
-    // logic.
-    if (this.exported) {
-        return this;
+describe('APIs', function() {
+  var url = 'localhost:3000';
+  // within before() you can run all the operations that are needed to setup your tests. In this case
+  // I want to create a connection with the database, and when I'm done, I call done().
+  before(function(done) {
+    // In our tests we use the sample db
+    var db = require('../db')();
+    collectionsToDrop = [
+      'skills',
+      'messages',
+      'broadcasts',
+      'chats',
+      'users',
+      'showcases',
+      'projects',
+      'jobs']
+    for (var i = 0; i<collectionsToDrop.length; i++) {
+      mongoose.connection.collections[collectionsToDrop[i]].drop();
     }
-
-    require('../app')(true);
-
-    extend(this, test);
-
-    // expose some members on the local scope so we can write helper functions
-    // that use them without saving the scope
-    var driver = new webdriver.Builder().
-        withCapabilities(webdriver.Capabilities.phantomjs()).
-        build();
-    this.driver = driver;
-
-    var expect = chai.expect;
-    this.expect = expect;
-
-    var describe = this.describe;
-    var beforeEach = this.beforeEach;
-    var it = this.it;
-
-    // set up chai extensions
-    chai.use(chaiAsPromised);
-    chai.use(chaiWebdriver(driver));
-
-    //variable to use in tests
-    var host = 'http://localhost:3002/';
-    this.host = host;
-
-    // helper functions
-    this.forPage = function(page, doTests) {
-        describe('/' + page, function() {
-            beforeEach(function() {
-                driver.get(host + page);
-            });
-
-            doTests();
-        });
-    };
-
-    this.testTitle = function(expected) {
-        it('should have the correct title', function() {
-            driver.getTitle().then(function(title) {
-                expect(title).to.equal('Pythius | ' + expected);
-            });
-        })
-    };
-
-    this.parseJSONResponse = function(callback) {
-        driver.findElement(webdriver.By.tagName("pre")).getInnerHtml().then(function(html) {
-            callback(JSON.parse(html));
-        });
-    };
-
-    this.fullURLForEndpoint = function(endpoint) {
-        if (host.endsWith("/") && endpoint.startsWith("/")) {
-            // trim off the slash, since our host starts with it
-            endpoint = endpoint.substring(1);
-        } else if (!(host.endsWith("/") || endpoint.startsWith("/"))) {
-            // neither of them have slashes, so add it on to the endpoint
-            endpoint = "/" + endpoint;
+    done();
+  });
+  // use describe to give a title to your test suite, in this case the tile is "Account"
+  // and then specify a function in which we are going to declare all the tests
+  // we want to run. Each test starts with the function it() and as a first argument
+  // we have to provide a meaningful title for it, whereas as the second argument we
+  // specify a function that takes a single parameter, "done", that we will use
+  // to specify when our test is completed, and that's what makes easy
+  // to perform async test!
+  describe('Users', function() {
+    var userId;
+    it('should create a new, unique user', function(done) {
+      user.createUser('dkouznetsov', 'hashedPassword', 'dkouznetsov@aida.com', function(err, user) {
+        if (err) {
+          throw err;
+        } else {
+          userId = user._id;
+          done();
         }
-
-        return host + endpoint;
-    };
-
-    this.expectJSONAndNoErr = function(res){
-        this.expect(typeof res).to.equal('object');
-        this.expect(res).to.not.have.property("err");
-   };
-
-    this.exported = true;
-    return this;
-};
+      });
+    });
+    /*
+    it('should retrieve an existing user', function(done) {
+      req = {
+        user: {
+          _id: userId
+        },
+        params: {
+          username: 'dkouznetsov'
+        }
+      };
+      res = {};
+      user.deleteUser(req, res, function(err, user) {
+        if (err) {
+          throw err;
+        } else {
+          done();
+        }
+      });
+      */
+    });
+});

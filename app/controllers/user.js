@@ -89,7 +89,7 @@ var sendMessageTo = function (sender, receiver, message) {
 }
 
 module.exports = function(app) {
-  this.getUser = function (req, res) {
+  this.getUser = function (req, res, next) {
   	/*
   	{
   		id: person id,
@@ -115,11 +115,10 @@ module.exports = function(app) {
   				job_comment: comment on the work
   			}
   		]
-  	}*/
-  	/*try {
+  	}*//*
+  	try {
   		var json = new Object();
-  		var user_name = req.params.username;
-  		db.getUserByField(user_name, function(err, user){
+  		user.findByUsername(req.params.username, function(err, user){
   			if (!user.length) {
   				res.status(404);
   				// page not found
@@ -154,7 +153,7 @@ module.exports = function(app) {
   				json.projects.push(newProject);
   			}
   			json.jobs = [];
-  			var jobs = db.Job.find({"taker": ObjectId(user_id)});
+  			var jobs = Job.find({"taker": ObjectId(user_id)});
   			while (jobs.hasNext()) {
   				var newJob = new Object();
   				var current = jobs.next();
@@ -165,8 +164,8 @@ module.exports = function(app) {
   				newJob.job_comment = current.comment;
   				json.projects.push(newJob);
   			}
-
   			res.send(JSON.stringify(json));
+        next();
   		});
   	}
   	catch (e) {
@@ -176,7 +175,7 @@ module.exports = function(app) {
   			res.render('404', { url: req.url });
   		}
   	}*/
-
+    /*
      var person1 =
     {
       "id": "1",
@@ -215,7 +214,7 @@ module.exports = function(app) {
       }]
     }
 
-    res.json(person1);
+    res.json(person1);*/
   };
 
   this.getPopularUsers = function (req, res) {
@@ -227,7 +226,6 @@ module.exports = function(app) {
   	}
   	*/
   	var json = new Object();
-
   	//var cursor =
     User.find(function(err, cursor) {
       console.log(err);
@@ -487,7 +485,7 @@ module.exports = function(app) {
     user.email = email;
     user.save(function(err, user) {
       if (err) { console.log(err); }
-      else { console.log('Created User ' + user); callback(err, user); }
+      else { callback(err, user); }
     });
   };
 
@@ -497,11 +495,12 @@ module.exports = function(app) {
 		var username = req.params.username;
 		var accountId;
 		User.findOne({"username": username}, function(err, user){
-			accountId = user._id;
+      if(err){console.log(err);}
+      accountId = user._id;
+      if (permissionManager.canDeleteProfile(userId, accountId)) {
+  			User.remove({_id: accountId});
+  		}
 		});
-		if (canDeleteProfile(userId, accountId)) {
-			User.remove({_id: accountId});
-		}
 	}
 
 	this.editProfile = function(req, res){
@@ -525,7 +524,7 @@ module.exports = function(app) {
 			db.setUserField(profileId, "tags", profileForm.tags.replace(/\s+/g, '').split(","));
 			db.setUserField(profileId, "email", profileForm.email);
 			db.setUserField(profileId, "skillTags", profileForm.skillTags.replace(/\s+/g, '').split(","));
-      
+
 			res.send('200');
 		}
 		else {
