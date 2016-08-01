@@ -13,11 +13,12 @@ module.exports = function(app) {
   	/*
   		{
   			id: project id,
-  			title: project title,
-  			publisher:
+  			name: project name,
+  			owner:
   			{
-  				publisher_id: id of owner,
-  				publisher_name: name of project owner
+  				_id: id of owner,
+          username: String,
+  				name: name of project owner
   			},
   			members:
   			[
@@ -26,8 +27,8 @@ module.exports = function(app) {
   					member_name: name of project owner
   				}
   			],
-  			short_intro: short description, 300 characters max,
-  			long_intro: longer intro with no character limit,
+  			basicInfo: short description, 300 characters max,
+  			detailedInfo: longer intro with no character limit,
   			showcase:
   			[
   				{
@@ -50,14 +51,42 @@ module.exports = function(app) {
   			],
   		}
   	*/
-    Project.findById(req.params.project_id)
-      .exec(function(err, project) {
+    Project.findById(req.params.project_id).
+      select({
+        _id: 1,
+        owner: 1,
+        name: 1,
+        members: 1,
+        showcase: 1,
+        jobs: 1,
+        basicInfo: 1,
+        detailedInfo: 1,
+        updatedAt: 1,
+        status: 1,
+        tags: 1}).
+      lean().
+      exec(function(err, project) {
         if (err) {
           res.status(404).send(err);
         } else {
-          res.status(200).send(project);
+          User.findById(project.owner).
+            select({
+              _id: 1,
+              name: 1,
+              username: 1
+            }).
+            lean().
+            exec(function(err, owner) {
+            if (err) {
+              res.status(404).send(err);
+            } else {
+              project.owner = owner;
+              console.log(project);
+              res.status(200).send(project);
+            }
+          });
         }
-      })
+      });
   	/*try {
   		var json = new Object();
   		Project.findById(req.params.project_id, function(err, project){
@@ -88,7 +117,7 @@ module.exports = function(app) {
   					json.members.push(newMember);
   				});
   			}
-  			json.short_intro = project.basicInfo;
+  			json.basicInfo = project.basicInfo;
   			json.long_intro = project.detailedInfo;
 
   			json.long_intro = [];

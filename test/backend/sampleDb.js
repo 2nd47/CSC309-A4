@@ -93,6 +93,7 @@ module.exports = function(app, auth, user, project, job, search) {
             members: [
               user3._id
             ],
+            status: 'Active',
             basicInfo: 'This is basic information about the project!',
             detailedInfo: 'This is a much much much much much\
               much much much much much much much much much much much much much \
@@ -108,6 +109,7 @@ module.exports = function(app, auth, user, project, job, search) {
               'Democratic',
               'DNC'
             ],
+            status: 'Closed',
             basicInfo: 'This is basic information about the project!',
             detailedInfo: 'This is a much much much \
               much much much much much much much much much much much much much much \
