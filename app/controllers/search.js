@@ -2,11 +2,17 @@ var collectUserInfo = function(userId) {
   var userTags = [];
   var userSkills = [];
   var userProjectTags = [];
-  var userContractSkills = [];
+  var userJobSkills = [];
   if (userId) {
     var user = db.User.findOne({"_id": ObjectId(userId)});
-    var userProjects = db.Project.find({"owner": user._id, "status": "ongoing"});
-    var userContracts = db.Contract.find({"owner": ObjectId(userId), "status": "open"});
+    var userProjects;
+		db.Project.find({"owner": user._id, "status": "ongoing"}, function(err, projects){
+			userProjects = projects;
+		});
+    var userJobs;
+		db.Job.find({"owner": ObjectId(userId), "status": "open"}, function(err, jobs){
+			userJobs = jobs;
+		});
     // User's tags on themselves
     userTags = user.tags;
     // User's skills
@@ -19,12 +25,12 @@ var collectUserInfo = function(userId) {
         userProjectTags.push(tags[i]);
       }
     }
-    // User's contracts' required skills
-    while (userContracts.hasNext()) {
-      var current = userContracts.next();
+    // User's jobs' required skills
+    while (userJobs.hasNext()) {
+      var current = userJobs.next();
       var skillTags = current.skillTags;
       for (i=0;i<skillTags.length;i++) {
-        userContractSkills.push(skillTags[i]);
+        userJobSkills.push(skillTags[i]);
       }
     }
   }
@@ -32,7 +38,7 @@ var collectUserInfo = function(userId) {
   userInfo.userTags = userTags;
   userInfo.userSkills = userSkills;
   userInfo.userProjectTags = userProjectTags;
-  userInfo.userContractSkills = userContractSkills;
+  userInfo.userJobSkills = userJobSkills;
   return JSON.stringify(userInfo);
 };
 
@@ -228,10 +234,22 @@ module.exports = function(app) {
   		var keyword = keywords[i];
   		// Get projects
   		if (category === "projects") {
-  			var projectsByName = db.Project.find({"name": {$regex: ".*" + keyword + ".*/i"}});
-  			var projectsByTags = db.Project.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}});
-  			var projectsByIntro = db.Project.find({"basicInfo": {$regex: ".*" + keyword + ".*/i"}});
-  			var projectsByDetail = db.Project.find({"detailedInfo": {$regex: ".*" + keyword + ".*/i"}});
+  			var projectsByName;
+				db.Project.find({"name": {$regex: ".*" + keyword + ".*/i"}}, function(err, projects){
+					projectsByName = projects;
+				});
+  			var projectsByTags;
+				db.Project.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}}, function(err, projects){
+					projectsByTags = projects;
+				});
+  			var projectsByIntro;
+				db.Project.find({"basicInfo": {$regex: ".*" + keyword + ".*/i"}}, function(err, projects){
+					projectsByIntro = projects;
+				});
+  			var projectsByDetail;
+				db.Project.find({"detailedInfo": {$regex: ".*" + keyword + ".*/i"}}, function(err, projects){
+					projectsByDetail = projecs;
+				});
 
   			// match projects by name
   			while (projectsByName.hasNext()) {
@@ -293,11 +311,26 @@ module.exports = function(app) {
 
   		// Get people
   		if (category === "people") {
-  			var peopleByName = db.Project.find({"name": {$regex: ".*" + keyword + ".*/i"}});
-  			var peopleByTags = db.Project.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}});
-  			var peopleBySkill = db.Project.find({"skillTags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}});
-  			var peopleByTitle = db.Project.find({"title": {$regex: ".*" + keyword + ".*/i"}});
-  			var peopleByBio = db.Project.find({"bio": {$regex: ".*" + keyword + ".*/i"}});
+  			var peopleByName;
+				db.User.find({"name": {$regex: ".*" + keyword + ".*/i"}}, function(err, people){
+					peopleByName = people;
+				});
+  			var peopleByTags;
+				db.User.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}}, function(err, people){
+					peopleByTags = people;
+				});
+  			var peopleBySkill;
+				db.User.find({"skillTags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}}, function(err, people){
+					peopleBySkill = people;
+				});
+  			var peopleByTitle;
+				db.User.find({"title": {$regex: ".*" + keyword + ".*/i"}}, function(err, people){
+					peopleByTitle = people;
+				});
+  			var peopleByBio;
+				db.User.find({"bio": {$regex: ".*" + keyword + ".*/i"}}, function(err, people){
+					peopleByBio = people;
+				});
 
   			// match people by name
   			while (peopleByName.hasNext()) {
@@ -372,11 +405,26 @@ module.exports = function(app) {
 
   		// Get jobs
   		if (category === "jobs") {
-  			var jobsByName = db.Job.find({"name": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
-  			var jobsByTags = db.Job.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"});
-  			var jobsBySkills = db.Job.find({"skillTags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"});
-  			var jobsByIntro = db.Job.find({"info": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
-  			var jobsByDetail = db.Job.find({"details": {$regex: ".*" + keyword + ".*/i"}, "status": "open"});
+  			var jobsByName;
+				db.Job.find({"name": {$regex: ".*" + keyword + ".*/i"}, "status": "open"}, function(err, jobs){
+					jobsByName = jobs;
+				});
+  			var jobsByTags;
+				db.Job.find({"tags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"}, function(err, jobs){
+					jobsByTags = jobs;
+				});
+  			var jobsBySkills;
+				db.Job.find({"skillTags": {$elemMatch: {$regex: ".*" + keyword + ".*/i"}}, "status": "open"}, function(err, jobs){
+					jobsBySkills = jobs;
+				});
+  			var jobsByIntro;
+				db.Job.find({"info": {$regex: ".*" + keyword + ".*/i"}, "status": "open"}, function(err, jobs){
+					jobsByIntro = jobs;
+				});
+  			var jobsByDetail;
+				db.Job.find({"details": {$regex: ".*" + keyword + ".*/i"}, "status": "open"}, function(err, jobs){
+					jobsByDetail = jobs;
+				});
 
   			// match jobs by name
   			while (jobsByName.hasNext()) {
