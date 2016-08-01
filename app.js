@@ -2,7 +2,7 @@
 /* Contributors located at: github.com/2nd47/CSC309-A4 */
 
 var startServer = function(testServer) {
-  // server modules
+  // setup express app
   var express = require('express');
   var app = express();
 
@@ -15,7 +15,7 @@ var startServer = function(testServer) {
 			admin = require('./app/controllers/admin')(app),
       router = require('./router')(app, auth, user, project, job, search, admin);
 
-  //return 404 page
+  // return 404 page
   app.use(function(req, res, next){
     res.status(404);
     res.sendFile('404.html', { root: "./views" });
