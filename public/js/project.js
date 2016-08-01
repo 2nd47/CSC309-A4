@@ -43,7 +43,7 @@ $("#profile_follow").click(function(){
 
 $(document).ready(function() {
 	//set the path to the api
-	var path = window.location.href.replace("project","api/project");
+	var path = window.location.href.replace("projects","api/projects");
 
 	//make api request and render json data on the html
 	$.get(path, function(data) {

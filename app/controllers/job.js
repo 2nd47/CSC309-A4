@@ -20,7 +20,7 @@ module.exports = function(app) {
       select({ _id: 1, createdAt: 1, name: 1, intro: 1, owner: 1 }).
       exec(function(err, jobs) {
         if (err) {
-        res.status(500).send(err);
+        res.status(404).send(err);
         } else {
           res.status(200).send(jobs);
         }

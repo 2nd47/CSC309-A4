@@ -3,6 +3,9 @@ var User = require('../models/user'),
     permissionManager = require('../middleware/permission_manager');
 
 module.exports = function(app) {
+  this.renderPopularProjectPage = function(req, res) {
+    res.sendFile('popularProjects.html', { root: './views' });
+  }
   this.renderProjectPage = function(req, res) {
     res.sendFile('project.html', { root: "./views" });
   }
@@ -47,7 +50,15 @@ module.exports = function(app) {
   			],
   		}
   	*/
-  	try {
+    Project.findById(req.params.project_id)
+      .exec(function(err, project) {
+        if (err) {
+          res.status(404).send(err);
+        } else {
+          res.status(200).send(project);
+        }
+      })
+  	/*try {
   		var json = new Object();
   		Project.findById(req.params.project_id, function(err, project){
         if (!project.length) {
@@ -123,7 +134,7 @@ module.exports = function(app) {
   		if (req.accepts('html')) {
   			res.render('404', { url: req.url });
   		}
-  	}
+  	}*/
     //res.send('AIDA Home Page!');
     /*
     var project1 =
@@ -170,35 +181,21 @@ module.exports = function(app) {
 
       res.json(project1);*/
   };
-
-  this.getPopularProjects = function (req, res, next) {
-  	// get name, tags, showcase
-  	var json = new Object();
-  	var cursor = Project.find({},{"name": 1, "tags": 1, "showcase": 1}).sort({"numFollowers": -1}).limit(10);
-  	json.topTen = cursor.toArray();
-  	json.following = [];
-  	var userId = req.session.userId;
-  	if (userId) {
-  		User.findById(userId, function(err, user){
-  			var followings = user.followings;
-  			var numFollowings = followings.length;
-  			var i;
-  			for (i=0;i<numFollowings;i++) {
-  				Project.findById(followings[i], function(){
-  					// the object being followed is an existing project
-  					if (project.length) {
-  						var newProject = new Object();
-  						newProject._id = project._id;
-  						newProject.name = project.name;
-  						newProject.tags = project.tags;
-  						json.following.push(newProject);
-  					}
-  				});
-  			}
-  		});
-  	}
-  	res.send(JSON.stringify(json));
-    //res.send('AIDA Home Page!');
+  this.getPopularProjects = function (req, res) {
+    var pageNum = 1;
+    var resultsPerPage = 10;
+  	Project.find({}).
+      select({_id: 1, name: 1, tags: 1, showcase: 1, createdAt: 1, basicInfo: 1}).
+      sort({numFollowers: -1}).
+      skip((pageNum - 1) * resultsPerPage).
+      limit(resultsPerPage).
+      exec(function(err, projects) {
+        if (err) {
+          res.status(404).send(err);
+        } else {
+          res.status(200).send(projects);
+        }
+      });
   };
 
   this.createProject = function (req, res, next) {

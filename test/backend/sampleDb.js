@@ -63,8 +63,8 @@ module.exports = function(app, auth, user, project, job, search) {
     url: 'http://eng.putin.kremlin.ru/'
   });
   var user4 = User({
-    username: 'aida-admin',
-    passwordHash: bcrypt.hashSync('bananamonkeymuffin'),
+    username: 'aida',
+    passwordHash: bcrypt.hashSync('aidapass'),
     email: 'aidawebapp@gmail.com',
     name: 'AIDA Master',
     bio: 'Hello, I am the adminstrator account for AIDA!',
