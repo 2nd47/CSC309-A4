@@ -15,6 +15,10 @@ $(document).ready(function() {
       $newJob.append(
         $("<p>").text(item.intro)
       );
+      $newJob.append(
+        $("<p>").addClass("timestamp").
+          text('Created at: ' + item.createdAt)
+      );
       $("#left").append($newJob);
     }
   });

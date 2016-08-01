@@ -17,15 +17,12 @@ module.exports = function(app) {
       sort({ createdAt: 1 }).
       skip((pageNum - 1) * resultsPerPage).
       limit(resultsPerPage).
-      select({ _id: 1, name: 1, intro: 1, owner: 1 }).
+      select({ _id: 1, createdAt: 1, name: 1, intro: 1, owner: 1 }).
       exec(function(err, jobs) {
         if (err) {
         res.status(500).send(err);
         } else {
-          // Get user associated with job so we can load their profile picture
-          User.findById(owner, function(err, user) {
-            res.status(200).send(jobs);
-          });
+          res.status(200).send(jobs);
         }
       });
   }

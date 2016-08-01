@@ -73,6 +73,12 @@ IT CONTAINS STYLES FOR THE jobs PAGE*/
   margin: 0.25em;
 }
 
+.jobs-item .timestamp {
+  text-align: right;
+  font-size: x-small;
+  margin: 0.25em;
+}
+
 .jobs-header {
   text-align: center;
   background-color: #E6E6E6;
