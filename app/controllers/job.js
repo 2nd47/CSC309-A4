@@ -29,12 +29,12 @@ module.exports = function(app) {
   					var tags = jobForm.descriptionTags.replace(/\s+/g, '');split(",");
   					db.setJobField(newJobId, "descriptionTags", tags);
   					db.setJobField(newJobId, "details", jobForm.details);
-  					db.setJobField(newJobId, "url", jobIdToUrl(newJobId));//??
-  					json.url = jobIdToUrl(newJobId);
+  					db.setJobField(newJobId, "url", "/job/" + newJobId));//??
+  					json.url = "/job/" + newJobId;
   					json.success = "true";
   					// send broadcast to all followers of the project
   					var broadcast = "A new job is added for " + db.getProjectField(projectId, "name") + " .";
-  					broadcastFollowers(projectId, jobIdToUrl(newJobId), broadcast);
+  					broadcastFollowers(projectId, "/job/" + newJobId, broadcast);
   				});
   			}
   			else {

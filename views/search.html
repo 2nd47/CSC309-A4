@@ -94,59 +94,27 @@
 			<div id="search_wrapper" class="box_content">
 			    <div id="searchbar_inpage">
 					<!--The search button will be implemented in javascript later-->
-					<input id="searchbar_button" type="submit" value="">
-					<input id="searchbar_input" type="text" name="search" placeholder="Donald Trump">
+					<input id="search_button" type="submit" value="">
+					<input id="search_input" type="text" name="search" placeholder="Enter keywords">
 				</div>
 
 
 				<select id="dropdownBox">
-				  <option value="option1">Everything</option>
-				  <option value="option2">Projects</option>
-				  <option value="option3">Contractors</option>
-				  <option value="option4">Notifications</option>
+				  <option selected="selected" value="projects">Projects</option>
+				  <option value="people">People</option>
+				  <option value="jobs">Jobs</option>
 				</select>
 				<button id="search">Search</button>
-				<form id="checkbox"action="">
-					<input type="checkbox" name="vehicle" value="Bike">Last 3 months<br>
-					<input type="checkbox" name="vehicle" value="Car">Last 6 months
-				</form>
 			</div>
         <div class ="box_tag">
-          Results(5)
+          Results(<span id="num-results">5</span>)
         </div>
 				<div class="box_content">
-          <div id="result_people">
-            <div id="profile_picture">
-              <a href="profile.html">
-              <img src="assets/images/users/trump.jpg" width="128" height="128">
-              </a>
-            </div>
+          <div id="results">
+						<!--divs with class result-->
+						
           </div>
-					<div id="result">
-					<strong>Donald</strong> John <strong>Trump</strong>(born June 14, 1946) is an American businessman,
-					television personality, author, and politician. He is chairman of
-					The Trump Organization, which is the principal holding company for
-					his real estate ventures and other business interests. He is also
-					the presumptive nominee of the Republican Party for President of
-					 the United States in the 2016 election.
-					Trump graduated from the Wharton School of the University of
-					Pennsylvania in 1968. Having worked in his father Fred Trump's
-					real estate and construction firm while attending college, he
-					assumed control of that family business in 1973, later renaming
-					it The Trump Organization. During his career, Trump has built
-					hotels, casinos, golf courses, the Manhattan neighborhood Riverside
-					South and numerous other developments, many of which bear his name,
-					including Trump Entertainment Resorts (now owned by Carl Icahn).
-					</div>
-					<div id="result">
-					<strong>Donald</strong> John <strong>Trump</strong> updated a new skill Business with proficiency ★★★★★. Let's congrats him!
-					</div>
-					<div id="result">
-					<strong>Donald</strong> John <strong>Trump</strong> updated a new skill C/C++ with proficiency ★☆☆☆☆. Oh man...
-					</div>
-					<div id="result">
-					<strong>Donald</strong> John <strong>Trump</strong> just became the president of USA!
-					</div>
+					
 				</div>
 
 

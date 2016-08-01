@@ -223,7 +223,7 @@ module.exports = function(app) {
       });
 
       newProject.save(function(err, project) {
-        json.url = req.baseUrl + '/' + newProject._id;
+        json.url = '/project/' + newProject._id;
         json.success = true;
       });
   	}
