@@ -108,6 +108,11 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 	//app.post('/api/admin/repopulate_database', admin.repopulate_database);
 
 	app.get('/api/get_username', function(req, res){
-		res.send(req.user._id);
+		if (req.user) {
+			res.send(req.user._id);
+		}
+		else {
+			//res.send(null);
+		}
 	});
 };
