@@ -231,6 +231,8 @@ module.exports = function(app) {
   		following: [list of info, empty if user is not following anyone or is not logged in];
   	}
   	*/
+    return res.redirect('/');
+
   	var json = new Object();
   	//var cursor =
     User.find(function(err, cursor) {
