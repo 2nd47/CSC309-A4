@@ -48,9 +48,8 @@ $(document).ready(function() {
 	//make api request and render json data on the html
 	$.get(path, function(data) {
 		console.log(data);
-		console.log(data.owner.name);
 		$("#project_name").html(JSON.stringify(data.name).slice(1,-1));
-		$("#project_owner").text(data.owner.name);
+		$("#project_owner").html($("<strong>").text(data.owner.name));
 		$("#project_owner").attr("href", "/profile/" + JSON.stringify(data.owner.username).slice(1,-1));
 		$("#project_brief").html(JSON.stringify(data.basicInfo).slice(1,-1));
 		$("#last_update").html(
@@ -72,11 +71,11 @@ $(document).ready(function() {
 
 		$("#showcase_display").html(
 			"<img src='"
-			+ JSON.stringify(data.showcase.path).slice(1,-1)
+			+ JSON.stringify(data.showcase).slice(1,-1)
 			+ "'>"
 		);
 
-		$("#details_text").html(JSON.stringify(data.detailedInfo).slice(1,-1));
+		$("#details_text").append($("<p>").text(data.detailedInfo));
 
 		//render every contract
 		$.each(data.jobs, function(index, job) {

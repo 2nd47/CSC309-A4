@@ -20,7 +20,6 @@ module.exports = function(app, auth, user, project, job, search) {
     'broadcasts',
     'chats',
     'users',
-    'showcases',
     'projects',
     'jobs']
   for (var i = 0; i<collectionsToDrop.length; i++) {
