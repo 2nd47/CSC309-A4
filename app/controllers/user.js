@@ -227,31 +227,34 @@ module.exports = function(app) {
   	}
   	*/
   	var json = new Object();
-  	var cursor = User.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}).sort({"numFollowers": -1}).limit(10);
-  	json.topTen = cursor.toArray();
-  	json.following = [];
-  	var userId = req.session.userId;
-  	if (userId) {
-  		User.findById(userId, function(err, user){
-  			var followings = user.followings;
-  			var numFollowings = followings.length;
-  			var i;
-  			for (i=0;i<numFollowings;i++) {
-  				User.findById(followings[i], function(err, person){
-  					// the object being followed is an existing user
-  					if (person) {
-  						var newPerson = new Object();
-  						newPerson._id = person._id;
-  						newPerson.name = person.name;
-  						newPerson.title = person.title;
-  						newPerson.skillTags = person.skillTags;
-  						newPerson.tags = person.tags;
-  						json.following.push(newPerson);
-  					}
-  				});
-  			}
-  		});
-  	}
+  	User.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}, function(err, cursor){
+			cursor = cursor.sort({"numFollowers": -1}).limit(10);
+			json.topTen = cursor.toArray();
+			json.following = [];
+			var userId = req.session.userId;
+			if (userId) {
+				User.findById(userId, function(err, user){
+					var followings = user.followings;
+					var numFollowings = followings.length;
+					var i;
+					for (i=0;i<numFollowings;i++) {
+						User.findById(followings[i], function(err, person){
+							// the object being followed is an existing user
+							if (person) {
+								var newPerson = new Object();
+								newPerson._id = person._id;
+								newPerson.name = person.name;
+								newPerson.title = person.title;
+								newPerson.skillTags = person.skillTags;
+								newPerson.tags = person.tags;
+								json.following.push(newPerson);
+							}
+						});
+					}
+				});
+			}
+		});
+
   	res.send(JSON.stringify(json));
   };
 
@@ -480,6 +483,73 @@ module.exports = function(app) {
       else { console.log('Created User ' + user); callback(err, user); }
     });
   };
-
+	
+	// Delete an existing account given the id
+	this.deleteUser = function(req, res) {
+		var userId = req.user._id;
+		var username = req.params.username;
+		var accountId;
+		User.findOne({"username": username}, function(err, user){
+			accountId = user._id;
+		});
+		if (canDeleteProfile(userId, accountId)) {
+			User.remove({_id: accountId});
+		}
+	}
+	
+	this.editProfile = function(req, res){
+		var userId = req.user._id;
+		var username = req.params.username;
+		var profileId;
+		User.findOne({"username": username}, function(err, user){
+			profileId = user._id;
+		});
+		var profileForm = qs.parse(req.data);
+		if (canEditProfile(userId, profileId)) {
+			db.setUserField(profileId, "name", profileForm.name);
+			if (profileForm.newpassword.length != 0) {
+				if (bcrypt.hash(profileForm.newpassword) === bcrypt.hash(profileForm.repeatpassword)) {
+					db.setUserField(profileId, "passwordHash", bcrypt.hash(profileForm.newpassword));
+				}
+			}
+			db.setUserField(profileId, "avatar", profileForm.image.id);
+			db.setUserField(profileId, "title", profileForm.title);
+			db.setUserField(profileId, "bio", profileForm.bio);
+			db.setUserField(profileId, "tags", profileForm.tags.replace(/\s+/g, '').split(","));
+			db.setUserField(profileId, "email", profileForm.email);
+			
+			// edit skill tags
+			db.getUserById(profileId, function(err, profile){
+				// delete all current skills
+				var curSkills = profile.skillTags;
+				var numCurSkills = curSkills.length;
+				var i;
+				for (i=0;i<numCurSkills;i++) {
+					var id = curSkills[i]._id;
+					db.Skill.remove({_id: id});
+				}
+				db.setUserField(profileId, "skillTags", []);
+				
+			});
+			// build new skill tags
+			var skills = profileForm.skill
+			var skillLevels = profileForm.level;
+			var numSkills = skills.length;
+			var i;
+			for (i=0;i<numSkills;i++) {
+				var skill = new models.Skill({
+					name: skills[i],
+					rating: skillLevel[i]
+				});
+				skill.save(function(err, st){
+					db.pusUserField(profileId, "skillTags", st);
+				});
+			}
+			res.send('200');
+		}
+		else {
+			res.send('401');
+		}
+	}
   return this;
 }

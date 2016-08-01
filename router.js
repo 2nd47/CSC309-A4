@@ -38,7 +38,7 @@ var serveStaticPagesOnRequest = function(app, pageNames) {
   }
 };
 
-module.exports = function(app, auth, user, project, job, search) {
+module.exports = function(app, auth, user, project, job, search, admin) {
 
   app.use(express.static(__dirname + '/public'));
   app.set('view engine', 'html');
@@ -126,4 +126,21 @@ module.exports = function(app, auth, user, project, job, search) {
 
   // search page
   app.get('/search', search.getSearch);
+	// username search page used by the admin
+	app.get('/search_user', admin.searchUser);
+
+	app.post('/delete_user/:username', user.deleteUser);
+	//app.post('/admin/delete_database', admin.delete_database);
+	//app.post('/admin/repopulate_database', admin.repopulate_database);
+	app.get('/inbox.html', function(req, res){
+		res.sendFile('inbox.html', { root: "./views/" });
+	});
+	app.get('/control.html', function(req, res){
+		res.sendFile('control.html', { root: "./views/" });
+	});
+	app.get('/api/get_username', function(req, res){
+		res.send(req.user._id);
+	});
+	// edit user profile (profile_id: the user id of the profile)
+	app.post('/edit_profile/:username', user.editProfile);
 };
