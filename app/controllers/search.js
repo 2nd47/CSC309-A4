@@ -121,8 +121,15 @@ module.exports = function(app) {
   	else {
   		category = "projects";
   	}
-
-  	var keywords = queries.keywords.split(",");
+		
+		var keywords;
+		if (keywords) {
+			keywords = queries.keywords.split(",");
+		}
+		else {
+			keywords = [];
+		}
+  	
   	/*
   	var time;
   	if (queries.time) {
