@@ -9,19 +9,13 @@ For Windows:
 
 ## Launching the app
 For Windows:
-- Open your command window and enter:
-
-  mongod --port 27017 --dbpath "<i>Path to db folder</i>"
-
+- Open your command window and enter the following code, replacint <i>db_folder_path</i> with the absolute path to the db folder you've made:
+~~~
+  mongod --port 27017 --dbpath "db_folder_path"
+~~~
 - Open your command window in the root folder of the app and enter:
-
+~~~
+  npm install
   node app.js
-
-
-# Enhancements / Ideas for Final
-- Database select: field
-- Password retries: fail 5 times wait 15 minutes
-- Logout if inactive
-- File upload
-- Favicon
-- Mobile friendly (except top 10 projects, top 10 people, inbox)
+~~~
+- You can now go to the app by going to <i>localhost:3000</i> in your web browser
