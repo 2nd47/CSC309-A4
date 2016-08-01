@@ -13,6 +13,10 @@ var loginSwitch = document.getElementById("login_switch");
 var signupButton = document.getElementById("signup_button");
 var loginButton = document.getElementById("login_button");
 
+var googleIcon = document.getElementById("google");
+var githubIcon = document.getElementById("github");
+
+
 // When the user clicks the button, open the modal
 btn.onclick = function() {
     modal.style.display = "block";
@@ -93,16 +97,15 @@ loginButton.onclick = function(event) {
       data: data
     })
     .done(function(data) {
-      alert("Done.");
     })
     .success(function(msg) {
-      alert("Successfully logged in.");
+      document.getElementById("login_signup_content").style.display = "none";
+      document.getElementById("verify_content").style.display = "block";
     })
     .fail(function(jqXHR, textStatus) {
       $("#feedback_msg").html(jqXHR.status);
       $("#feedback_msg").css('display','block');
       $("#feedback_msg").css('background-color','#FF7F7F');
-      alert("Failed to log in because of: " + textStatus);
     });
 }
 
@@ -131,14 +134,46 @@ signupButton.onclick = function(event) {
         data: data
       })
       .done(function(data) {
-        alert("Done.");
       })
       .success(function(msg) {
         alert("Successfully signed up.");
+        document.getElementById("login_signup_content").style.display = "none";
+        document.getElementById("verify_content").style.display = "block";
       })
       .fail(function(jqXHR, textStatus) {
         alert("Failed to sign up because of: " + textStatus);
       });
+}
+
+googleIcon.onclick = function(event) {
+  alert("goo");
+
+  var data = {
+    username: $("#username").val() //how?
+  };
+
+  $.ajax(
+    {
+      type: "POST",
+      url: "/google",
+      data: {username: "izzy"}
+    })
+
+}
+
+githubIcon.onclick = function(event) {
+  alert("git");
+
+  var data = {
+    username: $("#username").val() //how?
+  };
+
+  $.ajax(
+    {
+      type: "POST",
+      url: "/github",
+      data: {username: "izzy"}
+    })
 }
 
 //clear the fields
