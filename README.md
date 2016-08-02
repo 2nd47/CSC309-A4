@@ -9,7 +9,7 @@ For Windows:
 
 ## Launching the app
 For Windows:
-- Open your command window and enter the following code, replacint <i>db_folder_path</i> with the absolute path to the db folder you've made:
+- Open your command window and enter the following code, replacing <i>db_folder_path</i> with the absolute path to the db folder you've made:
 ~~~
   mongod --port 27017 --dbpath "db_folder_path"
 ~~~
@@ -22,7 +22,7 @@ For Windows:
 
 ## Testing the app
 For Windows:
-- Open your command window and enter the following code, replacint <i>db_folder_path</i> with the absolute path to the db folder you've made:
+- Open your command window and enter the following code, replacing <i>db_folder_path</i> with the absolute path to the db folder you've made:
 ~~~
   mongod --port 27017 --dbpath "db_folder_path"
 ~~~
