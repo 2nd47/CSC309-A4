@@ -235,15 +235,20 @@ module.exports = function(app) {
 
   	var json = new Object();
   	//var cursor =
-    User.find(function(err, cursor) {
+    User.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}).sort({"numFollowers": -1}).limit(10).lean().exec(function(err, cursor) {
       console.log(err);
       console.log(cursor[0]);
-        /*{"name": 1, "title": 1, "skillTags": 1, "tags": 1}*/
+			console.log(cursor);
+      //cursor should be an array now?
   		//cursor = cursor.sort({"numFollowers": -1}).limit(10);
-  		json.topTen = cursor.toArray();
-  		res.send(JSON.stringify(json));
+  		if (!err) {
+				res.status(200).send(cursor);
+			}
+			else {
+				res.status(404).send('404');
+			}
   		return;
-  		json.following = [];
+  		/*json.following = [];
   		var userId = req.session.userId;
   		if (userId) {
   			User.findById(userId, function(err, user){
@@ -265,10 +270,8 @@ module.exports = function(app) {
   					});
   				}
   			});
-      }
+      }*/
 		});
-
-  	res.send(JSON.stringify(json));
   };
 
   this.getMessages = function (req, res) {
