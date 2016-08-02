@@ -8,7 +8,7 @@ $(document).ready(function(){
 	.done(function(data){
 		$.ajax({
 			type: "get",
-			url: "/api/profile/:" + username
+			url: "/api/profiles/:" + username
 		})
 		.done(function(data)
 		{
@@ -123,7 +123,7 @@ function requestEditProfile(username) {
 	$.ajax(
 	{
 		type: "post",
-		url: "/profile/:" + username,
+		url: "/profiles/:" + username,
 		data: queryString
 	})
 	.done(function(data)
@@ -142,7 +142,7 @@ function requestDeleteProfile(username) {
 	if (ans) {
 		$.ajax({
 			type: "delete",
-			url: "/profile/:" + username
+			url: "/profiles/:" + username
 		})
 		.done(function(data)
 		{
@@ -158,7 +158,7 @@ function requestDeleteProfile(username) {
 function displayProfileForm(username) {
 	$.ajax({
 		type: "post",
-		url: "/api/profile/:" + username
+		url: "/api/profiles/:" + username
 	})
 	.done(function(data)
 	{

@@ -1,6 +1,8 @@
 var User = require('../models/user'),
+    Job = require('../models/job'),
     Project = require('../models/project'),
-    permissionManager = require('../middleware/permission_manager');
+    permissionManager = require('../middleware/permission_manager'),
+    async = require('async');
 
 module.exports = function(app) {
   this.renderPopularProjectPage = function(req, res) {
@@ -81,8 +83,32 @@ module.exports = function(app) {
               res.status(404).send(err);
             } else {
               project.owner = owner;
-              console.log(project);
-              res.status(200).send(project);
+              var jobsArray = [];
+              async.each(project.jobs, function(jobId, callback) {
+                Job.findById(jobId).
+                  select({
+                    _id: 1,
+                    name: 1,
+                    budget: 1,
+                    deadline: 1,
+                    status: 1
+                  }).
+                  exec(function(err, job) {
+                    if (err) {
+                      callback(err);
+                    } else {
+                      jobsArray.push(job);
+                      callback();
+                    }
+                  });
+              }, function(err) {
+                if (err) {
+                  res.status(404).send(err);
+                } else {
+                  project.jobs = jobsArray;
+                  res.status(200).send(project);
+                }
+              });
             }
           });
         }

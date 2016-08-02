@@ -74,9 +74,9 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   // FRONT-FACING ROUTES
   // USER ROUTES
   app.get('/profiles', user.getPopularUsers);
-  app.get('/profile/:username', user.renderUserPage);
-  app.post('/profile/:username', user.editProfile);
-  app.delete('/profile/:username', user.deleteUser);
+  app.get('/profiles/:username', user.renderUserPage);
+  app.post('/profiles/:username', user.editProfile);
+  app.delete('/profiles/:username', user.deleteUser);
 
   // INBOX ROUTES
   app.get('/inbox', user.renderMessagePage);
@@ -104,7 +104,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 
 
   // API ROUTES
-  app.get('/api/profile/:username', user.getUser);
+  app.get('/api/profiles/:username', user.getUser);
 
   app.get('/api/projects', project.getPopularProjects);
   app.get('/api/projects/:project_id', project.getProject);

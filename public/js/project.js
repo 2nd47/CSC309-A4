@@ -48,7 +48,7 @@ $(document).ready(function() {
 	$.get(path, function(data) {
 		$("#project_name").html(JSON.stringify(data.name).slice(1,-1));
 		$("#project_owner").html($("<strong>").text(data.owner.name));
-		$("#project_owner").attr("href", "/profile/" + JSON.stringify(data.owner.username).slice(1,-1));
+		$("#project_owner").attr("href", "/profiles/" + JSON.stringify(data.owner.username).slice(1,-1));
 		$("#project_brief").html(JSON.stringify(data.basicInfo).slice(1,-1));
 		$("#last_update").html(
 			"<strong>Last Update:</strong> "
@@ -77,20 +77,24 @@ $(document).ready(function() {
 
 		//render every contract
 		$.each(data.jobs, function(index, job) {
+			job = data.jobs[index];
 			$("#contract_listing").append(
 				"<li>"
-				+ "<a href='/job/"
-				+ JSON.stringify(job.id).slice(1,-1)
+				+ "<a href='/jobs/"
+				+ JSON.stringify(job._id).slice(1,-1)
 				+ "' style='text-decoration: none'>"
 				+ "<div class='contract_intro'>"
 				+ "<h2><strong>"
-				+ JSON.stringify(job.title).slice(1,-1)
+				+ JSON.stringify(job.name).slice(1,-1)
 				+ "</strong></h2>"
 				+ "<p><strong>Status:</strong> "
 				+ JSON.stringify(job.status).slice(1,-1)
 				+ "</p>"
 				+ "<p><strong>Budget:</strong> "
 				+ JSON.stringify(job.budget)
+				+ "</p>"
+				+ "<p><strong>Budget:</strong> "
+				+ JSON.stringify(job.deadline)
 				+ "</p>"
 				+ "</li>"
 			);

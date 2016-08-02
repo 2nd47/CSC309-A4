@@ -28,7 +28,7 @@ $("#profile_bio_save").click(function(){
 
 $(document).ready(function() {
 	//set the path to the api
-	var path = window.location.href.replace("profile","api/profile");
+	var path = window.location.href.replace("profiles","api/profiles");
 
 	//make api request and render json data on the html
 	$.get(path, function(data) {
@@ -63,7 +63,7 @@ $(document).ready(function() {
 		//render every contract
 		$.each(data.jobs, function(index, job) {
 			$("#contracts_list").append(
-				"<a href='/job/"
+				"<a href='/jobs/"
 				+	JSON.stringify(job.id).slice(1,-1)
 				+ "'>"
 				+ JSON.stringify(job.name).slice(1,-1)
