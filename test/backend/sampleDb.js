@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 // Init sample database info
 var sample_data_init = false;
 
-module.exports = function(app, auth, user, project, job, search, mainCallback) {
+module.exports = function(app, auth, user, project, job, search) {
   if (sample_data_init) {
     return;
   } else {
@@ -86,13 +86,12 @@ module.exports = function(app, auth, user, project, job, search, mainCallback) {
     });
     // Save users
     user1.save(function(err, dtrump) {
-      if (err) { console.log(err); }
+
       user2.save(function(err, bsanders) {
-        if (err) { console.log(err); }
+
         user3.save(function(err, vputin) {
-          if (err) { console.log(err); }
+
           user4.save(function(err, hclinton) {
-            if (err) { console.log(err); }
             // Projects
             var project1 = Project({
               name: 'Trump for President!',
@@ -134,20 +133,18 @@ module.exports = function(app, auth, user, project, job, search, mainCallback) {
                 for the \'Sanders for President!\' job!'
             });
             project1.save(function(err, trumpProj) {
-              if (err) { console.log(err); }
-              console.log('project created ' + trumpProj);
+
               User.findByIdAndUpdate(user1._id,
                 { $push: { 'projects': trumpProj._id }},
                 function(err, user) {
-                  if (err) { console.log(err); }
+
                 });
               project2.save(function(err, sandersProj) {
-                if (err) { console.log(err); }
-                console.log('project created ' + sandersProj);
+                
                 User.findByIdAndUpdate(user2._id,
                   { $push: { 'projects': project2._id}},
                   function(err, user) {
-                    if (err) { console.log(err); }
+
                   });
                 var job1 = Job({
                   name: 'Website Designer',
@@ -178,20 +175,19 @@ module.exports = function(app, auth, user, project, job, search, mainCallback) {
                   url: 'http://www.trump.com/connect-with-us'
                 });
                 job1.save(function(err, job1) {
-                  if (err) { console.log(err); }
+
                   Project.findByIdAndUpdate(project1._id,
                     { $push: { 'jobs' : job1._id }},
                     function(err, project) {
-                      if (err) { console.log(err); }
+
                     });
                 });
                 job2.save(function(err, job2) {
-                  if (err) { console.log(err); }
+
                   Project.findByIdAndUpdate(project1._id,
                     { $push: { 'jobs' : job2._id }},
                     function(err, project) {
-                      if (err) { console.log(err); }
-                      else {mainCallback();}
+
                     });
                 });
               });

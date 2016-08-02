@@ -22,10 +22,10 @@
     "mongoose-findorcreate": "*",
     "nodemon": "^1.9.2",
     "passport": "*",
+    "passport-github": "*",
     "passport-google-oauth2": "*",
     "passport-http": "*",
     "passport-local": "*",
-    "passport-github": "*",
     "shortid": "^2.2.6",
     "validator": "^5.4.0"
   },

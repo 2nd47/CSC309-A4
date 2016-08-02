@@ -2,8 +2,6 @@
 /* Contributors located at: github.com/2nd47/CSC309-A4 */
 
 var express = require('express');
-var fs = require('fs');
-var url = require('url');
 
 module.exports = function(app, auth, user, project, job, search, admin) {
 
