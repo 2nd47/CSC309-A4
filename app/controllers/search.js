@@ -198,9 +198,9 @@ module.exports = function(app) {
 			// helper function to add new project
 			function addNewProject(project, basePriority) {
 				results[project._id] = new Object();
-				results[project._id].url = "/project/" + project._id;
+				results[project._id].url = "/projects/" + project._id;
 				results[project._id].type = "project";
-				results[project._id].title = project.name;
+				results[project._id].name = project.name;
 				results[project._id].short_intro = project.basicInfo;
 				results[project._id].latest_update = project.updatedAt;
 				results[project._id].status =  project.status;
@@ -217,7 +217,7 @@ module.exports = function(app) {
 			// helper function to add new person
 			function addNewPerson(person, basePriority) {
 				results[person._id] = new Object();
-				results[person._id].url = "/profile/" + person.username;
+				results[person._id].url = "/profiles/" + person.username;
 				results[person._id].type = "person";
 				results[person._id].username = person.username;
 				results[person._id].name = person.name;
@@ -244,8 +244,8 @@ module.exports = function(app) {
 				results[job._id].name = job.name;
 				results[job._id].intro = job.intro;
 				results[job._id].skills = job.skillTags;
-				results[job._id].project_id = job.project;
-				results[job._id].project_tags = job.descriptionTags;
+				results[job._id].project_url = '/projects/' + job.project;
+				results[job._id].tags = job.descriptionTags;
 				results[job._id].deadline = job.deadline;
 				results[job._id].budget = job.budget;
 				// base priority

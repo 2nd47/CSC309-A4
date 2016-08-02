@@ -11,6 +11,7 @@ IT CONTAINS STYLES FOR THE SEARCH PAGE*/
 }
 
 #search_wrapper {
+	height: 50px;
   margin-bottom: 10px;
 }
 
@@ -126,18 +127,9 @@ h6 {
     font-size: 12px;
 }
 
-#search_nav {
-  height: 28px;
-  display: inline-block;
-  float:right;
-  border: 2px solid #FBFBFB;
-  border-radius: 2px;
-  margin: 9px 8px 9px 8px;
-}
-
 /*Maginifying glass image is public domain:
 https://pixabay.com/en/magnifying-glass-search-1083373/*/
-#search_nav input[type=submit] {
+#search_button input[type=submit] {
   width: 28px;
   height: 28px;
   text-decoration: none;
@@ -152,7 +144,7 @@ https://pixabay.com/en/magnifying-glass-search-1083373/*/
   cursor: pointer;
 }
 
-#search_nav input[type=submit]:focus {
+#search_button input[type=submit]:focus {
   outline: none;
 }
 
