@@ -1,65 +1,60 @@
-var bcrypt = require('bcryptjs'),
-    mongoose = require('mongoose'),
-    user = require('../app/controllers/user')();
+var express = require('express'),
+    request = require('supertest');
+
+var app;
 
 describe('APIs', function() {
-  var url = 'localhost:3000';
-  // within before() you can run all the operations that are needed to setup your tests. In this case
-  // I want to create a connection with the database, and when I'm done, I call done().
   before(function(done) {
-    // In our tests we use the sample db
-    var db = require('../db')();
-    collectionsToDrop = [
-      'skills',
-      'messages',
-      'broadcasts',
-      'chats',
-      'users',
-      'showcases',
-      'projects',
-      'jobs']
-    for (var i = 0; i<collectionsToDrop.length; i++) {
-      mongoose.connection.collections[collectionsToDrop[i]].drop();
-    }
-    done();
+    app = require('../app')(done());
   });
-  // use describe to give a title to your test suite, in this case the tile is "Account"
-  // and then specify a function in which we are going to declare all the tests
-  // we want to run. Each test starts with the function it() and as a first argument
-  // we have to provide a meaningful title for it, whereas as the second argument we
-  // specify a function that takes a single parameter, "done", that we will use
-  // to specify when our test is completed, and that's what makes easy
-  // to perform async test!
-  describe('Users', function() {
-    var userId;
-    it('should create a new, unique user', function(done) {
-      user.createUser('dkouznetsov', 'hashedPassword', 'dkouznetsov@aida.com', function(err, user) {
-        if (err) {
-          throw err;
-        } else {
-          userId = user._id;
-          done();
-        }
+
+  describe('GET routes for serving pages', function() {
+    describe('/', function() {
+      it('should respond with html for landing page', function(done) {
+        request(app).
+          get('/').
+          expect('Content-Type', /html/).
+          expect(200, done)
       });
     });
-    /*
-    it('should retrieve an existing user', function(done) {
-      req = {
-        user: {
-          _id: userId
-        },
-        params: {
-          username: 'dkouznetsov'
-        }
-      };
-      res = {};
-      user.deleteUser(req, res, function(err, user) {
-        if (err) {
-          throw err;
-        } else {
-          done();
-        }
+    describe('/jobs', function() {
+      it('should respond with html for popular page', function(done) {
+        request(app).
+          get('/jobs').
+          expect('Content-Type', /html/).
+          expect(200, done)
       });
-      */
     });
+    describe('/projects', function() {
+      it('should respond with html for popular projects page', function(done) {
+        request(app).
+          get('/projects').
+          expect('Content-Type', /html/).
+          expect(200, done)
+      });
+    });
+    describe('/inbox', function() {
+      it('should respond with html for the inbox page', function(done) {
+        request(app).
+          get('/inbox').
+          expect('Content-Type', /html/).
+          expect(200, done)
+      });
+    });
+    describe('/images/users/placeholder.jpg', function() {
+      it('should respond with a placeholder user avatar ', function(done) {
+        request(app).
+          get('/images/users/placeholder.png').
+          expect('Content-Type', /image/).
+          expect(200, done)
+      });
+    });
+    describe('/../app/models/user.js', function() {
+      it('should not be able to read back end files', function(done) {
+        request(app).
+          get('/../app/models/user.js').
+          expect(404, done)
+      });
+    });
+  });
 });

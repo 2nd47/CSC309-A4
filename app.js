@@ -2,9 +2,8 @@
 /* Contributors located at: github.com/2nd47/CSC309-A4 */
 
 var startServer = function(testServer) {
-  // setup express app
-  var express = require('express');
-  var app = express();
+  // server modules
+  var app = require('express')();
 
   // require necessary modules and establish routing
   var auth = require('./app/controllers/auth')(app),
@@ -38,6 +37,8 @@ var startServer = function(testServer) {
 
   app.listen(APP_PORT);
   console.log('Server listening on port ' + APP_PORT);
+
+  return app;
 }
 
 if (require.main === module) {

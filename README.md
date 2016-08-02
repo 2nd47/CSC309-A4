@@ -19,3 +19,16 @@ For Windows:
   node app.js
 ~~~
 - You can now go to the app by going to <i>localhost:3000</i> in your web browser
+
+## Testing the app
+For Windows:
+- Open your command window and enter the following code, replacint <i>db_folder_path</i> with the absolute path to the db folder you've made:
+~~~
+  mongod --port 27017 --dbpath "db_folder_path"
+~~~
+- Open your command window in the root folder of the app and enter:
+~~~
+  npm install
+  npm test
+~~~
+- Mocha should now run and display the tests that are being run.

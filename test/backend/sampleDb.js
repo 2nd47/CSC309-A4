@@ -23,16 +23,13 @@ module.exports = function(app, auth, user, project, job, search) {
     'projects',
     'jobs']
   for (var i = 0; i<collectionsToDrop.length; i++) {
-    console.log('Dropping collection ' + collectionsToDrop[i]);
     mongoose.connection.collections[collectionsToDrop[i]].drop(function(err) {
-      console.log('Dropped!');
     });
   }
 
   User.remove(function(err, removed) {
     Project.remove(function(err, removed) {
       Job.remove(function(err, removed) {
-        console.log('All databases dropped!');
         createSampleDb();
       });
     });
@@ -89,17 +86,12 @@ module.exports = function(app, auth, user, project, job, search) {
     });
     // Save users
     user1.save(function(err, dtrump) {
-      if (err) { console.log(err); }
-      console.log('User created with: ' + dtrump);
+
       user2.save(function(err, bsanders) {
-        if (err) { console.log(err); }
-        console.log('User created with ' + bsanders);
+
         user3.save(function(err, vputin) {
-          if (err) { console.log(err); }
-          console.log('User created with ' + vputin);
+
           user4.save(function(err, hclinton) {
-            if (err) { console.log(err); }
-            console.log('User created with ' + hclinton);
             // Projects
             var project1 = Project({
               name: 'Trump for President!',
@@ -141,20 +133,18 @@ module.exports = function(app, auth, user, project, job, search) {
                 for the \'Sanders for President!\' job!'
             });
             project1.save(function(err, trumpProj) {
-              if (err) { console.log(err); }
-              console.log('project created ' + trumpProj);
+
               User.findByIdAndUpdate(user1._id,
                 { $push: { 'projects': trumpProj._id }},
                 function(err, user) {
-                  if (err) { console.log(err); }
+
                 });
               project2.save(function(err, sandersProj) {
-                if (err) { console.log(err); }
-                console.log('project created ' + sandersProj);
+                
                 User.findByIdAndUpdate(user2._id,
                   { $push: { 'projects': project2._id}},
                   function(err, user) {
-                    if (err) { console.log(err); }
+
                   });
                 var job1 = Job({
                   name: 'Website Designer',
@@ -185,21 +175,19 @@ module.exports = function(app, auth, user, project, job, search) {
                   url: 'http://www.trump.com/connect-with-us'
                 });
                 job1.save(function(err, job1) {
-                  if (err) { console.log(err); }
-                  console.log('job created at ' + job1);
+
                   Project.findByIdAndUpdate(project1._id,
                     { $push: { 'jobs' : job1._id }},
                     function(err, project) {
-                      if (err) { console.log(err); }
+
                     });
                 });
                 job2.save(function(err, job2) {
-                  if (err) { console.log(err); }
-                  console.log('job created at ' + job2);
+
                   Project.findByIdAndUpdate(project1._id,
                     { $push: { 'jobs' : job2._id }},
                     function(err, project) {
-                      if (err) { console.log(err); }
+
                     });
                 });
               });

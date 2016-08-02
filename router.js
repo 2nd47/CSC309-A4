@@ -2,8 +2,6 @@
 /* Contributors located at: github.com/2nd47/CSC309-A4 */
 
 var express = require('express');
-var fs = require('fs');
-var url = require('url');
 
 module.exports = function(app, auth, user, project, job, search, admin) {
 
@@ -11,12 +9,6 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.use(express.static(__dirname + '/public'));
   app.set('view engine', 'html');
   app.set('views', __dirname + '/views');
-
-  // Log when routes are accessed
-  app.use(function timeLog(req, res, next) {
-    console.log('Time: ', Date.now());
-    next();
-  });
 
   // ROUTES BEGIN HERE
 
