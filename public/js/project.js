@@ -76,15 +76,18 @@ $(document).ready(function() {
 		$("#details_text").append($("<p>").text(data.detailedInfo));
 
 		//render every contract
+		console.log(data.jobs);
 		$.each(data.jobs, function(index, job) {
+			job = data.jobs[index];
+			console.log(job);
 			$("#contract_listing").append(
 				"<li>"
-				+ "<a href='/job/"
-				+ JSON.stringify(job.id).slice(1,-1)
+				+ "<a href='/jobs/"
+				+ JSON.stringify(job._id).slice(1,-1)
 				+ "' style='text-decoration: none'>"
 				+ "<div class='contract_intro'>"
 				+ "<h2><strong>"
-				+ JSON.stringify(job.title).slice(1,-1)
+				+ JSON.stringify(job.name).slice(1,-1)
 				+ "</strong></h2>"
 				+ "<p><strong>Status:</strong> "
 				+ JSON.stringify(job.status).slice(1,-1)

@@ -174,10 +174,20 @@ module.exports = function(app, auth, user, project, job, search) {
                 job1.save(function(err, job1) {
                   if (err) { console.log(err); }
                   console.log('job created at ' + job1);
+                  Project.findByIdAndUpdate(project1._id,
+                    { $push: { 'jobs' : job1._id }},
+                    function(err, project) {
+                      if (err) { console.log(err); }
+                    });
                 });
                 job2.save(function(err, job2) {
                   if (err) { console.log(err); }
                   console.log('job created at ' + job2);
+                  Project.findByIdAndUpdate(project1._id,
+                    { $push: { 'jobs' : job2._id }},
+                    function(err, project) {
+                      if (err) { console.log(err); }
+                    });
                 });
               });
             });
