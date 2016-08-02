@@ -53,5 +53,12 @@ describe('APIs', function() {
           expect(200, done)
       });
     });
+    describe('/../app/models/user.js', function() {
+      it('should not be able to read back end files', function(done) {
+        request(app).
+          get('/../app/models/user.js').
+          expect(404, done)
+      });
+    });
   });
 });
