@@ -185,7 +185,7 @@ module.exports = function(app) {
   });
 
   this.googleCallback = passport.authenticate( 'google', {
-    successRedirect: '/profile',
+    successRedirect: '/',
     failureRedirect: '/login'
   });
 
@@ -200,7 +200,7 @@ module.exports = function(app) {
   */
 
   this.githubCallback = passport.authenticate( 'github', {
-    successRedirect: '/profile',
+    successRedirect: '/',
     failureRedirect: '/login'
   });
 
