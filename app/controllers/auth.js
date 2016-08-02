@@ -64,7 +64,7 @@ module.exports = function(app) {
   passport.use(new GoogleStrategy({
     clientID        : '913375318653-dqg1upddvrlpfssnpou9m519nh5p9vec.apps.googleusercontent.com',
     clientSecret    : 'fGnNQThRZe__20C_3vUxKynj',
-    callbackURL     : 'http://http://aida-webapp.herokuapp.com/google/callback',
+    callbackURL     : 'http://aida-webapp.herokuapp.com/google/callback',
     passReqToCallback   : true
   },
   function(request, accessToken, refreshToken, profile, done) {
@@ -74,13 +74,11 @@ module.exports = function(app) {
   }
 ));
 
-
-
 //Passport Github Strategy
   passport.use(new GitHubStrategy({
     clientID        : 'e9a26732aa4e50ddfd37',
     clientSecret    : '5d2b3b64024322f6deb611bec846e169b98df9cf',
-    callbackURL     : 'http://http://aida-webapp.herokuapp.com/github/callback',
+    callbackURL     : 'http://aida-webapp.herokuapp.com/github/callback',
     passReqToCallback   : true
     },
     function(accessToken, refreshToken, profile, cb) {
