@@ -11,7 +11,7 @@ var skill = new Schema({
   name: {
     type: String,
     required: true,
-    uniquer: true
+    unique: true
   },
   rating: {
     type: Number,

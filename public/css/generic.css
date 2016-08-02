@@ -71,6 +71,10 @@ header {
     color: #A1A1A1;
 }
 
+#logoutNav {
+  display: none;
+}
+
 #searchbar_nav {
   height: 28px;
   display: inline-block;

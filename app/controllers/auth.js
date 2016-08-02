@@ -1,13 +1,17 @@
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy,
-    GoogleStrategy = require('passport-google').Strategy;
+    GoogleStrategy = require('passport-google-oauth2').Strategy;
+    GitHubStrategy = require('passport-github').Strategy;
     session = require('express-session'),
     expressValidator = require('express-validator'),
     bcrypt = require('bcryptjs'),
     flash = require('connect-flash'),
     cookieParser = require('cookie-parser'),
     bodyParser = require("body-parser"),
-    User = require('../models/user');
+    User = require('../models/user'),
+    findOrCreate = require("mongoose-findorcreate");
+
+    //UserSchema.plugin(findOrCreate);
 
 module.exports = function(app) {
 
@@ -56,56 +60,35 @@ module.exports = function(app) {
       });
   }));
 
-  // Passport Google Strategy
-  /**
-  passport.use(new GoogleStrategy({
-    consumerKey: GOOGLE_CONSUMER_KEY,
-    consumerSecret: GOOGLE_CONSUMER_SECRET,
-    callbackURL: "http://www.example.com/auth/google/callback"
-  },
-  function(token, tokenSecret, profile, done) {
-      User.findOrCreate({ googleId: profile.id }, function (err, user) {
-        return done(err, user);
-      });
-    }
-  ));
-  */
-/**
+// Passport Google Strategy
   passport.use(new GoogleStrategy({
     clientID        : '913375318653-dqg1upddvrlpfssnpou9m519nh5p9vec.apps.googleusercontent.com',
     clientSecret    : 'fGnNQThRZe__20C_3vUxKynj',
-    callbackURL     : configAuth.googleAuth.callbackURL,
+    callbackURL     : 'http://aida-webapp.herokuapp.com/google/callback',
+    passReqToCallback   : true
   },
-  function(token, refreshToken, profile, done) {
-      // make the code asynchronous
-      // User.findOne won't fire until we have all our data back from Google
-      process.nextTick(function() {
-          // try to find the user based on their google id
-          User.findOne({ 'google.id' : profile.id }, function(err, user) {
-              if (err)
-                  return done(err);
-              if (user) {
-                  // if a user is found, log them in
-                  return done(null, user);
-              } else {
-                  // if the user isnt in our database, create a new user
-                  var newUser          = new User();
-                  // set all of the relevant information
-                  newUser.google.id    = profile.id;
-                  newUser.google.token = token;
-                  newUser.google.name  = profile.displayName;
-                  newUser.google.email = profile.emails[0].value; // pull the first email
-                  // save the user
-                  newUser.save(function(err) {
-                      if (err)
-                          throw err;
-                      return done(null, newUser);
-                  });
-              }
-          });
+  function(request, accessToken, refreshToken, profile, done) {
+    User.findOne({ googleId: profile.id }, function (err, user) {
+      return done(err, user);
+    });
+  }
+));
+
+//Passport Github Strategy
+  passport.use(new GitHubStrategy({
+    clientID        : 'e9a26732aa4e50ddfd37',
+    clientSecret    : '5d2b3b64024322f6deb611bec846e169b98df9cf',
+    callbackURL     : 'http://aida-webapp.herokuapp.com/github/callback',
+    passReqToCallback   : true
+    },
+    function(accessToken, refreshToken, profile, cb) {
+      User.findOne({ githubId: profile.id }, function (err, user) {
+        return cb(err, user);
       });
-  }));
-*/
+    }
+  ));
+
+// Serialize and Deserialize user
   passport.serializeUser(function(user, done) {
     done(null, user._id);
   });
@@ -177,28 +160,44 @@ module.exports = function(app) {
     // `req.user` contains the authenticated user.
     res.redirect('/');
   }
-/**
-  this.google = passport.authenticate('google'),
-  function(req, res) {
-    console.log("In auth.js > this.google");
-    res.redirect('/');
-  }
-  */
 
-  this.google = passport.authenticate('google', { scope: 'https://www.google.com/m8/feeds' }),
+
+  this.google = passport.authenticate('google', ['profile','email']),
   function(req, res) {
     // If this function gets called, authentication was successful.
     // `req.user` contains the authenticated user.
+    alert("in auuth.js");
     console.log("In auth.js > this.google");
     res.redirect('/');
   }
 
 
-  this.github = passport.authenticate('github'),
-  function(res, req) {
-    console.log("In auth.js > this.github");
+
+  this.google = passport.authenticate('google', { scope:
+  	[ 'https://www.googleapis.com/auth/plus.login',
+  	  'https://www.googleapis.com/auth/plus.profile.emails.read' ]
+  });
+
+  this.googleCallback = passport.authenticate( 'google', {
+    successRedirect: '/',
+    failureRedirect: '/'
+  });
+
+
+  this.github = passport.authenticate('github',  { scope: [ 'user:email' ] });
+/**
+  this.githubCallback = passport.authenticate('github', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
     res.redirect('/');
-  }
+  });
+  */
+
+  this.githubCallback = passport.authenticate( 'github', {
+    successRedirect: '/',
+    failureRedirect: '/'
+  });
+
 
   this.logout = function(req, res, next){
     req.logout();

@@ -12,9 +12,14 @@ var loginSwitch = document.getElementById("login_switch");
 
 var signupButton = document.getElementById("signup_button");
 var loginButton = document.getElementById("login_button");
+var logoutButton = document.getElementById("logoutNav");
 
 var googleIcon = document.getElementById("google");
 var githubIcon = document.getElementById("github");
+
+//var loginButton = document.getElementById("login");
+//var logoutButton = document.getElementById("logout");
+
 
 
 // When the user clicks the button, open the modal
@@ -101,6 +106,8 @@ loginButton.onclick = function(event) {
     .success(function(msg) {
       document.getElementById("login_signup_content").style.display = "none";
       document.getElementById("verify_content").style.display = "block";
+      document.getElementById("logoutNav").style.display = "block";
+      document.getElementById("loginNav").style.display = "none";
     })
     .fail(function(jqXHR, textStatus) {
       $("#feedback_msg").html(jqXHR.status);
@@ -136,7 +143,6 @@ signupButton.onclick = function(event) {
       .done(function(data) {
       })
       .success(function(msg) {
-        alert("Successfully signed up.");
         document.getElementById("login_signup_content").style.display = "none";
         document.getElementById("verify_content").style.display = "block";
       })
@@ -146,34 +152,31 @@ signupButton.onclick = function(event) {
 }
 
 googleIcon.onclick = function(event) {
-  alert("goo");
+  modal.style.display = "none";
+  document.getElementById("login_signup_content").style.display = "block";
+  document.getElementById("verify_content").style.display = "none";
+  $("#proceed_button").remove();
 
-  var data = {
-    username: $("#username").val() //how?
-  };
+  clearFields();
 
-  $.ajax(
-    {
-      type: "GET",
-      url: "/google",
-      data: {username: "izzy"}
-    })
-
+  window.location.pathname = '/google';
 }
 
 githubIcon.onclick = function(event) {
-  alert("git");
+  modal.style.display = "none";
+  document.getElementById("login_signup_content").style.display = "block";
+  document.getElementById("verify_content").style.display = "none";
+  $("#proceed_button").remove();
 
-  var data = {
-    username: $("#username").val() //how?
-  };
+  clearFields();
 
-  $.ajax(
-    {
-      type: "GET",
-      url: "/github",
-      data: {username: "izzy"}
-    })
+  window.location.pathname = '/github';
+}
+
+logoutButton.onclick = function(event){
+  alert("Successfully logged out.");
+  document.getElementById("loginNav").style.display = "block";
+  document.getElementById("logoutNav").style.display = "none";
 }
 
 //clear the fields

@@ -10,13 +10,13 @@
 
     <!--Stylesheets-->
     <link rel="stylesheet" type="text/css" href="/css/generic.css">
-    <link rel="stylesheet" type="text/css" href="/css/contract.css">
+    <link rel="stylesheet" type="text/css" href="/css/job.css">
     <link rel="stylesheet" type="text/css" href="/css/modal.css">
 
     <!--Scripts-->
     <script type="text/javascript" src="/js/jquery-2.2.4.min.js" defer></script>
     <script type="text/javascript" src="/js/modal.js" defer></script>
-    <script type="text/javascript" src="/js/contract.js" defer></script>
+    <script type="text/javascript" src="/js/job.js" defer></script>
     <script type="text/javascript" src="/js/generic.js" defer></script>
   </head>
 
@@ -32,7 +32,8 @@
             </a>
           </div>
           <div id="login_nav">
-            <a class="navbutton">Log in</a>
+            <a id="loginNav" class="navbutton">Log in</a>
+            <a id="logoutNav" class="navbutton">Log out</a>
           </div>
           <div id="searchbar_nav">
             <!--The search button will be implemented in javascript later-->
@@ -82,9 +83,9 @@
           <h3 id="login_text">Have an account? <span id="login_switch">Login!</span></h3>
         </div>
         <div id="verify_content">
-          <h3 id="verify_text">Please choose any of the two-factor auth. method.</h3>
-          <image id="google" src="https://cdn3.iconfinder.com/data/icons/picons-social/57/80-google-plus-512.png" alt="Smiley face" height="42" width="42"></image>
-          <image id="github" src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="Smiley face" height="42" width="42"></image>
+          <h3 id="verify_text">Please choose one of the two-factor authentication below.</h3>
+          <image id="google" src="../images/google.png" alt="Google" height="47" width="47"></image>
+          <image id="github" src="../images/github.png" alt="Github" height="42" width="42"></image>
         </div>
       </div>
     </div>
@@ -105,7 +106,7 @@
                 <p><strong>Posted on:</strong> <span id="post_date"> </span></p>
       					<p><strong>Status:</strong> <span id="status"> </span></p>
       					<p><strong>Employer:</strong> <a id="employer" href="profile.html"> </a></p>
-      					<a id="project_link" href="project.html">See Project</a>
+      					<p><strong>Project:</strong> <a id="project_link" href="project.html"></a></p>
       					<div id="status_change">
       						<p><strong>Choose actions:</strong></p>
       						<button id="sign">Sign Contract</button>

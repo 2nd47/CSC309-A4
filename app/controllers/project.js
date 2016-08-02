@@ -1,8 +1,13 @@
 var User = require('../models/user'),
+    Job = require('../models/job'),
     Project = require('../models/project'),
-    permissionManager = require('../middleware/permission_manager');
+    permissionManager = require('../middleware/permission_manager'),
+    async = require('async');
 
 module.exports = function(app) {
+  this.renderPopularProjectPage = function(req, res) {
+    res.sendFile('popularProjects.html', { root: './views' });
+  }
   this.renderProjectPage = function(req, res) {
     res.sendFile('project.html', { root: "./views" });
   }
@@ -10,11 +15,12 @@ module.exports = function(app) {
   	/*
   		{
   			id: project id,
-  			title: project title,
-  			publisher:
+  			name: project name,
+  			owner:
   			{
-  				publisher_id: id of owner,
-  				publisher_name: name of project owner
+  				_id: id of owner,
+          username: String,
+  				name: name of project owner
   			},
   			members:
   			[
@@ -23,8 +29,8 @@ module.exports = function(app) {
   					member_name: name of project owner
   				}
   			],
-  			short_intro: short description, 300 characters max,
-  			long_intro: longer intro with no character limit,
+  			basicInfo: short description, 300 characters max,
+  			detailedInfo: longer intro with no character limit,
   			showcase:
   			[
   				{
@@ -47,7 +53,67 @@ module.exports = function(app) {
   			],
   		}
   	*/
-  	try {
+    Project.findById(req.params.project_id).
+      select({
+        _id: 1,
+        owner: 1,
+        name: 1,
+        members: 1,
+        showcase: 1,
+        jobs: 1,
+        basicInfo: 1,
+        detailedInfo: 1,
+        updatedAt: 1,
+        status: 1,
+        tags: 1}).
+      lean().
+      exec(function(err, project) {
+        if (err) {
+          res.status(404).send(err);
+        } else {
+          User.findById(project.owner).
+            select({
+              _id: 1,
+              name: 1,
+              username: 1
+            }).
+            lean().
+            exec(function(err, owner) {
+            if (err) {
+              res.status(404).send(err);
+            } else {
+              project.owner = owner;
+              var jobsArray = [];
+              async.each(project.jobs, function(jobId, callback) {
+                Job.findById(jobId).
+                  select({
+                    _id: 1,
+                    name: 1,
+                    budget: 1,
+                    deadline: 1,
+                    status: 1
+                  }).
+                  exec(function(err, job) {
+                    if (err) {
+                      callback(err);
+                    } else {
+                      jobsArray.push(job);
+                      callback();
+                    }
+                  });
+              }, function(err) {
+                if (err) {
+                  res.status(404).send(err);
+                } else {
+                  project.jobs = jobsArray;
+                  res.status(200).send(project);
+                }
+              });
+            }
+          });
+        }
+      });
+  	/*try {
   		var json = new Object();
   		Project.findById(req.params.project_id, function(err, project){
         if (!project.length) {
@@ -77,7 +143,7 @@ module.exports = function(app) {
   					json.members.push(newMember);
   				});
   			}
-  			json.short_intro = project.basicInfo;
+  			json.basicInfo = project.basicInfo;
   			json.long_intro = project.detailedInfo;
 
   			json.long_intro = [];
@@ -123,7 +189,7 @@ module.exports = function(app) {
   		if (req.accepts('html')) {
   			res.render('404', { url: req.url });
   		}
-  	}
+  	}*/
     //res.send('AIDA Home Page!');
     /*
     var project1 =
@@ -170,35 +236,21 @@ module.exports = function(app) {
 
       res.json(project1);*/
   };
-
-  this.getPopularProjects = function (req, res, next) {
-  	// get name, tags, showcase
-  	var json = new Object();
-  	var cursor = Project.find({},{"name": 1, "tags": 1, "showcase": 1}).sort({"numFollowers": -1}).limit(10);
-  	json.topTen = cursor.toArray();
-  	json.following = [];
-  	var userId = req.session.userId;
-  	if (userId) {
-  		User.findById(userId, function(err, user){
-  			var followings = user.followings;
-  			var numFollowings = followings.length;
-  			var i;
-  			for (i=0;i<numFollowings;i++) {
-  				Project.findById(followings[i], function(){
-  					// the object being followed is an existing project
-  					if (project.length) {
-  						var newProject = new Object();
-  						newProject._id = project._id;
-  						newProject.name = project.name;
-  						newProject.tags = project.tags;
-  						json.following.push(newProject);
-  					}
-  				});
-  			}
-  		});
-  	}
-  	res.send(JSON.stringify(json));
-    //res.send('AIDA Home Page!');
+  this.getPopularProjects = function (req, res) {
+    var pageNum = 1;
+    var resultsPerPage = 10;
+  	Project.find({}).
+      select({_id: 1, name: 1, tags: 1, showcase: 1, createdAt: 1, basicInfo: 1}).
+      sort({numFollowers: -1}).
+      skip((pageNum - 1) * resultsPerPage).
+      limit(resultsPerPage).
+      exec(function(err, projects) {
+        if (err) {
+          res.status(404).send(err);
+        } else {
+          res.status(200).send(projects);
+        }
+      });
   };
 
   this.createProject = function (req, res, next) {
@@ -217,6 +269,7 @@ module.exports = function(app) {
   		var projectForm = qs.parse(req.data);
       var tags = jobForm.descriptionTags.replace(/\s+/g, '').split(",");
   		// may createJob return job _id or something...
+			var showcasePath = projectForm.image.id;
       var newProject = Project({
         name: projectForm.name,
         owner: req.user._id,
@@ -226,7 +279,7 @@ module.exports = function(app) {
       });
 
       newProject.save(function(err, project) {
-        json.url = req.baseUrl + '/' + newProject._id;
+        json.url = '/project/' + newProject._id;
         json.success = true;
       });
   	}

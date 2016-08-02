@@ -3,6 +3,7 @@ var User = require('../models/user'),
     Project = require('../models/project'),
     permissionManager = require('../middleware/permission_manager');
 
+		var async = require('async');
 // send all followers of the object (project or person) at given url
 // the broadcast message to their messageBoard
 var broadcastFollowers = function (id, url, message) {
@@ -231,17 +232,24 @@ module.exports = function(app) {
   		following: [list of info, empty if user is not following anyone or is not logged in];
   	}
   	*/
+    return res.redirect('/');
+
   	var json = new Object();
   	//var cursor =
-    User.find(function(err, cursor) {
+    User.find({},{"name": 1, "title": 1, "skillTags": 1, "tags": 1}).sort({"numFollowers": -1}).limit(10).lean().exec(function(err, cursor) {
       console.log(err);
       console.log(cursor[0]);
-        /*{"name": 1, "title": 1, "skillTags": 1, "tags": 1}*/
+			console.log(cursor);
+      //cursor should be an array now?
   		//cursor = cursor.sort({"numFollowers": -1}).limit(10);
-  		json.topTen = cursor.toArray();
-  		res.send(JSON.stringify(json));
+  		if (!err) {
+				res.status(200).send(cursor);
+			}
+			else {
+				res.status(404).send('404');
+			}
   		return;
-  		json.following = [];
+  		/*json.following = [];
   		var userId = req.session.userId;
   		if (userId) {
   			User.findById(userId, function(err, user){
@@ -263,10 +271,8 @@ module.exports = function(app) {
   					});
   				}
   			});
-      }
+      }*/
 		});
-
-  	res.send(JSON.stringify(json));
   };
 
   this.getMessages = function (req, res) {
@@ -297,10 +303,12 @@ module.exports = function(app) {
   	// If the user is not logged in (or login expired),   //
   	// prompt them to log in. Could be done at front end  //
   	////////////////////////////////////////////////////////
-  	var userId = req.session.userId;
   	var json = new Object();
-  	json.chats = new Object();
-  	if (userId) {
+		console.log("yay?");
+		console.log(json);
+		if (req.user) {
+			var userId = req.user._id;
+			json.chats = new Object();
   		// The user is logged in
   		User.findById(userId, function(err, found){
   			if (!err) {
@@ -313,36 +321,49 @@ module.exports = function(app) {
   				// Clear message board broadcasts
   				db.setUserField(userId, messageBoard, []);
   				var chats = found.chats;
-  				var numChats = chats.length;
-  				for (i=0;i<numChats;i++) {
-  					var other;
-  					Chat.findById(chats[i], function(err, chat){
+  				async.each(chats, function(chatId, err){
+						Chat.findById(chatId, function(err, chat){
   						if (userId === chat.personOne) {
-  							User.findById(chat.personTwo, function(err, user){
-  								other = user;
+  							User.findById(chat.personTwo, function(err, other){
+									json.chats[chat._id] = new Object();
+									json.chats[chat._id].chat_name = other.name;
+									// messages should be in ascending order by time
+									json.chats[chat._id].last_message = messages[-1];
+									// get the source of avatar
+									json.chats[chat._id].chat_avatar = other.avatar;
+									// count number of messages sent after the first read message
+									var numUnread = 0;
+									// while the current message is unread and it is a received message, keep counting
+									while (messages[numUnread].unread && messages[numUnread].sender === other._id) {
+										numUnread += 1;
+									}
+									json.chats[chat._id].num_unread = numUnread;
   							});
   						}
   						else {
   							User.findById(chat.personOne, function(err, user){
   								other = user;
+									json.chats[chat._id] = new Object();
+									json.chats[chat._id].chat_name = other.name;
+									// get the source of avatar
+									json.chats[chat._id].chat_avatar = other.avatar;
+									// count number of messages sent after the first read message
+									var numUnread = 0;
+									// while the current message is unread and it is a received message, keep counting
+									while (messages[numUnread].unread && messages[numUnread].sender === other._id) {
+										numUnread += 1;
+									}
+									json.chats[chat._id].num_unread = numUnread;
   							});
   						}
   					});
-  					json.chats[chat._id] = new Object();
-  					json.chats[chat._id].chat_name = other.name;
-  					// messages should be in ascending order by time
-  					json.chats[chat._id].last_message = messages[-1];
-  					// get the source of avatar
-  					json.chats[chat._id].chat_avatar = other.avatar;
-  					// count number of messages sent after the first read message
-  					var numUnread = 0;
-  					// while the current message is unread and it is a received message, keep counting
-  					while (messages[numUnread].unread && messages[numUnread].sender === other._id) {
-  						numUnread += 1;
-  					}
-  					json.chats[chat._id].num_unread = numUnread;
-  				}
-  				json.success = "true";
+					});
+					if (!err) {
+						json.success = "true";
+					}
+  				else {
+						json.success = "false";
+					}
   			}
   			else {
   				json.success = "false";
@@ -353,7 +374,8 @@ module.exports = function(app) {
   		// The user is not logged in
   		json.success = "false";
   	}
-  	res.send(JSON.stringify(json));
+		console.log(json);
+  	res.send(json);
 
   };
 
@@ -374,75 +396,90 @@ module.exports = function(app) {
   	*/
 
   	// Check if the person is logged in as personOne or personTwo
-  	var userId = req.session.userId;
-  	var chat_id = req.params.chat_id;
-  	Chat.findById(chat_id, function(err, chat){
-  		var json = new Object();
-  		if (userId === chat.personOne || userId === chat.personTwo) {
-  			json.success = "true";
-  			json.result = new Object();
-  			var other;
-  			if (userId === chat.personOne) {
-  				// the other person is person two
-  				User.findById(chat.personTwo, function(err, user){
-  					other = user;
-  				});
-  			}
-  			else {
-  				// the other person is person one
-  				User.findById(chat.personOne, function(err, user){
-  					other = user;
-  				});
-  			}
-  			// other user is not found
-  			if (!other) {
-  				json.success = "false";
-  				res.send(JSON.stringify(json));
-  				return;
-  			}
-  			json.result.other_id = other._id;
-  			json.result.other_name = other.name;
-  			json.messages = [];
-  			var messages = chat.messages.slice(-10); // Get the last 10 messages
+		var json = new Object();
+		var user = req.user;
+		if (user) {
+			var userId = user._id;
+			var chat_id = req.params.chat_id;
+			Chat.findById(chat_id, function(err, chat){
+				
+				if (userId === chat.personOne || userId === chat.personTwo) {
+					json.success = "true";
+					json.result = new Object();
+					var other;
+					if (userId === chat.personOne) {
+						// the other person is person two
+						User.findById(chat.personTwo, function(err, user){
+							other = user;
+						});
+					}
+					else {
+						// the other person is person one
+						User.findById(chat.personOne, function(err, user){
+							other = user;
+						});
+					}
+					// other user is not found
+					if (!other) {
+						json.success = "false";
+						res.send(json);
+						return;
+					}
+					json.result.other_id = other._id;
+					json.result.other_name = other.name;
+					json.messages = [];
+					var messages = chat.messages.slice(-10); // Get the last 10 messages
 
-  			var i;
-  			var numMessages = messages.length;
-  			for (i=0;i<numMessages;i++) {
-  				// Mark all the messages shown as read
-  				readMessage(messages[i]);
-  				// check sender of the message and append to list
-  				var message = new Object();
-  				if (messages[i].sender === userId) {
-  					message.sender = "user";
-  				}
-  				else {
-  					message.sender = "other";
-  				}
-  				message.text = messages[i].text;
-  				json.messages.push(message);
-  			}
+					var i;
+					var numMessages = messages.length;
+					for (i=0;i<numMessages;i++) {
+						// Mark all the messages shown as read
+						readMessage(messages[i]);
+						// check sender of the message and append to list
+						var message = new Object();
+						if (messages[i].sender === userId) {
+							message.sender = "user";
+						}
+						else {
+							message.sender = "other";
+						}
+						message.text = messages[i].text;
+						json.messages.push(message);
+					}
 
 
-  		}
-  		else {
-  			json.success = "false";
-  			json.result = null;
-  		}
-  		res.send(JSON.stringify(json));
-  	});
+				}
+				else {
+					json.success = "false";
+					json.result = null;
+				}
+			});
+		}
+		else {
+			json.success = "false";
+			json.result = null;
+		}
+		res.send(json);
+  	
   };
 
   this.createMessage =  function (req, res) {
-  	var userId = req.session.userId;
-  	var personId = req.params.person_id;
-  	if (canSendMessage(userId, personId)) {
-  		var message = req.body['new-message-box'];
-  		sendMessageTo(userId, chatId, message);
-  		res.send("OK");
-  	}
-  	else {
-  		res.send("Denied");
-  	}
+		var user = req.use;
+		if (user) {
+			var userId = user._id;
+			var personId = req.params.person_id;
+			if (canSendMessage(userId, personId)) {
+				var message = req.body['new-message-box'];
+				sendMessageTo(userId, chatId, message);
+				res.send("OK");
+			}
+			else {
+				res.send("Denied");
+			}
+		}
+		else {
+			res.send("Denied");
+		}
   };
 
   this.getChatHistory = function (req, res) {
@@ -460,27 +497,35 @@ module.exports = function(app) {
   	*/
 
   	// Check if the person is logged in as personOne or personTwo
-  	var userId = req.session.userId;
-  	var chat_id = req.params.chat_id;
-  	Chat.findById(chat_id, function(err, chat){
-  		var json = new Object();
-  		if (userId === chat.personOne || userId === chat.personTwo) {
-  			json.success = "true";
-  			json.result = new Object();
-  			json.result.messages = chat.messages;
-  			var i;
-  			var numMessages = json.messages.length;
-  			for (i=0;i<numMessages;i++) {
-  				// Mark all the messages shown as read
-  				db.Message.findByIdAndUpdate(chat_id, {$set: { 'unread': false }});
-  			}
-  		}
-  		else {
-  			json.success = "false";
-  			json.result = null;
-  		}
-  		res.send(JSON.stringify(json));
-  	});
+		var user = req.user;
+		var json = new Object();
+		if (user) {
+			var userId = user._id;
+			var chat_id = req.params.chat_id;
+			Chat.findById(chat_id, function(err, chat){
+				
+				if (userId === chat.personOne || userId === chat.personTwo) {
+					json.success = "true";
+					json.result = new Object();
+					json.result.messages = chat.messages;
+					var i;
+					var numMessages = json.messages.length;
+					for (i=0;i<numMessages;i++) {
+						// Mark all the messages shown as read
+						db.Message.findByIdAndUpdate(chat_id, {$set: { 'unread': false }});
+					}
+				}
+				else {
+					json.success = "false";
+					json.result = null;
+				}
+			});
+		}
+		else {
+			json.success = "false";
+			json.result = null;
+		}
+  	res.send(json);
   };
 
   // Create a new user given the required fields
@@ -512,30 +557,29 @@ module.exports = function(app) {
 	this.editProfile = function(req, res){
 		var userId = req.user._id;
 		var username = req.params.username;
-		var profileId;
 		User.findOne({"username": username}, function(err, user){
 			profileId = user._id;
-		});
-		var profileForm = qs.parse(req.data);
-		if (canEditProfile(userId, profileId)) {
-			db.setUserField(profileId, "name", profileForm.name);
-			if (profileForm.newpassword.length != 0) {
-				if (bcrypt.hash(profileForm.newpassword) === bcrypt.hash(profileForm.repeatpassword)) {
-					db.setUserField(profileId, "passwordHash", bcrypt.hash(profileForm.newpassword));
+			var profileForm = qs.parse(req.data);
+			if (canEditProfile(userId, profileId)) {
+				db.setUserField(profileId, "name", profileForm.name);
+				if (profileForm.newpassword.length != 0) {
+					if (bcrypt.hash(profileForm.newpassword) === bcrypt.hash(profileForm.repeatpassword)) {
+						db.setUserField(profileId, "passwordHash", bcrypt.hash(profileForm.newpassword));
+					}
 				}
-			}
-			db.setUserField(profileId, "avatar", profileForm.image.id);
-			db.setUserField(profileId, "title", profileForm.title);
-			db.setUserField(profileId, "bio", profileForm.bio);
-			db.setUserField(profileId, "tags", profileForm.tags.replace(/\s+/g, '').split(","));
-			db.setUserField(profileId, "email", profileForm.email);
-			db.setUserField(profileId, "skillTags", profileForm.skillTags.replace(/\s+/g, '').split(","));
+				db.setUserField(profileId, "avatar", profileForm.image.id);
+				db.setUserField(profileId, "title", profileForm.title);
+				db.setUserField(profileId, "bio", profileForm.bio);
+				db.setUserField(profileId, "tags", profileForm.tags.replace(/\s+/g, '').split(","));
+				db.setUserField(profileId, "email", profileForm.email);
+				db.setUserField(profileId, "skillTags", profileForm.skillTags.replace(/\s+/g, '').split(","));
 
-			res.send('200');
-		}
-		else {
-			res.send('401');
-		}
+				res.send('200');
+			}
+			else {
+				res.send('401');
+			}
+		});
 	}
   return this;
 }
