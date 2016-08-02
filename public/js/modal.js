@@ -12,9 +12,14 @@ var loginSwitch = document.getElementById("login_switch");
 
 var signupButton = document.getElementById("signup_button");
 var loginButton = document.getElementById("login_button");
+var logoutButton = document.getElementById("logoutNav");
 
 var googleIcon = document.getElementById("google");
 var githubIcon = document.getElementById("github");
+
+//var loginButton = document.getElementById("login");
+//var logoutButton = document.getElementById("logout");
+
 
 
 // When the user clicks the button, open the modal
@@ -101,6 +106,8 @@ loginButton.onclick = function(event) {
     .success(function(msg) {
       document.getElementById("login_signup_content").style.display = "none";
       document.getElementById("verify_content").style.display = "block";
+      document.getElementById("logoutNav").style.display = "block";
+      document.getElementById("loginNav").style.display = "none";
     })
     .fail(function(jqXHR, textStatus) {
       $("#feedback_msg").html(jqXHR.status);
@@ -146,7 +153,11 @@ signupButton.onclick = function(event) {
 }
 
 googleIcon.onclick = function(event) {
-  alert("goo");
+  //alert("goo");
+  //var path = window.location.href.replace("#signup","google");
+  //$('#myModal').style.display = "none";
+  //window.location = '/';
+
 
   modal.style.display = "none";
   document.getElementById("login_signup_content").style.display = "block";
@@ -188,6 +199,12 @@ githubIcon.onclick = function(event) {
       url: "/github",
       data: {username: "izzy"}
     })
+}
+
+logoutButton.onclick = function(event){
+  alert("log out.");
+  document.getElementById("loginNav").style.display = "block";
+  document.getElementById("logoutNav").style.display = "none";
 }
 
 //clear the fields
