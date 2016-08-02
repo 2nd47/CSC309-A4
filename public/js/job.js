@@ -70,7 +70,7 @@ $(document).ready(function() {
 		$("#status").html(JSON.stringify(data.status).slice(1,-1));
 		$("#employer").append($("<strong>").append($("<em>").html(JSON.stringify(data.owner.name).slice(1,-1))));
 
-		$("#employer").attr("href", "../profile/" + JSON.stringify(data.owner.username).slice(1,-1));
+		$("#employer").attr("href", "../profiles/" + JSON.stringify(data.owner.username).slice(1,-1));
 		$("#project_link").attr("href", "../projects/" + JSON.stringify(data.project._id).slice(1,-1));
 		$("#project_link").append($("<strong>").append($("<em>").text(data.project.name)));
 

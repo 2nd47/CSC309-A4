@@ -48,7 +48,7 @@ $(document).ready(function() {
 	$.get(path, function(data) {
 		$("#project_name").html(JSON.stringify(data.name).slice(1,-1));
 		$("#project_owner").html($("<strong>").text(data.owner.name));
-		$("#project_owner").attr("href", "/profile/" + JSON.stringify(data.owner.username).slice(1,-1));
+		$("#project_owner").attr("href", "/profiles/" + JSON.stringify(data.owner.username).slice(1,-1));
 		$("#project_brief").html(JSON.stringify(data.basicInfo).slice(1,-1));
 		$("#last_update").html(
 			"<strong>Last Update:</strong> "
