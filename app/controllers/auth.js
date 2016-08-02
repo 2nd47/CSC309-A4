@@ -68,7 +68,7 @@ module.exports = function(app) {
     passReqToCallback   : true
   },
   function(request, accessToken, refreshToken, profile, done) {
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    User.findOne({ googleId: profile.id }, function (err, user) {
       return done(err, user);
     });
   }
@@ -78,11 +78,11 @@ module.exports = function(app) {
   passport.use(new GitHubStrategy({
     clientID        : 'e9a26732aa4e50ddfd37',
     clientSecret    : '5d2b3b64024322f6deb611bec846e169b98df9cf',
-    callbackURL     : 'http://aida-webapp.herokuapp.com/github/callback',
+    callbackURL     : 'http://localhost:3000/github/callback',
     passReqToCallback   : true
     },
     function(accessToken, refreshToken, profile, cb) {
-      User.findOrCreate({ githubId: profile.id }, function (err, user) {
+      User.findOne({ githubId: profile.id }, function (err, user) {
         return cb(err, user);
       });
     }
@@ -160,14 +160,8 @@ module.exports = function(app) {
     // `req.user` contains the authenticated user.
     res.redirect('/');
   }
-/**
-  this.google = passport.authenticate('google'),
-  function(req, res) {
-    console.log("In auth.js > this.google");
-    res.redirect('/');
-  }
-  */
-/*
+
+
   this.google = passport.authenticate('google', ['profile','email']),
   function(req, res) {
     // If this function gets called, authentication was successful.
@@ -176,7 +170,7 @@ module.exports = function(app) {
     console.log("In auth.js > this.google");
     res.redirect('/');
   }
-  */
+
 
 
   this.google = passport.authenticate('google', { scope:
@@ -186,7 +180,7 @@ module.exports = function(app) {
 
   this.googleCallback = passport.authenticate( 'google', {
     successRedirect: '/',
-    failureRedirect: '/login'
+    failureRedirect: '/'
   });
 
 
@@ -201,7 +195,7 @@ module.exports = function(app) {
 
   this.githubCallback = passport.authenticate( 'github', {
     successRedirect: '/',
-    failureRedirect: '/login'
+    failureRedirect: '/'
   });
 
 

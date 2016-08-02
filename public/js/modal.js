@@ -143,7 +143,6 @@ signupButton.onclick = function(event) {
       .done(function(data) {
       })
       .success(function(msg) {
-        alert("Successfully signed up.");
         document.getElementById("login_signup_content").style.display = "none";
         document.getElementById("verify_content").style.display = "block";
       })
@@ -153,12 +152,6 @@ signupButton.onclick = function(event) {
 }
 
 googleIcon.onclick = function(event) {
-  //alert("goo");
-  //var path = window.location.href.replace("#signup","google");
-  //$('#myModal').style.display = "none";
-  //window.location = '/';
-
-
   modal.style.display = "none";
   document.getElementById("login_signup_content").style.display = "block";
   document.getElementById("verify_content").style.display = "none";
@@ -170,12 +163,6 @@ googleIcon.onclick = function(event) {
 }
 
 githubIcon.onclick = function(event) {
-  alert("git");
-  //var path = window.location.href.replace("#signup","google");
-  //$('#myModal').style.display = "none";
-  //window.location = '/';
-
-
   modal.style.display = "none";
   document.getElementById("login_signup_content").style.display = "block";
   document.getElementById("verify_content").style.display = "none";
@@ -187,7 +174,7 @@ githubIcon.onclick = function(event) {
 }
 
 logoutButton.onclick = function(event){
-  alert("You have just logged out.");
+  alert("Successfully logged out.");
   document.getElementById("loginNav").style.display = "block";
   document.getElementById("logoutNav").style.display = "none";
 }
