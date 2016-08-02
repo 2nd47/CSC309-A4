@@ -45,6 +45,7 @@ module.exports = function(app, auth, user, project, job, search, mainCallback) {
       title: 'Republican Presidential Nominee',
       bio: 'I am the greatest candidate for this position!',
       tags: 'Republican Party',
+      avatar: '/images/users/trump.jpg',
       isVerified: true,
       timeVerified: Date.now(),
       url: 'http://www.trump.com/'
@@ -57,6 +58,7 @@ module.exports = function(app, auth, user, project, job, search, mainCallback) {
       title: 'Democratic Presidential Nominee Runner-up',
       bio: 'I wish I had gotten that position!',
       isVerified: true,
+      avatar: '/images/users/sanders.jpg',
       timeVerified: Date.now(),
       url: 'http://www.sanders.senate.gov/'
     });
@@ -67,6 +69,7 @@ module.exports = function(app, auth, user, project, job, search, mainCallback) {
       name: 'Vladimir Putin',
       title: 'Russian Overlord',
       bio: 'I rule Russia forever!!!',
+      avatar: '/images/users/putin.jps',
       isVerified: true,
       timeVerified: Date.now(),
       url: 'http://eng.putin.kremlin.ru/'
@@ -132,8 +135,20 @@ module.exports = function(app, auth, user, project, job, search, mainCallback) {
             });
             project1.save(function(err, trumpProj) {
               if (err) { console.log(err); }
+              console.log('project created ' + trumpProj);
+              User.findByIdAndUpdate(user1._id,
+                { $push: { 'projects': trumpProj._id }},
+                function(err, user) {
+                  if (err) { console.log(err); }
+                });
               project2.save(function(err, sandersProj) {
                 if (err) { console.log(err); }
+                console.log('project created ' + sandersProj);
+                User.findByIdAndUpdate(user2._id,
+                  { $push: { 'projects': project2._id}},
+                  function(err, user) {
+                    if (err) { console.log(err); }
+                  });
                 var job1 = Job({
                   name: 'Website Designer',
                   project: project1._id,

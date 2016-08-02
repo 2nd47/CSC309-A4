@@ -5,40 +5,6 @@ var express = require('express');
 var fs = require('fs');
 var url = require('url');
 
-var VIEWPATH = __dirname + '/views';
-
-var walk = function(path, viewList, prepend) {
-  if (!prepend) {
-    prepend = "";
-  }
-
-  var views = fs.readdirSync(path);
-  for (var i = 0; i < views.length; i++) {
-    var file = views[i];
-    var newPath = path + '/' + file;
-    var stat = fs.statSync(newPath);
-
-    if (stat.isFile()) {
-      if (/(.*)\.(html$|ejs$)/.test(file)) {
-        viewList.push(prepend + file.replace(/\.(html$|ejs$)/, ''));
-      }
-    } else if (stat.isDirectory() && file != 'partials') {
-      walk(newPath, viewList, prepend + file + "/");
-    }
-  }
-
-  return viewList;
-};
-
-var serveStaticPagesOnRequest = function(app, pageNames) {
-  for (var i = 0; i < pageNames.length; i++) {
-    var page = pageNames[i];
-    app.get('/' + page, function(req, res) {
-      res.sendFile(page, { root: './' });
-    });
-  }
-};
-
 module.exports = function(app, auth, user, project, job, search, admin) {
 
   // Set static files with Express
