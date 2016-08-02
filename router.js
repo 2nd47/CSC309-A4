@@ -2,6 +2,42 @@
 /* Contributors located at: github.com/2nd47/CSC309-A4 */
 
 var express = require('express');
+var fs = require('fs');
+var url = require('url');
+
+var VIEWPATH = __dirname + '/views';
+
+var walk = function(path, viewList, prepend) {
+  if (!prepend) {
+    prepend = "";
+  }
+
+  var views = fs.readdirSync(path);
+  for (var i = 0; i < views.length; i++) {
+    var file = views[i];
+    var newPath = path + '/' + file;
+    var stat = fs.statSync(newPath);
+
+    if (stat.isFile()) {
+      if (/(.*)\.(html$|ejs$)/.test(file)) {
+        viewList.push(prepend + file.replace(/\.(html$|ejs$)/, ''));
+      }
+    } else if (stat.isDirectory() && file != 'partials') {
+      walk(newPath, viewList, prepend + file + "/");
+    }
+  }
+
+  return viewList;
+};
+
+var serveStaticPagesOnRequest = function(app, pageNames) {
+  for (var i = 0; i < pageNames.length; i++) {
+    var page = pageNames[i];
+    app.get('/' + page, function(req, res) {
+      res.sendFile(page, { root: './' });
+    });
+  }
+};
 
 module.exports = function(app, auth, user, project, job, search, admin) {
 
@@ -54,16 +90,18 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.post('/projects/new', project.createProject);
 
   // JOB ROUTES
-  app.get('/jobs', job.renderLatestJobPage)
+  app.get('/jobs', job.renderLatestJobPage);
   app.get('/jobs/:job_id', job.renderJobPage);
   app.get('/jobs/:job_id/sign', job.signJob);
   app.post('/jobs/new', job.createJob);
 
-	app.get('/control.html', function(req, res){
+	app.get('/control', function(req, res){
 		res.sendFile('control.html', { root: "./views/" });
 	});
+	
+	//SEARCH ROUTES
+	app.get('/search', search.renderResultPage);
 
-  app.get('/search', search.getSearch);
 
   // API ROUTES
   app.get('/api/profile/:username', user.getUser);
@@ -79,8 +117,15 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.get('/api/admin/search', admin.searchUser);
   //app.post('/api/admin/delete_database', admin.delete_database);
 	//app.post('/api/admin/repopulate_database', admin.repopulate_database);
+	
+	app.get('/api/search', search.getSearch);
 
 	app.get('/api/get_username', function(req, res){
-		res.send(req.user._id);
+		if (req.user) {
+			res.send(req.user._id);
+		}
+		else {
+			res.send('User not found');
+		}
 	});
 };

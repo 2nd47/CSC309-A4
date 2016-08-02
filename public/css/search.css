@@ -11,6 +11,7 @@ IT CONTAINS STYLES FOR THE SEARCH PAGE*/
 }
 
 #search_wrapper {
+	height: 50px;
   margin-bottom: 10px;
 }
 
@@ -82,7 +83,7 @@ https://pixabay.com/en/magnifying-glass-search-1083373/*/
   margin: 6px;
 }
 
-#result{
+.result{
   background-color: #FFFFFF;
   transition: 0.2s background-color ease-in-out;
   padding: 0.25em;
@@ -92,11 +93,11 @@ https://pixabay.com/en/magnifying-glass-search-1083373/*/
   margin-bottom: 0.5em;
 }
 
-#result:hover {
+.result:hover {
   background-color: #E6E6E6;
 }
 
-#result::after {
+.result::after {
     content:"";
     display:block;
     clear:both;
@@ -124,4 +125,38 @@ h6 {
     padding: 6px;
     font-weight: 700;
     font-size: 12px;
+}
+
+/*Maginifying glass image is public domain:
+https://pixabay.com/en/magnifying-glass-search-1083373/*/
+#search_button input[type=submit] {
+  width: 28px;
+  height: 28px;
+  text-decoration: none;
+  background-color: #F5F5F5;
+  border: none;
+  display: inline-block;
+  padding: 0;
+  background-image: url('../images/search.png');
+  background-size: 22px 22px;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+}
+
+#search_button input[type=submit]:focus {
+  outline: none;
+}
+
+#search_input {
+  float: right;
+  padding: 0 4px;
+  height: 28px;
+  background-color: #F5F5F5;
+  border: none;
+  display: inline-block;
+}
+
+#search_input:focus {
+  outline: none;
 }
