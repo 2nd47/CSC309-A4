@@ -46,12 +46,6 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.set('view engine', 'html');
   app.set('views', __dirname + '/views');
 
-  // Log when routes are accessed
-  app.use(function timeLog(req, res, next) {
-    console.log('Time: ', Date.now());
-    next();
-  });
-
   // ROUTES BEGIN HERE
 
   // HOME PAGE
@@ -99,7 +93,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 	app.get('/control', function(req, res){
 		res.sendFile('control.html', { root: "./views/" });
 	});
-	
+
 	//SEARCH ROUTES
 	app.get('/search', search.renderResultPage);
 
@@ -118,7 +112,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.get('/api/admin/search', admin.searchUser);
   //app.post('/api/admin/delete_database', admin.delete_database);
 	//app.post('/api/admin/repopulate_database', admin.repopulate_database);
-	
+
 	app.get('/api/search', search.getSearch);
 
 	app.get('/api/get_username', function(req, res){

@@ -4,28 +4,54 @@ var express = require('express'),
 var app;
 
 describe('APIs', function() {
-  // within before() you can run all the operations that are needed to setup your tests. In this case
-  // I want to create a connection with the database, and when I'm done, I call done().
+
   before(function(done) {
-    app = require('../app')();
-    done();
+    app = require('../app')(done());
   });
-  // use describe to give a title to your test suite, in this case the tile is "Account"
-  // and then specify a function in which we are going to declare all the tests
-  // we want to run. Each test starts with the function it() and as a first argument
-  // we have to provide a meaningful title for it, whereas as the second argument we
-  // specify a function that takes a single parameter, "done", that we will use
-  // to specify when our test is completed, and that's what makes easy
-  // to perform async test!
+
   describe('Users', function() {
   });
-  describe('GET /jobs', function() {
-    it('should respond with JSON', function(done) {
-      request(app).
-        get('/jobs').
-        set('Accept', 'application/json').
-        expect('Content-Type', /json/).
-        expect(200, done)
+
+  describe('GET routes for serving pages', function() {
+    describe('/', function() {
+      it('should respond with html for landing page', function(done) {
+        request(app).
+          get('/').
+          expect('Content-Type', /html/).
+          expect(200, done)
+      });
+    });
+    describe('/jobs', function() {
+      it('should respond with html for popular page', function(done) {
+        request(app).
+          get('/jobs').
+          expect('Content-Type', /html/).
+          expect(200, done)
+      });
+    });
+    describe('/projects', function() {
+      it('should respond with html for popular projects page', function(done) {
+        request(app).
+          get('/projects').
+          expect('Content-Type', /html/).
+          expect(200, done)
+      });
+    });
+    describe('/inbox', function() {
+      it('should respond with html for the inbox page', function(done) {
+        request(app).
+          get('/inbox').
+          expect('Content-Type', /html/).
+          expect(200, done)
+      });
+    });
+    describe('/images/users/placeholder.jpg', function() {
+      it('should respond with a placeholder user avatar ', function(done) {
+        request(app).
+          get('/images/users/placeholder.png').
+          expect('Content-Type', /image/).
+          expect(200, done)
+      });
     });
   });
 });
