@@ -4,12 +4,8 @@ var express = require('express'),
 var app;
 
 describe('APIs', function() {
-
   before(function(done) {
     app = require('../app')(done());
-  });
-
-  describe('Users', function() {
   });
 
   describe('GET routes for serving pages', function() {
