@@ -449,7 +449,7 @@ module.exports = function(app) {
 							addNewJob(current, MATCH_NAME);
 						}
 					}
-					Job.find({"tags": {$elemMatch: {$regex: '.*' + keyword + '.*', $options: 'i'}}, "status": "open"}).lean().exec(function(err, jobsByTags){
+					Job.find({"descriptionTags": {$elemMatch: {$regex: '.*' + keyword + '.*', $options: 'i'}}, "status": "open"}).lean().exec(function(err, jobsByTags){
 						// match jobs by tags
 						for (var current in jobsByTags) {
 							current = jobsByTags[current];

@@ -1,17 +1,18 @@
 $(document).ready(function() {
 	/*When the page loads, send a request to get the chat list*/
-	//requestInbox();
-	renderInbox();
+	requestInbox();
 });
 
 function requestInbox() {
+	console.log("yaaaaayyyyy!");
 	$.ajax(
 	{
 		type: "get",
 		url: "/api/inbox",
 	})
-	.done(function(data)
+	.success(function(data)
 	{
+		console.log("yay.");
 		renderInbox(data);
 	})
 	.fail(function( jqXHR, textStatus )
@@ -21,9 +22,10 @@ function requestInbox() {
 }
 
 function renderInbox(data) {
-	/*var json = JSON.parse(data);*/
+	var json = data;
+	console.log(data);
 	// Dummy data for testing
-	var json = new Object();
+	/*var json = new Object();
 	json.success = "true";
 	json.messageBoard = [];
 	var update1 = new Object();
@@ -34,7 +36,7 @@ function renderInbox(data) {
 	update2.message = "people"
 	json.messageBoard.push(update1);
 	json.messageBoard.push(update2);
-	json.chats = new Object();
+	json.chats = new Object();*/
 	/////////////////////////////////
 	if (json.success === "true") {
 		// show update info on the left side
@@ -93,7 +95,7 @@ function renderInbox(data) {
 	else {
 		// direct user to landing page
 		alert("Please login again.");
-		window.location.replace("/landing.html");
+		window.location.replace("/");
 	}
 }
 
