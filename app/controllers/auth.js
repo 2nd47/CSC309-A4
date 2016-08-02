@@ -64,7 +64,7 @@ module.exports = function(app) {
   passport.use(new GoogleStrategy({
     clientID        : '913375318653-dqg1upddvrlpfssnpou9m519nh5p9vec.apps.googleusercontent.com',
     clientSecret    : 'fGnNQThRZe__20C_3vUxKynj',
-    callbackURL     : 'http://aida-webapp.herokuapp.com/google/callback',
+    callbackURL     : 'http://localhost:3000/google/callback',
     passReqToCallback   : true
   },
   function(request, accessToken, refreshToken, profile, done) {
