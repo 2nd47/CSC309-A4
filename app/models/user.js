@@ -115,6 +115,10 @@ var user = new Schema({
     type: String,
     default: ""
   }],
+  githubId: [{
+    type: String,
+    default: ""
+  }],
   google: {
     id: String,
     token: String,

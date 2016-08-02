@@ -67,7 +67,8 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.get('/google', auth.google, auth.redirectToHome);
   app.get('/google/callback', auth.googleCallback);
 
-  app.post('/github', auth.github, auth.redirectToHome);
+  app.get('/github', auth.github, auth.redirectToHome);
+  app.get('/github/callback', auth.githubCallback);
 
   app.get('/logout', auth.logout);
 

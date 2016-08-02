@@ -166,43 +166,28 @@ googleIcon.onclick = function(event) {
 
   clearFields();
 
-  var data = {
-    username: $("#username").val() //how?
-  };
-
-  $.ajax(
-    {
-      type: "GET",
-      url: "/google"
-    })
-    .done(function(data) {
-      //done
-    })
-    .success(function(msg) {
-      alert("Successfully gooed up.");
-    })
-    .fail(function(jqXHR, textStatus) {
-      alert("Failed to goo up because of: " + textStatus);
-    });
+  window.location.pathname = '/google';
 }
 
 githubIcon.onclick = function(event) {
   alert("git");
+  //var path = window.location.href.replace("#signup","google");
+  //$('#myModal').style.display = "none";
+  //window.location = '/';
 
-  var data = {
-    username: $("#username").val() //how?
-  };
 
-  $.ajax(
-    {
-      type: "GET",
-      url: "/github",
-      data: {username: "izzy"}
-    })
+  modal.style.display = "none";
+  document.getElementById("login_signup_content").style.display = "block";
+  document.getElementById("verify_content").style.display = "none";
+  $("#proceed_button").remove();
+
+  clearFields();
+
+  window.location.pathname = '/github';
 }
 
 logoutButton.onclick = function(event){
-  alert("log out.");
+  alert("You have just logged out.");
   document.getElementById("loginNav").style.display = "block";
   document.getElementById("logoutNav").style.display = "none";
 }
