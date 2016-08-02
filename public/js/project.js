@@ -76,10 +76,8 @@ $(document).ready(function() {
 		$("#details_text").append($("<p>").text(data.detailedInfo));
 
 		//render every contract
-		console.log(data.jobs);
 		$.each(data.jobs, function(index, job) {
 			job = data.jobs[index];
-			console.log(job);
 			$("#contract_listing").append(
 				"<li>"
 				+ "<a href='/jobs/"
@@ -94,6 +92,9 @@ $(document).ready(function() {
 				+ "</p>"
 				+ "<p><strong>Budget:</strong> "
 				+ JSON.stringify(job.budget)
+				+ "</p>"
+				+ "<p><strong>Budget:</strong> "
+				+ JSON.stringify(job.deadline)
 				+ "</p>"
 				+ "</li>"
 			);

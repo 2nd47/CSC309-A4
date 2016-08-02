@@ -89,7 +89,6 @@ module.exports = function(app) {
                   select({
                     _id: 1,
                     name: 1,
-                    skillTags: 1,
                     budget: 1,
                     deadline: 1,
                     status: 1
@@ -107,7 +106,6 @@ module.exports = function(app) {
                   res.status(404).send(err);
                 } else {
                   project.jobs = jobsArray;
-                  console.log(project);
                   res.status(200).send(project);
                 }
               });
