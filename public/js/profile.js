@@ -46,11 +46,12 @@ $(document).ready(function() {
 			);
 		});
 
-		$("#profile_bio_content").html(JSON.stringify(data.biography).slice(1,-1));
-		$("#profile_bio_edit").html(JSON.stringify(data.biography).slice(1,-1));
+		$("#profile_bio_content").html(JSON.stringify(data.bio).slice(1,-1));
+		$("#profile_bio_edit").html(JSON.stringify(data.bio).slice(1,-1));
 
 		//render every project
 		$.each(data.projects, function(index, project) {
+			project = data.projects[index];
 			$("#projects_list").append(
 				"<a href='/projects/"
 				+	JSON.stringify(project.id).slice(1,-1)

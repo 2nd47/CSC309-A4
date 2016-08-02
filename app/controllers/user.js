@@ -1,6 +1,8 @@
 var User = require('../models/user'),
     Chat = require('../models/chat'),
     Project = require('../models/project'),
+    Job = require('../models/job'),
+    async = require('async'),
     permissionManager = require('../middleware/permission_manager');
 
 		var async = require('async');
@@ -122,66 +124,47 @@ module.exports = function(app) {
   				job_comment: comment on the work
   			}
   		]
-  	}*//*
-  	try {
-  		var json = new Object();
-  		user.findByUsername(req.params.username, function(err, user){
-  			if (!user.length) {
-  				res.status(404);
-  				// page not found
-  				if (req.accepts('html')) {
-  					res.render('404', { url: req.url });
-  				}
-  				return;
-  			}
-  			json.id = user._id;
-  			json.name = user.name;
-  			json.title = user.title;
-  			json.skills = user.skillTags;
-  			json.tags = user.tags;
-  			json.biography = user.bio;
-  			json.projects = [];
-  			// Where the user is the owner
-  			var projects = Project.find({"owner": user._id},{name: 1});
-  			while (projects.hasNext()) {
-  				var newProject = new Object();
-  				var current = projects.next();
-  				newProject.project_id = current._id;
-  				newProject.project_name = current.name;
-  				json.projects.push(newProject);
-  			}
-  			// Where the user is a member
-  			var member_projects = Project.find({members: {$elemMatch: {"user": ObjectId(user_id)}}});
-  			while (member_projects.hasNext()) {
-  				var newProject = new Object();
-  				var current = member_projects.next();
-  				newProject.project_id = current._id;
-  				newProject.project_name = current.name;
-  				json.projects.push(newProject);
-  			}
-  			json.jobs = [];
-  			var jobs = Job.find({"taker": ObjectId(user_id)});
-  			while (jobs.hasNext()) {
-  				var newJob = new Object();
-  				var current = jobs.next();
-  				newJob.job_id = current._id;
-  				newJob.job_name = current.name;
-  				newJob.completion_date = current.completion;
-  				newJob.job_rating = current.rating;
-  				newJob.job_comment = current.comment;
-  				json.projects.push(newJob);
-  			}
-  			res.send(JSON.stringify(json));
-        next();
-  		});
-  	}
-  	catch (e) {
-  		res.status(404);
-  		// page not found
-  		if (req.accepts('html')) {
-  			res.render('404', { url: req.url });
-  		}
   	}*/
+    User.findOne({username: req.params.username}).
+      select({
+        _id: 1,
+        name: 1,
+        title: 1,
+        tags: 1,
+        avatar: 1,
+        bio: 1,
+        jobs: 1,
+        projects: 1
+      }).
+      exec(function(err, user) {
+        if (err) {
+          res.status(404).send(err);
+        } else {
+          var projArray = [];
+          async.each(user.projects, function(projId, callback) {
+            Project.findById(projId).
+            select({
+              _id: 1,
+              name: 1
+            }).
+            exec(function(err, project) {
+              if (err) {
+                callback(err);
+              } else {
+                projArray.push(project);
+                callback();
+              }
+            });
+          }, function(err) {
+            if (err) {
+              res.status(404).send(err);
+            } else {
+              user.projects = projArray;
+              res.status(200).send(user);
+            }
+          });
+        }
+    });
     /*
      var person1 =
     {

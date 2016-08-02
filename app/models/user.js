@@ -5,6 +5,7 @@ var mongoose = require('mongoose'),
     chat = require('./chat'),
     skill = require('./skill'),
     job = require('./job'),
+    project = require('./project'),
     Schema = mongoose.Schema,
     ObjectId = Schema.Types.ObjectId;
 
@@ -33,7 +34,7 @@ var user = new Schema({
 	avatar: {
 		// path to the image
 		type: String,
-    default: "/assets/img/users/placeholder.png"
+    default: "/images/users/placeholder.png"
 	},
   title: {
     type: String,
@@ -99,8 +100,13 @@ var user = new Schema({
     default: []
   }],
   jobs: [{
-    type: ObjectId,
+    type: String,
     ref: 'Job',
+    default: []
+  }],
+  projects: [{
+    type: String,
+    ref: 'Project',
     default: []
   }],
 	frozen: [{

@@ -5,40 +5,6 @@ var express = require('express');
 var fs = require('fs');
 var url = require('url');
 
-var VIEWPATH = __dirname + '/views';
-
-var walk = function(path, viewList, prepend) {
-  if (!prepend) {
-    prepend = "";
-  }
-
-  var views = fs.readdirSync(path);
-  for (var i = 0; i < views.length; i++) {
-    var file = views[i];
-    var newPath = path + '/' + file;
-    var stat = fs.statSync(newPath);
-
-    if (stat.isFile()) {
-      if (/(.*)\.(html$|ejs$)/.test(file)) {
-        viewList.push(prepend + file.replace(/\.(html$|ejs$)/, ''));
-      }
-    } else if (stat.isDirectory() && file != 'partials') {
-      walk(newPath, viewList, prepend + file + "/");
-    }
-  }
-
-  return viewList;
-};
-
-var serveStaticPagesOnRequest = function(app, pageNames) {
-  for (var i = 0; i < pageNames.length; i++) {
-    var page = pageNames[i];
-    app.get('/' + page, function(req, res) {
-      res.sendFile(page, { root: './' });
-    });
-  }
-};
-
 module.exports = function(app, auth, user, project, job, search, admin) {
 
   // Set static files with Express
@@ -99,7 +65,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
 	app.get('/control', function(req, res){
 		res.sendFile('control.html', { root: "./views/" });
 	});
-	
+
 	//SEARCH ROUTES
 	app.get('/search', search.renderResultPage);
 
@@ -118,7 +84,7 @@ module.exports = function(app, auth, user, project, job, search, admin) {
   app.get('/api/admin/search', admin.searchUser);
   //app.post('/api/admin/delete_database', admin.delete_database);
 	//app.post('/api/admin/repopulate_database', admin.repopulate_database);
-	
+
 	app.get('/api/search', search.getSearch);
 
 	app.get('/api/get_username', function(req, res){
